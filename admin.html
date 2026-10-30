@@ -1,0 +1,1450 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin – Météo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Cinzel:wght@700&family=VT323&family=Orbitron:wght@500&family=Press+Start+2P&family=Special+Elite&family=Playfair+Display:wght@900&family=Creepster&family=Bangers&family=Caveat:wght@700&family=Gochi+Hand&family=Rye&family=Poiret+One&family=Monoton&family=Share+Tech+Mono&family=Silkscreen&family=Fredoka:wght@600&family=Architects+Daughter&family=Mountains+of+Christmas:wght@700&family=Oswald:wght@600&family=Tilt+Neon&family=Dela+Gothic+One&family=Noto+Serif+JP:wght@900&family=JetBrains+Mono:wght@400;700&family=Shippori+Mincho+B1:wght@800&family=Yuji+Syuku&family=Bodoni+Moda:ital,wght@1,900&family=Nunito:wght@600;800;900&display=swap">
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#000;--dim:#8a8a8e;--ln:#e5e5ea;--ac:#007aff;--ok:#34c759;--bad:#ff3b30}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--tx:#fff;--dim:#8e8e93;--ln:#38383a;--ac:#0a84ff}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:15px}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--ln)}
+.bar{display:flex;align-items:center;gap:16px;padding:12px 28px 6px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+#st{flex:1;min-width:0;font-size:13px;color:var(--dim);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nav{display:flex;gap:4px;padding:4px 24px 10px;overflow-x:auto}
+#nav button{padding:7px 16px;border:0;border-radius:999px;background:none;color:var(--dim);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+#nav button.on{background:var(--ac);color:#fff}
+main{padding:20px 28px 48px}
+main.dock{padding-right:440px}
+.pg{display:none}.pg.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start}
+.card,.w{background:var(--card);border:1px solid var(--ln);border-radius:14px;overflow:hidden}
+.card>h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);padding:14px 16px 0;font-weight:600}
+.card+.card{margin-top:16px}.cards .card+.card{margin-top:0}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 14px;padding:14px 16px 16px;align-items:end}
+.g.s{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;padding:12px 14px 14px}
+.g.s .row input,.g.s .row select{padding:7px 6px;font-size:13px}
+.rpool{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 16px}.rpool label{display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--ln);border-left:4px solid var(--rc);cursor:pointer}.rpool input{accent-color:var(--rc)}
+.hx .sw{background:radial-gradient(circle at 50% 50%,#2a1650,#05030c 70%)!important;color:#fff;justify-content:center!important;gap:14px}
+.hx .sw b{font-size:40px;background:linear-gradient(90deg,#ff6bd5,#ffd36b,#6bffb8,#6bc8ff,#b56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hx .sw i{color:#d9cfff;letter-spacing:.3em}
+.hvoid .sw{background:#f4f1ea!important;color:#141418!important}.hvoid .sw b{font-size:44px;-webkit-text-fill-color:#141418!important;background:none!important;font-weight:300}.hvoid .sw i{color:#888!important}
+.hcrea{grid-column:span 2;border:2px solid transparent!important;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(115deg,#fff,#c8a2ff,#8fe9ff,#fff3c4,#ff9ad5,#fff) border-box!important}
+.hcrea .sw{height:110px!important;justify-content:center!important;gap:18px;background:radial-gradient(ellipse at 50% 55%,#2a2060 0,#0b0820 55%,#020108 100%)!important}
+.hcrea .sw b{font-size:62px!important;background:linear-gradient(110deg,#fff,#d8b8ff 30%,#9fe8ff 50%,#fff3c4 70%,#fff)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;filter:drop-shadow(0 0 14px rgba(200,170,255,.8))}
+.hcrea .sw i{color:#e8e0ff!important;letter-spacing:.32em;font-weight:700;font-size:11px!important}
+.hcrea .nm{font-size:16px}
+@media(max-width:700px){.hcrea{grid-column:auto}}
+.htrain .sw{background:linear-gradient(135deg,#f6e2a8,#d8b46a 40%,#a87d34 60%,#f3d98f)!important;color:#3a2410!important}.htrain .sw b{font-size:44px;background:none!important;-webkit-text-fill-color:initial!important}.htrain .sw i{color:#3a2410!important;letter-spacing:.2em;font-weight:800}.htrain{outline:2px solid #d8b46a;outline-offset:-2px}
+.hx0s .sw{background:radial-gradient(circle at 50% 50%,#fff 0 4%,#9ff0ff 7%,#c58bff 18%,#1a0c3a 45%,#04020c 75%)!important}.hx0s .sw b{font-size:46px;background:none!important;-webkit-text-fill-color:initial!important;filter:drop-shadow(0 0 12px #9ff0ff)}.hx0s .sw i{color:#e6f8ff!important;letter-spacing:.4em;font-weight:800}.hx0s{outline:2px solid #9ff0ff;outline-offset:-2px}
+.hgen .sw{background:radial-gradient(ellipse at 50% 50%,#fff3d6 0,#ffcf7a 6%,#7a5cff 22%,#160f3a 55%,#04030c 80%)!important}.hgen .sw b{font-size:48px;color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;text-shadow:0 0 18px #ffd98a,0 0 40px #b08cff}.hgen .sw i{color:#ffe7b0!important;letter-spacing:.2em}.hgen{outline:2px solid #ffd98a;outline-offset:-2px}
+.htes .sw{background:radial-gradient(circle at 50% 45%,#2a1a6a,#07051a 70%)!important;box-shadow:inset 0 0 0 1px rgba(90,240,255,.5),inset 0 0 0 6px #07051a,inset 0 0 0 7px rgba(255,90,220,.45)}.htes .sw b{font-size:48px;background:linear-gradient(90deg,#5af0ff,#ff5adc,#ffd65a)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important}
+.hinf .sw{background:conic-gradient(from 0deg,#2a0f4a,#0f2a4a,#2a0f4a)!important}.hinf .sw b{font-size:46px}
+.hxr .sw{background:repeating-linear-gradient(-45deg,#ff7a00 0 10px,#111 10px 20px)!important;justify-content:center!important;gap:10px}
+.hxr .sw b{font-size:30px;background:#111;border-radius:50%;padding:4px 8px}
+.hxr .sw i{background:#111;color:#ff7a00;padding:2px 8px;font-weight:800;letter-spacing:.06em;font-style:normal;font-size:10px}
+.hx{border-image:linear-gradient(90deg,#ff6bd5,#ffd36b,#6bffb8,#6bc8ff,#b56bff) 1}
+.sbtn{display:flex;flex-wrap:wrap;gap:6px}
+.mpv{display:flex;gap:14px;align-items:flex-start}
+#mthumb{flex:none;width:110px;height:110px;border-radius:12px;border:1px solid var(--ln);background:repeating-conic-gradient(rgba(127,127,127,.18) 0 25%,transparent 0 50%) 0 0/16px 16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#mthumb img,#mthumb svg{max-width:96px;max-height:96px}
+.mbt{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+code{font-size:11px;background:var(--bg);padding:1px 5px;border-radius:4px}
+.row{display:flex;flex-direction:column;gap:5px;min-width:0}
+.row label{font-size:12px;font-weight:500;color:var(--dim)}
+.row.col,.row.full{grid-column:1/-1}
+.row input,.row select,.row textarea{width:100%;padding:8px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-size:14px;text-align:left;outline:0}
+.row input:focus,.row select:focus,.row textarea:focus{border-color:var(--ac)}
+.row textarea{resize:vertical;min-height:54px}
+.row input[type=color]{padding:2px;height:34px;cursor:pointer}
+.row input[type=color].auto{opacity:.3}
+.row input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--ac)}
+.row input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac)}
+.rg{display:flex;align-items:center;gap:8px}.rg span{font-size:12px;color:var(--dim);min-width:30px;text-align:right;font-variant-numeric:tabular-nums}
+.row>span{font-size:14px;padding:8px 0}
+.cc{display:flex;gap:8px;align-items:center}
+.pv{grid-column:1/-1;height:14px;border-radius:7px}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start}
+.items.wide{grid-template-columns:repeat(auto-fill,minmax(390px,1fr))}
+.wh{display:flex;align-items:center;gap:4px;padding:6px 8px 6px 14px;border-bottom:1px solid var(--ln);font-weight:600}
+.wh span{flex:1}
+.wh input.nm{flex:1;min-width:0;border:0;background:none;color:var(--tx);font:inherit;font-weight:600;padding:5px 0;outline:0}
+details.adv{grid-column:1/-1;border-top:1px dashed var(--ln);padding-top:8px}
+details.adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ac);list-style:none;padding:2px 0}
+details.adv summary::before{content:"▸ "}details.adv[open] summary::before{content:"▾ "}
+details.adv .g{padding:10px 0 0}
+.tb{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.tb select{padding:8px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;font-size:14px}
+.tb .foot{flex:1;min-width:240px}
+.foot{color:var(--dim);font-size:13px;line-height:1.45}
+.foot.pad{padding:0 16px 14px}
+.btn{padding:9px 18px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.s{background:var(--card);color:var(--ac);border:1px solid var(--ln)}
+.btn.d{background:var(--card);color:var(--bad);border:1px solid var(--ln)}
+.btn.xs{padding:5px 10px;font-size:12px;border-radius:8px}
+.mini{border:0;background:none;color:var(--ac);font-size:14px;cursor:pointer;padding:4px 8px}
+.mini.on{background:var(--ac);color:#fff;border-radius:8px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--dim);margin-right:6px}
+.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}
+#ex{min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+/* Galerie des styles */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:14px 16px 16px}
+.hc{border:2px solid var(--ln);border-radius:12px;overflow:hidden;cursor:pointer;background:var(--card);text-align:left;padding:0;color:var(--tx);font:inherit;transition:transform .15s}
+.hc:hover{transform:translateY(-2px)}
+.hc.on{border-color:var(--ac);box-shadow:0 0 0 3px rgba(10,132,255,.25)}
+.hc .sw{height:84px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;overflow:hidden}
+.hc .sw b{font-size:42px;line-height:1;white-space:nowrap}
+.hc .sw i{font-style:normal;font-size:13px;opacity:.9;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc .nm{padding:8px 12px 2px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;gap:6px}
+.hc .nm em{font-style:normal;font-size:11px;color:var(--ac)}
+.hc .tg{padding:0 12px 10px;font-size:12px;color:var(--dim);line-height:1.35}
+.vars{padding:0 16px 16px}.vars summary{cursor:pointer;color:var(--ac);font-weight:600;font-size:13px;padding:6px 0}
+.vars .vl{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px}
+/* Surprises */
+.egl{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.eg{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.eg .t{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.eg .t span{flex:1}
+.eg p{font-size:13px;color:var(--dim);line-height:1.45}
+.eg .b{display:flex;flex-wrap:wrap;gap:6px}
+.sw2{position:relative;width:44px;height:26px;flex:none}
+.sw2 input{position:absolute;opacity:0;inset:0;cursor:pointer;z-index:1}
+.sw2 i{position:absolute;inset:0;border-radius:13px;background:var(--ln);transition:.2s}
+.sw2 i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.2s}
+.sw2 input:checked+i{background:var(--ok)}.sw2 input:checked+i::after{transform:translateX(18px)}
+/* Aperçu flottant */
+#dock{position:fixed;right:18px;bottom:18px;width:404px;z-index:30;background:var(--card);border:1px solid var(--ln);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;display:none}
+#dock.on{display:block}
+#dock .dh{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;font-size:12px;font-weight:600;color:var(--dim)}
+#dock .dh span{flex:1}
+#dbox{position:relative;width:100%;aspect-ratio:5/3;overflow:hidden;background:#000}
+#dbox iframe,#pvbox iframe{position:absolute;left:0;top:0;width:800px;height:480px;border:0;transform-origin:0 0;pointer-events:none}
+#pvforce{display:none;font-size:11px;padding:4px 12px;background:var(--ac);color:#fff}
+#pvforce.on{display:block}
+@media(max-width:1100px){main.dock{padding-right:28px}#dock{width:300px}}
+/* =================== ♛ SKIN CRÉATEUR (admin) =================== */
+@property --hra{syntax:'<angle>';inherits:false;initial-value:0deg}
+html.crea{color-scheme:dark;--bg:#07051a;--card:rgba(20,15,44,.66);--tx:#f4f1ff;--dim:#a8a0cc;--ln:rgba(200,180,255,.16);--ac:#c4a3ff;--ok:#5fe3a1;--bad:#ff6b8a;--holo:linear-gradient(110deg,#fff 0%,#e3ccff 18%,#a8ecff 36%,#fff 50%,#fff0c2 64%,#ffb8e2 82%,#fff 100%)}
+html.crea body{background:radial-gradient(ellipse 80% 60% at 15% 0%,rgba(140,90,255,.22),transparent 60%),radial-gradient(ellipse 70% 60% at 100% 30%,rgba(60,200,255,.12),transparent 60%),radial-gradient(ellipse 70% 60% at 40% 110%,rgba(255,110,200,.12),transparent 60%),#05030f;background-attachment:fixed;min-height:100vh}
+html.crea body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 120px 80px,#cfc4ff,transparent),radial-gradient(1.4px 1.4px at 200px 160px,#fff,transparent),radial-gradient(1px 1px at 300px 40px,#a8ecff,transparent),radial-gradient(1px 1px at 360px 220px,#fff,transparent),radial-gradient(1.2px 1.2px at 80px 260px,#ffd9ef,transparent);background-size:400px 300px;animation:crstars 120s linear infinite}
+@keyframes crstars{to{background-position:400px 300px}}
+html.crea body::after{content:"";position:fixed;left:-20%;top:-30%;width:140%;height:90%;pointer-events:none;z-index:0;background:conic-gradient(from var(--hra) at 50% 50%,transparent,rgba(170,120,255,.10),transparent 30%,rgba(90,220,255,.08),transparent 60%,rgba(255,120,210,.08),transparent);filter:blur(60px);animation:crhra 40s linear infinite}
+@keyframes crhra{to{--hra:360deg}}
+html.crea header.top,html.crea main,html.crea #dock{position:relative;z-index:1}
+html.crea header.top{position:sticky;background:rgba(7,5,24,.72);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(200,170,255,.6),rgba(140,230,255,.6),rgba(255,180,220,.6),transparent) 1;z-index:20}
+html.crea h1{font-family:Cinzel,serif;font-weight:700;letter-spacing:.08em;font-size:21px;background:var(--holo) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:crsh 9s linear infinite}
+html.crea h1::before{content:"♛ ";-webkit-text-fill-color:#fff;text-shadow:0 0 14px #c8a2ff}
+@keyframes crsh{to{background-position:-300% 0}}
+html.crea #st{color:#bfb6e6}
+html.crea #nav button{color:#b9b0dd;transition:color .2s,background .2s,box-shadow .2s}
+html.crea #nav button:hover{color:#fff;background:rgba(255,255,255,.06)}
+html.crea #nav button.on{background:var(--holo) 0 0/300% 100%;color:#120c28;box-shadow:0 0 18px rgba(200,170,255,.45);animation:crsh 9s linear infinite}
+html.crea .card,html.crea .w,html.crea .eg{background:var(--card);border:1px solid var(--ln);border-radius:18px;backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);position:relative}
+html.crea .card::before,html.crea .eg::before{content:"";position:absolute;left:18px;right:18px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,170,255,.8),rgba(140,230,255,.8),rgba(255,190,225,.8),transparent);opacity:.8;pointer-events:none}
+html.crea .card>h3{color:#dccdff;letter-spacing:.16em;font-weight:700}
+html.crea .card>h3::before{content:"◆ ";color:#a8ecff;font-size:9px;vertical-align:2px}
+html.crea .row label{color:#b6aedb}
+html.crea .row input,html.crea .row select,html.crea .row textarea,html.crea .tb select{background:rgba(255,255,255,.05);border:1px solid rgba(200,180,255,.2);color:var(--tx);border-radius:10px;transition:border-color .2s,box-shadow .2s,background .2s}
+html.crea .row input:focus,html.crea .row select:focus,html.crea .row textarea:focus{border-color:#c4a3ff;box-shadow:0 0 0 3px rgba(196,163,255,.18),0 0 18px rgba(196,163,255,.2);background:rgba(255,255,255,.08)}
+html.crea option{background:#120e2a;color:#fff}
+html.crea .btn{background:linear-gradient(110deg,#d6bcff,#a8ecff 55%,#ffd2ec) 0 0/200% 100%;color:#120c28;box-shadow:0 6px 20px rgba(168,140,255,.3);transition:transform .15s,box-shadow .2s,background-position .6s}
+html.crea .btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(168,140,255,.45);background-position:100% 0}
+html.crea .btn.s{background:rgba(255,255,255,.05);color:#e2d6ff;border:1px solid rgba(200,180,255,.28);box-shadow:none}
+html.crea .btn.s:hover{background:rgba(200,170,255,.12);border-color:rgba(200,180,255,.5)}
+html.crea .btn.d{background:rgba(255,80,120,.08);color:#ff8aa6;border:1px solid rgba(255,107,138,.35);box-shadow:none}
+html.crea .mini{color:#c4a3ff}
+html.crea .mini.on{background:var(--ac);color:#120c28}
+html.crea .hc{background:rgba(20,15,44,.7);border-color:rgba(200,180,255,.14);transition:transform .2s,box-shadow .2s,border-color .2s}
+html.crea .hc:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 22px rgba(170,140,255,.2)}
+html.crea .hc.on{border-color:#c4a3ff;box-shadow:0 0 0 3px rgba(196,163,255,.25),0 0 30px rgba(196,163,255,.3)}
+html.crea .hc .nm em{color:#a8ecff}
+html.crea .hcrea{background:linear-gradient(rgba(20,15,44,.92),rgba(20,15,44,.92)) padding-box,conic-gradient(from var(--hra),#fff,#c8a2ff,#8fe9ff,#fff3c4,#ff9ad5,#c8a2ff,#fff) border-box!important;animation:crhra 6s linear infinite}
+html.crea .sw2 i{background:rgba(255,255,255,.12)}
+html.crea .sw2 input:checked+i{background:linear-gradient(90deg,#c4a3ff,#8fe9ff);box-shadow:0 0 12px rgba(168,140,255,.5)}
+html.crea .rpool label{background:rgba(255,255,255,.03);border-color:rgba(200,180,255,.15)}
+html.crea code{background:rgba(255,255,255,.08);color:#ffe6a8}
+html.crea details.adv summary,html.crea .vars summary{color:#c4a3ff}
+html.crea #dock{background:rgba(14,10,32,.86);border:1px solid rgba(200,180,255,.25);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 30px rgba(150,120,255,.2)}
+html.crea #pvforce{background:linear-gradient(90deg,#c4a3ff,#8fe9ff);color:#120c28}
+html.crea ::-webkit-scrollbar{width:10px;height:10px}html.crea ::-webkit-scrollbar-thumb{background:linear-gradient(#5b4a99,#2f6b8a);border-radius:10px;border:2px solid #07051a}html.crea ::-webkit-scrollbar-track{background:transparent}
+html.crea ::selection{background:rgba(196,163,255,.45)}
+html.crea .pg.on{animation:crpg .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes crpg{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#skinb{white-space:nowrap}
+/* écran d'accès (une fois par session) */
+#crsplash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 45%,#1a1240,#05030f 70%);color:#fff;cursor:pointer;transition:opacity .7s,filter .7s}
+#crsplash.out{opacity:0;filter:blur(8px);pointer-events:none}
+#crsplash .k{font-size:64px;line-height:1;text-shadow:0 0 24px #c8a2ff,0 0 60px #8fe9ff;animation:crk 1.2s cubic-bezier(.2,1.3,.3,1) both}
+@keyframes crk{from{opacity:0;transform:translateY(-20px) scale(2);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+#crsplash .t{font:700 26px Cinzel,serif;letter-spacing:.3em;padding-left:.3em;background:linear-gradient(110deg,#fff 0%,#e3ccff 18%,#a8ecff 36%,#fff 50%,#fff0c2 64%,#ffb8e2 82%,#fff 100%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:crsh 4s linear infinite,crk 1s .25s both}
+#crsplash .l{font:500 13px "JetBrains Mono",monospace;color:#bfe9ff;white-space:nowrap;overflow:hidden;width:0;animation:crty 1s .7s steps(34) forwards}
+@keyframes crty{to{width:34ch}}
+#crsplash .bar2{width:220px;height:2px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
+#crsplash .bar2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c4a3ff,#8fe9ff,#ffd2ec);animation:crbar 1.4s .5s cubic-bezier(.6,0,.2,1) forwards;box-shadow:0 0 10px #c4a3ff}
+@keyframes crbar{to{width:100%}}
+</style>
+</head>
+<body>
+<script>try{if(localStorage.getItem('adminSkin')!=='classic')document.documentElement.classList.add('crea')}catch(e){document.documentElement.classList.add('crea')}</script>
+<header class="top">
+  <div class="bar"><h1>Administration · Météo</h1><div id="st"></div><button class="btn s" id="skinb" title="Changer l'apparence de l'admin">♛ Créateur</button><button class="btn s" id="dockb" title="Afficher / masquer l'aperçu flottant">Aperçu flottant</button><button class="btn" id="send">Enregistrer maintenant</button></div>
+  <nav id="nav"><button data-go="screen">Écran</button><button data-go="preview">Aperçu</button><button data-go="display">Affichage</button><button data-go="style">Style</button><button data-go="themes">Météos</button><button data-go="events">Fêtes</button><button data-go="eggs">Surprises</button><button data-go="amb">Sons & mascotte</button><button data-go="widgets">Widgets</button><button data-go="backup">Sauvegarde</button></nav>
+</header>
+<main>
+  <section class="pg" data-p="screen"><div class="cards">
+    <div class="card"><h3>Mes écrans</h3><div class="g">
+      <div id="scrl"></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><input id="ncode" placeholder="Code de l'écran" autocapitalize="off" autocomplete="off" style="text-align:left;min-width:120px"><input id="nname" placeholder="Nom (ex : Salle des profs)" style="text-align:left;min-width:140px"><button class="btn s" id="sgen">Générer un code</button><button class="btn" id="sadd">Ajouter</button></div>
+      <div class="row"><label>Même config sur tous les écrans</label><input type="checkbox" id="sall"></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" id="sping">Actualiser l'état</button><button class="btn s" id="spush">Envoyer cette config à tous</button></div>
+      <div class="foot pad" style="padding-top:10px">Chaque écran a son code (affiché en cliquant sur le nom du lieu, ou imposé par <b>index.html?code=salle1</b>). Un écran par code ; 2 écrans dans le même navigateur doivent avoir 2 codes différents. « Modifier » choisit l'écran dont tu règles la config ; avec « Même config sur tous », tes modifications partent vers tous les écrans (nom et position compris).</div>
+    </div></div>
+    <div class="card"><h3>Écran en cours de modification</h3><div class="g">
+      <div class="row" style="display:none"><input id="code"></div>
+      <div class="row"><label>Adresse (option ESP32)</label><input id="host" placeholder="192.168.1.50 (vide = cette adresse)" autocapitalize="off"></div>
+      <div class="row"><label>Clé (option ESP32)</label><input id="key" type="password" placeholder="définie dans l'ESP32"></div>
+      <div class="row"><label>État</label><span id="conn"><span class="dot"></span>Non testé</span></div>
+      <div class="row"><label>Écrans en ligne</label><span id="scr">–</span></div>
+      <div class="row"><button class="btn s" id="test">Tester et charger la config</button></div>
+    </div></div>
+    <div class="card"><h3>Envoyer une info maintenant</h3><div class="g">
+      <div class="row col"><label>Message affiché en haut de l'écran</label><textarea id="nt" rows="2" placeholder="Ex : Réunion à 14h en salle B"></textarea></div>
+      <div class="row"><label>Durée (secondes)</label><input id="ns" type="number" min="3" value="15"></div>
+      <div class="row"><button class="btn" id="sn">Envoyer le message</button></div>
+    </div></div>
+  </div></section>
+
+  <section class="pg" data-p="display"><div class="cards">
+    <div class="card"><h3>Général</h3><div class="g" id="gen"></div><div class="foot pad">En automatique, l'écran utilise sa position GPS si le navigateur l'autorise, sinon celle de sa connexion Internet (précise à quelques dizaines de km près). En manuel : clic droit sur Google Maps, puis copier les coordonnées. Changer la position recharge l'écran.</div></div>
+    <div class="card"><h3>Affichage</h3><div class="g" id="aff"></div></div>
+    <div class="card"><h3>Disposition</h3><div class="g" id="lay"></div></div>
+    <div class="card"><h3>🚀 Écran de démarrage</h3><div class="g" id="bootf"></div><div style="padding:4px 16px 12px"><button class="btn s xs" data-test="azure">▶ Voir le démarrage dans l'aperçu</button></div><div class="foot pad">Animation d'environ 6 à 7 secondes à chaque allumage ou rechargement de l'écran. Style Linux : menu GRUB, défilement des messages du noyau avec les [ OK ], logo avec chargement, puis connexion automatique. Style cinématique : particules, logo qui se dessine et « Welcome to ». Un toucher passe l'animation.</div></div>
+    <div class="card"><h3>🌙 Mode veille la nuit</h3><div class="g" id="slp"></div><div style="padding:4px 16px 12px"><button class="btn s xs" id="slpv">👁 Voir dans l'aperçu</button></div><div class="foot pad">Aux heures choisies, l'écran affiche seulement une grande horloge avec la température sur fond noir (ou s'assombrit simplement). Les animations s'arrêtent, ce qui économise l'écran et l'ordinateur. L'horloge se décale un peu chaque minute pour ne pas marquer l'écran. Un toucher réveille l'écran pendant 1 minute.</div></div>
+    <div class="card"><h3>Météos spéciales</h3><div class="g" id="wxc"></div><div class="foot pad">Ces météos se déclenchent toutes seules selon la vraie météo. Leurs couleurs et effets se règlent dans l'onglet Météos.</div></div>
+  </div></section>
+
+  <section class="pg" data-p="style">
+    <div class="card"><h3>Style de l'interface</h3><div class="gal" id="gal"></div>
+      <details class="vars"><summary>Variantes simples (anciens styles, mêmes formes que iOS)</summary><div class="vl" id="vars"></div></details></div>
+    <div class="card"><h3>🎰 Roll des styles (façon caisse CS)</h3><div class="g" id="rollf"></div><div style="padding:4px 16px 4px"><button class="btn xs" data-test="roll">🎰 Lancer un roll dans l'aperçu</button> <button class="btn s xs" id="rollscr">🎰 Lancer sur l'écran</button> <button class="btn s xs" data-test="x0cin" title="Attention, spoil !">✦ Rejouer l'animation secrète</button> <button class="btn s xs" data-test="x0scin" title="Attention, spoil !">✨ Rejouer la version shiny</button> <button class="btn s xs" data-test="infcin" title="Attention, spoil !">∞ Rejouer la cinématique infinie</button> <button class="btn s xs" data-test="voidcin" title="Attention, spoil !">∅ Rejouer la cinématique néant</button> <button class="btn s xs" data-test="traincin" title="Attention, spoil !">🎫 Rejouer la cinématique billet d'or</button> <button class="btn s xs" data-test="creacin">♛ Rejouer la cinématique créateur</button> <button class="btn s xs" data-test="gencin" title="Attention, énorme spoil !">✺ Rejouer la cinématique légendaire</button> <button class="btn s xs" data-test="tescin" title="Attention, gros spoil !">◈ Rejouer la cinématique ultime</button> <button class="btn s xs" data-test="novacin">✸ Rejouer la supernova</button></div><div class="foot pad">Les styles défilent comme à l'ouverture d'une caisse, ralentissent et s'arrêtent sur un style au hasard, selon sa rareté. Le style obtenu reste jusqu'au prochain roll, ou jusqu'à ce que tu choisisses un autre style dans la galerie. Coche les styles qui peuvent tomber (aucun coché = tous).</div><div class="rpool" id="rpool"></div></div>
+    <div class="card"><h3>Options du style</h3><div class="g" id="app"></div><div class="foot pad">Chaque style a ses propres polices, décors, icônes, sa façon d'afficher la température et ses propres phrases (« textes d'ambiance »). Le style festif remplace automatiquement le style pendant Halloween (Manoir hanté) et Noël.</div></div>
+  </section>
+
+  <section class="pg" data-p="themes">
+    <div class="tb"><div class="foot">Chaque météo est personnalisable : couleurs, effet principal + effet n°2, intensité, vitesse, vent, couleur des particules, soleil, lune, éclairs, image de fond, texte et message… Ouvre « Réglages avancés ». Le bouton 👁 montre la météo dans l'aperçu sans l'enregistrer.</div></div>
+    <div class="items" id="thm"></div>
+  </section>
+
+  <section class="pg" data-p="events">
+    <div class="tb"><button class="btn" id="eva">+ Ajouter un événement</button><div class="foot">Dates au format MM-JJ (ex : 12-25), « easter » / « easter+1 » pour Pâques, ou « fri13 » pour chaque vendredi 13. Dans le message, sépare plusieurs phrases par <b>|</b> : elles défilent. Le bouton 👁 montre la fête dans l'aperçu.</div></div>
+    <div class="items wide" id="evl"></div>
+  </section>
+
+  <section class="pg" data-p="eggs">
+    <div class="tb"><label class="foot" style="flex:none">Les boutons de test lancent la surprise sur :</label><select id="eggto"><option value="pv">l'aperçu</option><option value="scr">l'écran (envoi)</option></select><div class="foot">Les surprises n'apparaissent que pendant leur fête (ou si tu forces la fête dans Affichage › Fond animé). Les citrouilles, le poisson et les œufs se touchent sur l'écran tactile.</div></div>
+    <div class="egl" id="egl"></div>
+  </section>
+
+  <section class="pg" data-p="amb"><div class="cards">
+    <div class="card"><h3>🔊 Sons d'ambiance</h3><div class="g" id="sndf"></div>
+      <div style="padding:4px 16px 12px"><div class="foot" style="margin-bottom:8px">Écouter ici (sur ce PC, pendant 10 s) :</div><div class="sbtn" id="sndt"></div></div>
+      <div class="foot pad">Tous les sons sont créés en direct par l'écran (aucun fichier à télécharger) et suivent la vraie météo : pluie et gouttes sur la vitre, grêle, vent qui souffle par rafales, tonnerre après chaque éclair, oiseaux le matin, grillons les soirs d'été, chouette la nuit. Certains styles ont leur propre ambiance : vagues (Marin), ville (Cyberpunk), nappe de synthé (Vaporwave), clavier (Terminal hacker), carillon à vent (Estampe japonaise).<br><br>Le navigateur bloque souvent le son tant que personne n'a touché l'écran : l'écran affiche alors « Touchez l'écran pour activer le son ». Sur un écran en mode kiosque (Chromium), ajoute <code>--autoplay-policy=no-user-gesture-required</code> pour que le son démarre tout seul.</div></div>
+    <div class="card"><h3>🐾 Mascotte animée</h3><div class="g" id="mscf"></div>
+      <div style="padding:4px 16px 12px"><div class="mpv"><div id="mthumb"></div><div class="mbt"><label class="btn s xs" style="cursor:pointer">📁 Choisir un PNG / GIF<input type="file" id="mfile" accept="image/png,image/gif,image/webp,image/jpeg" hidden></label><button class="btn s xs" id="mnim">☁ Nimbus (intégré)</button><button class="btn s xs" id="mresend" title="À utiliser si l'écran affiche Nimbus au lieu de ton image">↻ Renvoyer l'image</button><label class="foot" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="mcut" checked> Détourage auto (enlève le fond uni d'un PNG / JPG)</label><button class="btn xs" data-test="masc">▶ Faire passer maintenant</button></div></div></div>
+      <div class="foot pad">Mets un PNG détouré (fond transparent) ou un GIF animé : il est animé sur l'écran (défile, vole, rebondit, flotte ou surgit du bas). Touche-le sur l'écran tactile : il saute et dit la météo. Sans image, c'est <b>Nimbus</b>, le petit nuage, qui s'habille selon le temps (parapluie, lunettes de soleil, écharpe…).<br><br>Les PNG sont réduits automatiquement. Les GIF doivent faire moins de 150 Ko (sinon utilise un lien vers l'image). L'image n'est envoyée à l'écran qu'une seule fois.</div></div>
+  </div></section>
+
+  <section class="pg" data-p="widgets">
+    <div class="tb"><select id="nw"><option value="text">Texte</option><option value="value">Valeur (URL)</option><option value="image">Image</option><option value="clock">Horloge</option><option value="count">Compte à rebours</option><option value="web">Page web (URL)</option><option value="link">Lien (URL)</option></select><button class="btn" id="wa">+ Ajouter un widget</button><div class="foot">Widgets affichés sur la page Infos.</div></div>
+    <div class="items wide" id="wl"></div>
+  </section>
+
+  <section class="pg" data-p="preview">
+    <div class="card"><h3>Aperçu de la page météo de l'écran</h3>
+      <div style="padding:14px 16px"><div id="pvbox" style="position:relative;width:100%;aspect-ratio:5/3;overflow:hidden;border-radius:14px;background:#000"><iframe id="pvf" title="Aperçu de l'écran"></iframe></div></div>
+      <div class="g"><div class="row"><label>Adresse de la page écran</label><input id="pvu" placeholder="index.html" autocapitalize="off"></div></div>
+      <div class="foot pad" style="padding-top:10px">Reproduction fidèle de la page météo avec ta configuration (style, couleurs, météo réelle). Elle suit tes modifications en direct. Le fichier <b>index.html</b> doit être dans le même dossier que <b>admin.html</b> ; sinon indique son adresse complète.</div>
+    </div>
+  </section>
+  <section class="pg" data-p="backup">
+    <div class="card"><h3>Configuration (JSON)</h3><div class="g"><div class="row col"><textarea id="ex" spellcheck="false"></textarea></div></div></div>
+    <div class="acts"><button class="btn" id="dl">Télécharger la sauvegarde</button><button class="btn s" id="up">Restaurer un fichier</button><input type="file" id="fl" accept=".json,application/json" hidden><button class="btn s" id="exb">Afficher en texte</button><button class="btn s" id="imb">Importer</button><button class="btn d" id="rst">Réinitialiser</button></div>
+  </section>
+</main>
+<div id="dock"><div class="dh"><span>Aperçu en direct</span><button class="mini" id="dockx" title="Masquer">✕</button></div><div id="pvforce"></div><div id="dbox"><iframe id="pvd" title="Aperçu flottant"></iframe></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+/* ===== Configuration partagée (identique dans index.html et admin.html) ===== */
+/* Réglages avancés communs à chaque thème météo et à chaque fête */
+const TADV = {ang: 170, anim: false, dens: 1, spd: 1, wind: 0, pc: '', ps: 1, cc: '', cs: 1, sun: false, pos: 'auto', stars: false, fx2: 'none', bolt: 'auto', desc: '', msg: '', img: '', imgo: 0.5, emo: '', mr: 30, mc: '', mph: ''};
+const DEFTHEMES = {
+  clear: {name: 'Soleil', c: ['#1c6be6', '#56b0ff', '#bfe6ff'], fx: 'none', clouds: 1, moon: false, sun: true},
+  cloudy: {name: 'Nuageux', c: ['#56697c', '#93a5b5', '#cdd7df'], fx: 'none', clouds: 3, moon: false},
+  rain: {name: 'Pluie', c: ['#243244', '#44586f', '#76899c'], fx: 'rain', clouds: 3, moon: false},
+  storm: {name: 'Orage', c: ['#0c101c', '#272c46', '#4a3e63'], fx: 'storm', clouds: 3, moon: false},
+  snow: {name: 'Neige', c: ['#7e94ac', '#b7c7d8', '#e3ebf3'], fx: 'snow', clouds: 2, moon: false},
+  night: {name: 'Nuit', c: ['#060a1d', '#13204a', '#2c3a6b'], fx: 'stars', clouds: 2, moon: true},
+  cloudnight: {name: 'Nuit nuageuse', c: ['#070b18', '#1a2238', '#333c57'], fx: 'none', clouds: 3, moon: true},
+  fullmoon: {name: 'Pleine lune', c: ['#02030c', '#0a1433', '#1d2b5c'], fx: 'stars', clouds: 1, moon: true, mr: 46, mph: 'full'},
+  dawn: {name: 'Lever du soleil', c: ['#24325e', '#c0607c', '#ffc98a'], fx: 'none', clouds: 1, moon: false, sun: true, pos: 'h'},
+  dusk: {name: 'Coucher du soleil', c: ['#191540', '#a8426a', '#ff9450'], fx: 'none', clouds: 1, moon: false, sun: true, pos: 'h'},
+  fog: {name: 'Brouillard', c: ['#6b7785', '#a9b3bd', '#d5dbe0'], fx: 'fog', clouds: 2, moon: false},
+  drizzle: {name: 'Bruine', c: ['#3a4a5c', '#5f7388', '#93a4b3'], fx: 'drizzle', clouds: 3, moon: false},
+  sleet: {name: 'Pluie verglaçante', c: ['#35506b', '#6f93b3', '#c4def0'], fx: 'sleet', clouds: 3, moon: false},
+  hail: {name: 'Grêle', c: ['#141a2c', '#34405e', '#6a7a9c'], fx: 'hail', clouds: 3, moon: false},
+  blizzard: {name: 'Tempête de neige', c: ['#6d7f94', '#a5b4c4', '#e6edf4'], fx: 'blizzard', clouds: 3, moon: false},
+  frost: {name: 'Gel', c: ['#173456', '#5f94bd', '#dff1ff'], fx: 'frost', clouds: 0, moon: false},
+  wind: {name: 'Vent fort', c: ['#2f6fa8', '#6fb0d8', '#cfe9f3'], fx: 'wind', clouds: 3, moon: false},
+  heat: {name: 'Canicule', c: ['#d9480f', '#ff9f1c', '#ffe08a'], fx: 'heat', clouds: 0, moon: false},
+  rainbow: {name: 'Arc-en-ciel', c: ['#3a8dde', '#7cc4f5', '#e3f4ff'], fx: 'rainbow', clouds: 1, moon: false, sun: true},
+  aurora: {name: 'Aurore boréale', c: ['#020712', '#06283a', '#0b4a4a'], fx: 'aurora', clouds: 0, moon: false},
+  meteors: {name: 'Étoiles filantes', c: ['#03030f', '#0e1238', '#251b52'], fx: 'meteors', clouds: 0, moon: true},
+  sand: {name: 'Tempête de sable', c: ['#8a5a2b', '#c98d4a', '#f0c98a'], fx: 'sand', clouds: 2, moon: false},
+  lucky: {name: 'Jour de chance', c: ['#ff9d00', '#ffd23f', '#fff6b8'], fx: 'lucky', clouds: 0, moon: false, msg: '🍀 JOUR DE CHANCE 🍀'}
+};
+const DEFEVENTS = [
+  {id: 'newyear', name: 'Nouvel An', from: '12-31', to: '01-02', on: true, c: ['#1a0b3b', '#3b1a7a', '#c07a2c'], fx: 'fireworks', clouds: 0, moon: true, msg: '✨ Bonne année !'},
+  {id: 'chandeleur', name: 'Chandeleur', from: '02-02', to: '02-02', on: true, c: ['#5a2f0c', '#c27a2c', '#ffd98a'], fx: 'crepes', clouds: 1, moon: false, msg: '🥞 Bonne Chandeleur ! | Une crêpe, deux crêpes, trois crêpes…'},
+  {id: 'valentin', name: 'Saint-Valentin', from: '02-13', to: '02-14', on: true, c: ['#5a0f3a', '#c2306f', '#ff9bb8'], fx: 'hearts', clouds: 1, moon: false, msg: '❤ Joyeuse Saint-Valentin'},
+  {id: 'patrick', name: 'Saint-Patrick', from: '03-17', to: '03-17', on: true, c: ['#063a1c', '#10813f', '#9be37a'], fx: 'clovers', clouds: 1, moon: false, msg: '☘ Joyeuse Saint-Patrick'},
+  {id: 'april', name: "Poisson d'avril", from: '04-01', to: '04-01', on: true, c: ['#0b4f7a', '#2aa3d8', '#b9ecff'], fx: 'bubbles', clouds: 1, moon: false, msg: "🐟 Poisson d'avril ! | Attention : un poisson s'est caché sur l'écran"},
+  {id: 'easter', name: 'Pâques', from: 'easter', to: 'easter+1', on: true, c: ['#3fa7d6', '#9be3a6', '#fff3b0'], fx: 'eggs', clouds: 1, moon: false, msg: '🐣 Joyeuses Pâques | 🥚 3 œufs sont cachés sur l\'écran…'},
+  {id: 'starwars', name: 'Star Wars Day', from: '05-04', to: '05-04', on: true, c: ['#000004', '#05051a', '#141433'], fx: 'stars', clouds: 0, moon: false, msg: '✨ Que la Force soit avec toi | May the 4th be with you'},
+  {id: 'may8', name: '8 mai 1945', from: '05-08', to: '05-08', on: true, c: ['#12264d', '#2c4f8f', '#c9d6ee'], fx: 'none', clouds: 1, moon: false, msg: '8 mai 1945 · Victoire'},
+  {id: 'music', name: 'Fête de la musique', from: '06-21', to: '06-21', on: true, c: ['#2b0a4a', '#7a1fa2', '#ff6fb1'], fx: 'notes', clouds: 0, moon: false, msg: '🎶 Bonne fête de la musique'},
+  {id: 'bastille', name: 'Fête nationale', from: '07-13', to: '07-14', on: true, c: ['#0a1f5c', '#2a4fc4', '#e8edff'], fx: 'fireworks', clouds: 0, moon: true, msg: '🇫🇷 Bonne fête nationale'},
+  {id: 'halloween', name: 'Halloween', from: '10-25', to: '10-31', on: true, c: ['#0d0614', '#3a1240', '#e8761a'], fx: 'halloween', clouds: 2, moon: true, mr: 46, mc: '#ffb35c', mph: 'full', msg: '🎃 Joyeux Halloween | 🦇 Attention aux chauves-souris… | 👻 Il y a quelqu\'un derrière toi ? | 🍬 Des bonbons ou un sort ?'},
+  {id: 'nov11', name: '11 novembre', from: '11-10', to: '11-11', on: true, c: ['#0b1d3a', '#1d3f73', '#6f8db8'], fx: 'petals', clouds: 2, moon: false, msg: '11 novembre · Armistice 1918'},
+  {id: 'xmas', name: 'Noël', from: '12-20', to: '12-26', on: true, c: ['#07261c', '#0f5a3d', '#b3262d'], fx: 'santa', clouds: 1, moon: true, msg: '🎄 Joyeux Noël | ⛄ Le père Noël passe bientôt…'},
+  {id: 'fri13', name: 'Vendredi 13', from: 'fri13', to: 'fri13', on: true, c: ['#08080c', '#1d1b2a', '#3c3550'], fx: 'bats', clouds: 2, moon: true, msg: '🐈‍⬛ Vendredi 13… | Ne passe pas sous une échelle'}
+];
+const DEFEGGS = {halloween: true, fri13: true, newyear: true, april: true, starwars: true, xmas: true, easter: true, konami: true, bzh: true, ufo: true, wolf: true, snow1: true, nums: true, lcd: true};
+const DEFWX = {golden: true, frost: true, fullmoon: true, cloudnight: true, rainbow: true, heat: 32, windG: 70, blizG: 55};
+/* Version de l'application : l'admin prévient si l'écran a un index.html plus ancien */
+const APPV = 38;
+const DEFSND = {on: false, vol: 50, rain: true, wind: true, thunder: true, nature: true, style: true, quiet: 'low', qf: 22, qt: 7};
+const DEFMASC = {on: false, src: '', mode: 'walk', pos: 'br', size: 110, spd: 1, every: 40, look: 'r', op: 1, talk: true, acc: true, say: ''};
+/* empreinte d'une image (pour ne pas renvoyer la mascotte à chaque enregistrement) */
+const imgHash = s => { let h = 7; const st = Math.max(1, s.length >> 10); for (let i = 0; i < s.length; i += st) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + s.length.toString(36); };
+const DEFNIGHT = {on: false, from: 22, to: 7, mode: 'clock', lum: .5, wake: true};
+const DEFBOOT = {on: true, style: 'linux', title: 'AZURE OS', sub: 'Welcome to'};
+/* Galerie des styles : [id, nom, description, fond, couleur, police, graisse, petit texte] — sert aussi au roll */
+const SIGLIST = [
+  ['ios', 'iOS Liquid Glass', 'Verre dépoli, couleurs qui suivent la météo.', 'linear-gradient(170deg,#1c6be6,#56b0ff 60%,#bfe6ff)', '#fff', '-apple-system,Helvetica,Arial,sans-serif', 200, 'Ciel dégagé'],
+  ['cyber', 'Cyberpunk', 'Ville néon la nuit : gratte-ciel aux fenêtres allumées, enseignes en kanji qui grésillent, voitures volantes, glitch.', 'linear-gradient(135deg,#0b0820,#2a0838)', '#fcee0a', 'Rajdhani,sans-serif', 700, 'UPLINK OK'],
+  ['medieval', 'Grimoire médiéval', 'Parchemins, sceau de cire, lettrine, heures en chiffres romains.', 'radial-gradient(circle at 30% 30%,#5a3a1a,#1e1206)', '#f3d27a', 'Cinzel,serif', 700, 'Messire !'],
+  ['retro', 'Terminal rétro', 'Écran CRT vert, icônes en ASCII, démarrage façon BIOS.', '#021a09', '#4dff7a', 'VT323,monospace', 400, '$ meteo_'],
+  ['synth', 'Synthwave 84', 'Soleil rayé, montagnes néon et sol quadrillé qui défile.', 'linear-gradient(#12002a,#5a1080 60%,#ff2bd6)', '#ffe259', 'Monoton,sans-serif', 400, 'RADICAL'],
+  ['steam', 'Steampunk', 'Thermomètre à aiguille en laiton, engrenages, vapeur.', 'radial-gradient(circle,#5a3a1a,#2a1707)', '#f0cf80', '"Special Elite",serif', 400, 'Modèle 1887'],
+  ['pixel', 'Pixel RPG', 'Fenêtres de jeu de rôle, icônes pixel, barres de PV.', 'linear-gradient(#3b4cc0,#18206b)', '#ffcd75', '"Press Start 2P",monospace', 400, '+100 XP'],
+  ['scifi', 'Hologramme sci-fi', 'Anneau holographique, faisceau de balayage, données.', 'radial-gradient(circle,#0a3a68,#03101f)', '#7fe0ff', 'Orbitron,sans-serif', 500, 'T0'],
+  ['minimal', 'Suisse (minimal)', 'Typographie suisse noire sur papier, carré rouge.', '#f1efe9', '#111', 'Helvetica,Arial,sans-serif', 700, 'Clair.'],
+  ['gazette', 'La Gazette', 'Une de journal : titre gothique et gros titres.', '#ece3cf', '#161412', '"Playfair Display",serif', 900, 'EXTRA !'],
+  ['bd', 'Bande dessinée', 'Trames, bulles, explosion « KABOOM ! ».', '#ffd60a', '#e63946', 'Bangers,Impact,sans-serif', 400, 'PLIC !'],
+  ['gameboy', 'Game Boy', '4 tons de vert, pixels, cadre de console.', '#9bbc0f', '#0f380f', 'Silkscreen,monospace', 400, '▶ START'],
+  ['win95', 'Windows 95', 'Fenêtres grises, barre des tâches, bouton Démarrer.', '#008080', '#fff', 'Tahoma,Verdana,sans-serif', 700, 'meteo.exe'],
+  ['chalk', 'Tableau noir', 'Craies de couleur, cadre en bois, formules de maths.', '#23412f', '#f3f3ea', '"Gochi Hand",cursive', 400, 'E = mc²'],
+  ['cahier', 'Cahier Seyès', 'Lignes de cahier, post-it, stylo rouge.', 'repeating-linear-gradient(0deg,#fdfcf5 0 7px,#b9d3ee 7px 8px)', '#d32f2f', 'Caveat,cursive', 700, 'Exercice 1'],
+  ['flap', 'Aéroport (split-flap)', 'Panneau des départs à palettes qui tournent.', '#141414', '#ffd400', 'Oswald,sans-serif', 600, 'À L\'HEURE'],
+  ['cockpit', 'Cockpit (METAR)', 'Instruments d\'avion, boussole du vent, METAR.', '#050607', '#39ff7a', '"Share Tech Mono",monospace', 400, 'CAVOK'],
+  ['lcd', 'Station LCD', 'Afficheur 7 segments, rétroéclairage (bouton LIGHT).', 'linear-gradient(160deg,#c3cfae,#9fae88)', '#1d2617', '"Share Tech Mono",monospace', 400, 'TEMP OUT'],
+  ['neon', 'Enseigne néon', 'Tubes néon qui grésillent sur un mur de briques.', 'linear-gradient(#3a1a14,#1a0a08)', '#ff4fd8', '"Tilt Neon",sans-serif', 400, 'OUVERT'],
+  ['deco', 'Art déco', 'Noir et or, rayons, élégance des années 20.', 'repeating-conic-gradient(from -90deg at 50% 118%,rgba(212,175,55,.25) 0 3deg,#0b0b0d 3deg 8deg)', '#d4af37', '"Poiret One",serif', 400, '✦ 1925 ✦'],
+  ['kawaii', 'Kawaii', 'Pastel, icônes avec des petits visages, cœurs.', 'linear-gradient(#ffd6ec,#d6e2ff)', '#ff7ab8', 'Fredoka,sans-serif', 600, '(^o^)'],
+  ['matrix', 'Matrix', 'Pluie de code verte et phrases mystérieuses.', '#000a02', '#39ff6a', '"Share Tech Mono",monospace', 400, 'Neo…'],
+  ['blueprint', 'Plan d\'architecte', 'Quadrillage bleu, cotes, cartouche technique.', '#123f8c', '#fff', '"Architects Daughter",cursive', 400, 'FIG. 1'],
+  ['western', 'Far West', 'Affiche WANTED, planches de bois, cactus, virevoltants.', 'linear-gradient(#7a5230,#5a3a1c)', '#ffe2a8', 'Rye,serif', 400, 'WANTED'],
+  ['spooky', 'Manoir hanté', 'Halloween : bave verte, toiles d\'araignée, yeux dans le noir.', 'linear-gradient(#1a0420,#3a1240)', '#ff7518', 'Creepster,cursive', 400, 'Bouh !'],
+  ['xmas', 'Noël', 'Sucre d\'orge, neige sur les cadres, guirlande lumineuse.', 'linear-gradient(#7a0d18,#0f5a34)', '#fff', '"Mountains of Christmas",serif', 700, 'Ho ho ho'],
+  ['manga', 'Manga dramatique', 'Lignes de vitesse, cases de manga, onomatopées japonaises qui suivent la météo, « ドン ! » surprise.', 'repeating-conic-gradient(from 0deg at 30% 50%,#2b0a3d 0 2deg,#8a2be2 2deg 6deg)', '#fff36b', '"Dela Gothic One",Impact,sans-serif', 400, 'ゴゴゴ'],
+  ['mecha', 'Centre de commandement', 'QG d\'anime de mechas : alvéoles orange, kanji, afficheur, bandeau ALERTE rouge par mauvais temps.', '#050506', '#ff8c00', '"Noto Serif JP",Georgia,serif', 900, '警告'],
+  ['vapor', 'Vaporwave', 'Rose et cyan pastel, sol en damier qui défile, colonne en marbre, palmiers, cube 3D, fenêtres « .exe », texte ｅｓｔｈéｔｉｑｕｅ, magnéto VHS.', 'linear-gradient(#ff9ee6,#c58bff 50%,#7fd8ff)', '#fff', '"Bodoni Moda",serif', 900, 'ｖａｐｏｒ'],
+  ['hacker', 'Terminal hacker', 'Fenêtres de terminal, température en gros pixels, texte qui s\'écrit tout seul, journaux qui défilent, barre d\'état en bas.', '#0d1117', '#3fb950', '"JetBrains Mono",monospace', 700, '$ ./meteo'],
+  ['ukiyo', 'Estampe japonaise', 'Papier washi, ciel dégradé bleu de Prusse, soleil rouge, montagne, vague, brumes roses, sceau rouge, pluie à l\'encre, haïkus.', 'linear-gradient(#1c3a63,#efe3c8 45%)', '#c8402a', '"Shippori Mincho B1",serif', 800, '天気'],
+  ['chan', 'Menu des chaînes', 'Façon menu de console de salon : tuiles blanches arrondies, barre grise ondulée avec la grande horloge, boutons ronds, main-curseur qui se promène.', 'linear-gradient(#f2f3f4,#dfe2e5)', '#35b6e8', 'Nunito,sans-serif', 800, 'Chaîne météo'],
+  ['hbc', 'Chaîne homebrew', 'Fond sombre avec de grosses bulles bleues qui montent, liste façon applications, barre IP et version.', 'radial-gradient(circle at 30% 30%,#14306a,#02050f)', '#9fd0ff', 'Nunito,sans-serif', 800, 'meteo.dol'],
+  ['pres', '👁 La Présence', 'Caméra de surveillance d\'un couloir, la nuit… et quelqu\'un au bout, qui se rapproche à chaque coupure de courant. L\'activation fait (très) peur. Jamais tiré au roll.', 'linear-gradient(180deg,#1a1f1a,#050605)', '#d8e6d8', 'VT323,monospace', 400, '● REC'],
+  ['nova', 'Supernova', 'Nébuleuse colorée, pulsar qui tourne, éruptions. À l\'activation : l\'écran se coupe, se fissure et explose en morceaux !', 'radial-gradient(circle at 50% 50%,#fff 0 3%,#ff8a3c 8%,#c8287a 22%,#2a1460 45%,#05030c 70%)', '#fff', 'Orbitron,sans-serif', 700, '✸ BOOM'],
+  ['marin', 'Marin (hublot)', 'Hublot en laiton, bulles, vagues, vent en nœuds.', 'linear-gradient(#1b4555,#0f2c38)', '#e7c37a', 'Oswald,sans-serif', 600, 'Cap au nord']
+];
+/* Rareté des styles pour le roll (façon caisse CS) */
+const RARITY = [['blue', 'Courant', '#4b69ff', 55], ['purple', 'Rare', '#8847ff', 26], ['pink', 'Épique', '#d32ce6', 12], ['red', 'Légendaire', '#eb4b4b', 5.5], ['gold', '★ Exceptionnel', '#e4ae39', 1.5]];
+const RAR = {nova: 'gold', ukiyo: 'gold', manga: 'gold', mecha: 'red', vapor: 'red', hbc: 'red', chan: 'red', cyber: 'pink', synth: 'pink', hacker: 'pink', spooky: 'pink', xmas: 'pink', steam: 'pink', scifi: 'pink', medieval: 'purple', pixel: 'purple', gameboy: 'purple', win95: 'purple', flap: 'purple', cockpit: 'purple', neon: 'purple', deco: 'purple', matrix: 'purple', marin: 'purple', western: 'purple'};
+const DEFROLL = {mode: 'off', hour: 8, every: 6, tap: true, pool: []};
+const NEWKEYS = {unit: 'C', festAuto: true, labels: {meteo: 'Météo', radar: 'Radar', infos: 'Infos'}, show: {hours: true, days: true, details: true, date: true, air: true, pollen: true}, layout: {now: 'left', days: 'side', hours: 'bottom', size: 'L'}};
+const DEF = {v: 0, geo: true, name: 'Lycée Yves Thépot · Quimper', lat: 47.978, lon: -4.084, view: 'meteo', force: 'auto', refresh: 10, zoom: 7,
+  tabs: {radar: true, infos: true}, rain: true, bolt: true, ticker: '', tickerOn: false, notice: null, fire: null, lite: false, radarQ: 8, hud: 'ios', layout: NEWKEYS.layout, unit: 'C', festAuto: true, festHud: 'all', voice: true, icao: 'LFRQ', labels: NEWKEYS.labels, show: NEWKEYS.show, eggs: DEFEGGS, wx: DEFWX, snd: DEFSND, masc: DEFMASC, night: DEFNIGHT, boot: DEFBOOT, roll: DEFROLL, themes: DEFTHEMES, events: DEFEVENTS,
+  widgets: [{t: 'clock', title: 'Heure', tz: 'Europe/Paris', w: 1}]};
+const norm = c => {
+  c.tabs = Object.assign({radar: true, infos: true}, c.tabs);
+  c.labels = Object.assign({}, NEWKEYS.labels, c.labels);
+  c.layout = Object.assign({}, NEWKEYS.layout, c.layout); if (c.hud === 'glass') c.hud = 'ios';
+  c.show = Object.assign({}, NEWKEYS.show, c.show);
+  c.snd = Object.assign({}, DEFSND, c.snd); c.masc = Object.assign({}, DEFMASC, c.masc); c.night = Object.assign({}, DEFNIGHT, c.night); c.boot = Object.assign({}, DEFBOOT, c.boot); c.roll = Object.assign({}, DEFROLL, c.roll); if (!Array.isArray(c.roll.pool)) c.roll.pool = [];
+  c.eggs = Object.assign({}, DEFEGGS, c.eggs); c.wx = Object.assign({}, DEFWX, c.wx);
+  if (c.geo === undefined) c.geo = true;
+  if (c.voice === undefined) c.voice = true; if (c.festHud === undefined) c.festHud = 'all'; if (!c.icao) c.icao = 'LFRQ';
+  const T = {}; Object.keys(DEFTHEMES).forEach(k => T[k] = Object.assign({}, TADV, DEFTHEMES[k], (c.themes || {})[k]));
+  c.themes = T;
+  if (!Array.isArray(c.events)) c.events = JSON.parse(JSON.stringify(DEFEVENTS));
+  if ((+c.evVer || 0) < 3) {   // migration : nouvelles fêtes + Halloween / musique améliorés
+    const have = new Set(c.events.map(e => e.id));
+    DEFEVENTS.forEach((d, i) => { if (!have.has(d.id)) c.events.splice(d.id === 'fri13' ? c.events.length : Math.min(c.events.length, i), 0, JSON.parse(JSON.stringify(d))); });
+    c.events.forEach(e => {
+      const d = DEFEVENTS.find(x => x.id === e.id);
+      if (e.id === 'halloween' && e.fx === 'leaves') Object.assign(e, {fx: 'halloween', from: d.from, c: d.c, mr: d.mr, mc: d.mc, mph: d.mph, msg: d.msg});
+      if (e.id === 'music' && e.fx === 'confetti') e.fx = 'notes';
+    });
+    c.evVer = 3;
+  }
+  c.events = c.events.map(e => Object.assign({}, TADV, e));
+  c.events.forEach(e => { if (e.id === 'xmas' && e.fx === 'snow') e.fx = 'santa'; });   // migration : le père Noël passe
+  return c;
+};
+
+
+/* ===================================================================
+   SONS D'AMBIANCE — tout est synthétisé en direct (aucun fichier audio)
+   Pluie, gouttes, grêle, vent, tonnerre, oiseaux, grillons, chouette,
+   vagues, ville, nappe vaporwave, clavier, carillon japonais.
+   =================================================================== */
+const AMB = (() => {
+  let C = null, M = null, NB = null, BB = null, vol = 0, lite = false, iv = null, chordI = 0;
+  const ch = {}, lvl = {}, ev = {};
+  const A = () => window.AudioContext || window.webkitAudioContext;
+  const now = () => C.currentTime;
+  const R = (a, b) => a + Math.random() * (b - a);
+  function init() {
+    if (C) return C; const K = A(); if (!K) return null;
+    try { C = new K(); } catch (e) { return null; }
+    const comp = C.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;
+    M = C.createGain(); M.gain.value = 0; M.connect(comp); comp.connect(C.destination);
+    NB = C.createBuffer(1, C.sampleRate * 2, C.sampleRate); const w = NB.getChannelData(0); for (let i = 0; i < w.length; i++) w[i] = Math.random() * 2 - 1;
+    BB = C.createBuffer(1, C.sampleRate * 5, C.sampleRate); const b = BB.getChannelData(0); let l = 0; for (let i = 0; i < b.length; i++) { l = (l + .02 * (Math.random() * 2 - 1)) / 1.02; b[i] = l * 3.5; }
+    iv = setInterval(tickEv, 100);
+    return C;
+  }
+  const G = v => { const g = C.createGain(); g.gain.value = v; return g; };
+  const F = (type, f, q) => { const x = C.createBiquadFilter(); x.type = type; x.frequency.value = f; if (q != null) x.Q.value = q; return x; };
+  const P = v => { if (!C.createStereoPanner) return G(1); const p = C.createStereoPanner(); p.pan.value = v; return p; };
+  const link = (...n) => { for (let i = 0; i < n.length - 1; i++) n[i].connect(n[i + 1]); return n[0]; };
+  const src = (buf, loop = true) => { const s = C.createBufferSource(); s.buffer = buf; s.loop = loop; return s; };
+  const ramp = (p, v, tc = .9) => { p.cancelScheduledValues(now()); p.setTargetAtTime(v, now(), tc); };
+
+  /* ----- Sons continus (créés à la demande, puis gardés) ----- */
+  const BUILD = {
+    rain() { const o = G(0), s = src(NB), s2 = src(BB); link(s, F('highpass', 500), F('lowpass', 7000), G(.55), o); link(s2, F('lowpass', 1100), G(.6), o); o.connect(M); s.start(0, R(0, 1.9)); s2.start(0, R(0, 4)); return {o}; },
+    wind() { const o = G(0), bp = F('bandpass', 420, .7), s = src(NB), g = G(1); link(s, bp, g, o); o.connect(M); s.start(0, R(0, 1.9)); return {o, bp, g}; },
+    sea() { const o = G(0), g = G(.4), s = src(BB); link(s, F('lowpass', 700), g, o); o.connect(M); s.start(); return {o, g}; },
+    city() { const o = G(0), s = src(BB), h = C.createOscillator(); h.frequency.value = 55; link(s, F('lowpass', 180), G(1), o); link(h, G(.035), o); o.connect(M); s.start(); h.start(); return {o}; },
+    pad() {
+      const o = G(0), lp = F('lowpass', 900, 2), lfo = C.createOscillator(), lg = G(380); lfo.frequency.value = .07; link(lfo, lg); lg.connect(lp.frequency); lfo.start();
+      const osc = [0, 1, 2, 3].map(i => { const x = C.createOscillator(); x.type = i % 2 ? 'sawtooth' : 'triangle'; x.detune.value = (i - 1.5) * 9; link(x, G(.16), lp); x.start(); return x; });
+      link(lp, o); o.connect(M); return {o, osc};
+    },
+    drone() { const o = G(0), lp = F('lowpass', 160, 1.5), s = src(BB), lfo = C.createOscillator(), lg = G(70); lfo.frequency.value = .05; link(lfo, lg); lg.connect(lp.frequency); lfo.start(); link(s, lp, G(.9), o); [[41.2, 'sine', .5], [41.6, 'sine', .45], [61.7, 'triangle', .12], [82.4, 'sine', .08]].forEach(([fq, ty, v]) => { const x = C.createOscillator(); x.type = ty; x.frequency.value = fq; link(x, G(v), o); x.start(); }); o.connect(M); s.start(); return {o}; },
+    train() { const o = G(0), s = src(BB), h = C.createOscillator(); h.frequency.value = 46; link(s, F('lowpass', 200), G(1), o); link(h, G(.05), o); o.connect(M); s.start(); h.start(); return {o}; },
+    snow() { const o = G(0), s = src(NB); link(s, F('lowpass', 380), F('highpass', 90), G(.5), o); o.connect(M); s.start(0, R(0, 1.9)); return {o}; }
+  };
+  const CH = (k) => ch[k] || (ch[k] = BUILD[k]());
+
+  /* ----- Sons ponctuels ----- */
+  function blip(f0, f1, dur, vl, type = 'sine', pan = 0, at = 0) {
+    const t = now() + at, o = C.createOscillator(), g = G(0); o.type = type;
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vl, t + Math.min(.02, dur / 4)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    link(o, g, P(pan), M); o.start(t); o.stop(t + dur + .05);
+  }
+  function tick(f, q, dur, vl, pan = R(-.8, .8), at = 0) {
+    const t = now() + at, s = src(NB, false), g = G(0);
+    g.gain.setValueAtTime(vl, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    link(s, F('bandpass', f, q), g, P(pan), M); s.start(t, R(0, 1.8)); s.stop(t + dur + .02);
+  }
+  const ONE = {
+    drop: v => tick(R(1800, 5200), R(4, 9), R(.012, .03), .5 * v),
+    hail: v => { tick(R(2500, 6000), 3, .02, 1.1 * v); if (Math.random() < .4) tick(R(900, 1600), 5, .04, .5 * v); },
+    bird: () => { const p = R(-.9, .9), n = 2 + (Math.random() * 5 | 0), base = R(2200, 4200); let at = 0; for (let i = 0; i < n; i++) { const d = R(.05, .13); blip(base * R(.85, 1.15), base * R(1.1, 1.6), d, .09, 'sine', p, at); at += d + R(.02, .09); } },
+    cricket: () => { const p = R(-.7, .7), f = R(4200, 4800); for (let r = 0; r < 3; r++) for (let i = 0; i < 3; i++) blip(f, f * .98, .028, .035, 'sine', p, r * .32 + i * .045); },
+    owl: () => { const p = R(-.6, .6); blip(410, 380, .55, .13, 'sine', p); blip(400, 370, .28, .1, 'sine', p, .9); blip(410, 360, .7, .12, 'sine', p, 1.25); },
+    chime: (v = 1) => { const S = [1568, 1760, 2093, 2349, 2637, 3136], f = S[Math.random() * S.length | 0], p = R(-.5, .5); [[1, .1], [2.76, .045], [5.4, .02]].forEach(([m, a]) => blip(f * m, f * m * .998, R(1.8, 3), a * v, 'sine', p)); },
+    key: () => tick(R(2400, 4200), 6, .012, .22, R(-.3, .3)),
+    startup: () => { [[261.6, 0], [329.6, .14], [392, .28], [523.3, .42], [784, .7]].forEach(([f, at], i) => { blip(f, f, 2.4, .07, 'sine', (i - 2) * .25, at); blip(f * 2, f * 2, 1.6, .02, 'triangle', 0, at); }); },
+    rtick: () => { tick(3800, 3, .012, .45, 0); blip(1900, 1500, .03, .05, 'square'); },
+    win: () => { [523.3, 659.3, 784, 1046.5].forEach((f, i) => blip(f, f, .5, .08, 'triangle', 0, i * .09)); },
+    jackpot: () => { [523.3, 659.3, 784, 1046.5, 1318.5, 1568].forEach((f, i) => { blip(f, f, 1.2, .08, 'triangle', (i % 2 ? .4 : -.4), i * .08); blip(f * 2, f * 2, .8, .02, 'sine', 0, i * .08); }); },
+    ping: () => { blip(1318, 1310, 2.2, .05, 'sine', -.3); blip(1318, 1305, 1.8, .025, 'sine', .3, .45); blip(659, 655, 2.5, .03, 'sine', 0, .02); },
+    x0cin: () => {
+      const sw = (type, f0, f1, at, dur, v, lp) => { const t = now() + at, o = C.createOscillator(), gg = G(0); o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur); gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(v, t + dur * .85); gg.gain.linearRampToValueAtTime(0, t + dur); const ch = lp ? link(o, F('lowpass', lp), gg) : link(o, gg); gg.connect(M); o.start(t); o.stop(t + dur + .05); };
+      const nz = (at, dur, v, f0, f1, type = 'lowpass', buf = BB, fade = 'up') => { const t = now() + at, s = src(buf, true), fl = F(type, f0, 1.2), gg = G(0); fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + dur); if (fade === 'up') { gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(v, t + dur * .9); gg.gain.linearRampToValueAtTime(0, t + dur); } else { gg.gain.setValueAtTime(v, t); gg.gain.exponentialRampToValueAtTime(.0001, t + dur); } link(s, fl, gg, M); s.start(t, Math.random()); s.stop(t + dur + .05); };
+      for (let i = 0; i < 9; i++) tick(R(400, 5000), 2, R(.03, .12), .5, R(-.8, .8), R(0, 1.2));   // parasites
+      nz(.9, 3, .9, 70, 700); sw('sine', 32, 75, .9, 3, .35); sw('sine', 1800, 6200, 1.6, 2.3, .03);   // aspiration
+      nz(3.9, 2.6, 1.1, 1400, 90, 'lowpass', NB, 'down'); sw('sine', 70, 28, 3.9, 2.8, .0001); { const t = now() + 3.9, o = C.createOscillator(), gg = G(0); o.frequency.setValueAtTime(62, t); o.frequency.exponentialRampToValueAtTime(26, t + 2.6); gg.gain.setValueAtTime(.7, t); gg.gain.exponentialRampToValueAtTime(.0001, t + 2.8); link(o, gg, M); o.start(t); o.stop(t + 2.9); }   // effondrement
+      nz(4.3, 1.8, .35, 300, 2600, 'bandpass', NB);   // tourbillon
+      [261.6, 392, 493.9, 587.3, 740].forEach((fq, i) => { const t = now() + 6 + i * .06, o = C.createOscillator(), o2 = C.createOscillator(), gg = G(0); o.frequency.value = fq; o2.frequency.value = fq * 1.004; o2.type = 'triangle'; gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(.045, t + .9); gg.gain.setValueAtTime(.045, t + 1.8); gg.gain.linearRampToValueAtTime(0, t + 2.9); link(o, gg); link(o2, G(.4), gg); gg.connect(P((i - 2) * .3)); gg.connect(M); o.start(t); o2.start(t); o.stop(t + 3); o2.stop(t + 3); });
+      [1568, 2093, 2637, 3136, 2349, 1760].forEach((fq, i) => blip(fq, fq, 1.2, .025, 'sine', R(-.6, .6), 6.1 + i * .13));   // étincelles
+    },
+    vault: () => { for (let i = 0; i < 10; i++) tick(R(2600, 3400), 8, .015, .5, 0, .2 + i * .09); [1.25, 1.45, 1.65, 1.85].forEach(at => { tick(900, 3, .06, .9, 0, at); blip(140, 60, .18, .25, 'triangle', 0, at); }); { const t = now() + 2.1, s = src(BB, false), gg = G(0); gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(.8, t + .3); gg.gain.exponentialRampToValueAtTime(.0001, t + 1.4); link(s, F('lowpass', 500), gg, M); s.start(t, Math.random()); s.stop(t + 1.5); } blip(80, 40, .6, .4, 'sine', 0, 2.1); [523.3, 659.3, 784, 1046.5].forEach((f, i) => blip(f, f, .7, .07, 'triangle', 0, 2.9 + i * .08)); },
+    chest: () => { [0, .12, .24].forEach(at => tick(700, 4, .05, .5, 0, at)); [392, 523.3, 659.3, 784, 1046.5].forEach((f, i) => blip(f, f, .55, .07, 'triangle', 0, .55 + i * .11)); [1568, 2093, 2637].forEach((f, i) => blip(f, f * 1.01, 1.2, .03, 'sine', (i - 1) * .4, 1.2 + i * .07)); },
+    ykalert: () => { [0, .18, .36].forEach(at => { blip(1760, 1760, .1, .07, 'square', 0, at); blip(2350, 2350, .08, .05, 'square', 0, at + .09); }); },
+    ykpop: () => { blip(300, 900, .14, .14, 'sine'); blip(900, 600, .2, .06, 'triangle', 0, .12); },
+    boing: () => { blip(240, 720, .16, .14, 'triangle'); blip(720, 380, .2, .08, 'sine', 0, .14); },
+    shiny: () => { [2637, 3136, 3951, 4699, 5274].forEach((f, i) => { [[1, .035], [2.76, .012]].forEach(([m, a]) => blip(f * m, f * m * .998, 1.2, a, 'sine', (i - 2) * .35, .05 + i * .07)); }); },
+    steps: () => { const p = R(-.7, .7); for (let i = 0; i < 3; i++) { const at = i * .55 + R(0, .05), t = now() + at, sb = src(BB, false), g = G(0); g.gain.setValueAtTime(.22, t); g.gain.exponentialRampToValueAtTime(.0001, t + .16); link(sb, F('lowpass', 420), g, P(p), M); sb.start(t, R(0, 4)); sb.stop(t + .2); } },
+    clack: (v = 1) => { tick(900, 3, .05, .55 * v, -.2); tick(700, 3, .05, .5 * v, .2, .13); blip(120, 60, .08, .12 * v, 'sine', 0); },
+    whistle: () => { [523.3, 659.3, 784].forEach(f => { const t = now(), o = C.createOscillator(), g = G(0), lf = C.createOscillator(), lg = G(6); o.type = 'triangle'; o.frequency.value = f; lf.frequency.value = 5.5; link(lf, lg); lg.connect(o.frequency); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .1); g.gain.setValueAtTime(.05, t + .9); g.gain.linearRampToValueAtTime(0, t + 1.2); link(o, F('bandpass', f * 1.5, .8), g, M); o.start(t); lf.start(t); o.stop(t + 1.3); lf.stop(t + 1.3); }); },
+    impact: () => { const t = now(), o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(30, t + .5); g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.0001, t + .6); link(o, g, M); o.start(t); o.stop(t + .65); tick(2500, .7, .18, 1, 0); tick(600, .8, .3, .9, 0); },
+    siren: () => { const t = now(), o = C.createOscillator(), g = G(0), lfo = C.createOscillator(), lg = G(140); o.frequency.value = 760; lfo.frequency.value = .55; link(lfo, lg); lg.connect(o.frequency); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.02, t + 2); g.gain.linearRampToValueAtTime(0, t + 6); link(o, F('lowpass', 1300), g, P(R(-1, 1)), M); o.start(t); lfo.start(t); o.stop(t + 6.2); lfo.stop(t + 6.2); }
+  };
+  function thunder(near = Math.random()) {
+    if (!C || !vol || lvl.thunder === 0) return;
+    const at = (1 - near) * 2.5 + .25, t = now() + at, s = src(BB, false), lp = F('lowpass', 900), g = G(0), dur = R(3.5, 7), v = (lvl.thunder || 1) * (.45 + near * .6);
+    lp.frequency.setValueAtTime(near > .6 ? 2200 : 900, t); lp.frequency.exponentialRampToValueAtTime(110, t + dur * .8);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + R(.08, .4)); g.gain.setTargetAtTime(v * .55, t + .6, .4); g.gain.linearRampToValueAtTime(v * R(.5, .9), t + R(1.2, 2)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    link(s, lp, g, P(R(-.6, .6)), M); s.start(t, R(0, 1)); s.stop(t + dur + .1);
+    if (near > .55) { const c = src(NB, false), cg = G(0); cg.gain.setValueAtTime(.7 * v, t); cg.gain.exponentialRampToValueAtTime(.0001, t + .25); link(c, F('highpass', 1200), cg, M); c.start(t, R(0, 1.5)); c.stop(t + .3); }
+  }
+  /* ----- ∞ : partition générative d'une minute ----- */
+  function infScore() {
+    const T0 = now() + .05, bus = G(1); bus.connect(M);
+    const osc = (type, f0, f1, at, dur, v, att = .02, pan = 0, ramp = 'exp') => { const t = T0 + at, o = C.createOscillator(), g = G(0); o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) (ramp === 'exp' ? o.frequency.exponentialRampToValueAtTime(f1, t + dur) : o.frequency.linearRampToValueAtTime(f1, t + dur)); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setTargetAtTime(0, t + Math.max(att, dur * .7), dur * .15); link(o, g, P(pan), bus); o.start(t); o.stop(t + dur + .5); };
+    const pad = (fs, at, dur, v, att = 1.2) => fs.forEach((f, i) => { const t = T0 + at; [0, 7].forEach((det, j) => { const o = C.createOscillator(), g = G(0), lp = F('lowpass', 1400); o.type = j ? 'sawtooth' : 'triangle'; o.frequency.value = f; o.detune.value = det - 3; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * (j ? .35 : 1), t + att); g.gain.setValueAtTime(v * (j ? .35 : 1), t + dur - .8); g.gain.linearRampToValueAtTime(0, t + dur); link(o, lp, g, P((i - fs.length / 2) * .2), bus); o.start(t); o.stop(t + dur + .1); }); });
+    const noise = (type, f0, f1, at, dur, v, shape = 'up', buf = NB) => { const t = T0 + at, s = src(buf, true), fl = F(type, f0, 1.4), g = G(0); fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + dur); if (shape === 'up') { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + dur * .95); g.gain.linearRampToValueAtTime(0, t + dur); } else { g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); } link(s, fl, g, bus); s.start(t, Math.random()); s.stop(t + dur + .05); };
+    const kick = (at, v = .8) => { osc('sine', 130, 38, at, .32, v, .005); noise('lowpass', 900, 120, at, .08, v * .5, 'down'); };
+    const hit = at => { kick(at, 1); osc('sine', 60, 24, at, 3, .7, .005); noise('lowpass', 3000, 80, at, 2.6, 1, 'down', BB); noise('highpass', 3000, 9000, at, 3.2, .35, 'down'); };
+    const Am = [110, 130.8, 164.8, 220], Fm = [87.3, 110, 130.8, 174.6], Cm = [130.8, 164.8, 196, 261.6], Gm = [98, 123.5, 146.8, 196];
+    /* acte 1 : la réalité se fissure */
+    for (let i = 0; i < 26; i++) { const at = Math.random() * 4.4; osc('square', 200 + Math.random() * 3000, 100 + Math.random() * 600, at, .04 + Math.random() * .08, .05, .002, Math.random() * 2 - 1); }
+    noise('lowpass', 50, 400, 0, 4.6, .9, 'up', BB); hit(4.6);
+    /* acte 2 : battements de cœur + compte à rebours */
+    let t = 5.2, gap = 1.0; while (t < 12) { kick(t, .9); kick(t + .22, .55); osc('sine', 1760, 1760, t, .09, .05, .003); t += gap; gap = Math.max(.5, gap * .93); }
+    pad([55, 82.4], 5, 7.2, .07, 3);
+    /* acte 3 : l'hyperespace — riser + arpège qui accélère */
+    noise('bandpass', 200, 6000, 12, 10, .35); pad(Am, 12, 5, .05); pad(Fm, 17, 5, .05);
+    const arp = [220, 261.6, 329.6, 440, 523.3, 440, 329.6, 261.6]; let a = 12, n = 0; while (a < 32) { const rate = 4 + (a - 12) * .5; osc('triangle', arp[n % 8] * (a > 22 ? 2 : 1), arp[n % 8] * (a > 22 ? 2 : 1), a, .18, .045, .005, (n % 2 ? .4 : -.4)); a += 1 / rate; n++; }
+    for (let b = 12; b < 22; b += 1) kick(b, .5);
+    /* acte 4 : la spirale — grille Am F C G */
+    [[Am, 22], [Fm, 24.5], [Cm, 27], [Gm, 29.5]].forEach(([ch, at]) => pad(ch, at, 2.6, .06, .4));
+    for (let b = 22; b < 32; b += .5) kick(b, .6);
+    /* acte 5 : montée finale */
+    noise('highpass', 400, 9000, 32, 8, .5); osc('sine', 120, 2400, 32, 8, .12, 6, 0); osc('sawtooth', 60, 480, 32, 8, .04, 7, 0);
+    let s = 32, sg = .25; while (s < 40) { noise('bandpass', 1800, 2200, s, .06, .35, 'down'); s += sg; sg = Math.max(.03, sg * .92); }
+    for (let b = 32; b < 40; b += .25) kick(b, .45 + (b - 32) * .05);
+    /* acte 6 : silence… puis le point */
+    osc('sine', 2093, 2093, 41, 1.2, .04, .01);
+    /* acte 7 : l'explosion ∞ */
+    hit(42); pad([65.4, 130.8, 164.8, 196, 293.7, 392, 523.3], 42, 13, .055, 1.5);
+    [1568, 2093, 2349, 2637, 3136, 3520, 4186].forEach((f, i) => osc('sine', f, f, 42.4 + i * .18, 1.6, .03, .01, (i % 2 ? .6 : -.6)));
+    /* acte 8 : thème final, arpège lumineux en do majeur */
+    const fin = [523.3, 659.3, 784, 1046.5, 784, 659.3]; for (let i = 0; i < 40; i++) osc('triangle', fin[i % 6], fin[i % 6], 46 + i * .25, .5, .03 * (1 - i / 48), .01, Math.sin(i) * .5);
+    pad([130.8, 196, 261.6, 329.6], 50, 9, .045, 2);
+    return {stop() { bus.gain.cancelScheduledValues(now()); bus.gain.setTargetAtTime(0, now(), .15); setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 1500); }};
+  }
+  /* ----- outils communs aux grandes cinématiques ----- */
+  function kit(T0, bus) {
+    const osc = (type, f0, f1, at, dur, v, att = .01, pan = 0) => { const t = T0 + at, o = C.createOscillator(), g = G(0); o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setTargetAtTime(0, t + Math.max(att, dur * .6), dur * .2); link(o, g, P(pan), bus); o.start(t); o.stop(t + dur + .8); };
+    const nz = (type, f0, f1, at, dur, v, shape = 'down', buf = NB, q = 1) => { const t = T0 + at, s = src(buf, true), fl = F(type, f0, q), g = G(0); fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + dur); if (shape === 'up') { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + dur * .95); g.gain.linearRampToValueAtTime(0, t + dur); } else if (shape === 'swell') { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + dur * .5); g.gain.linearRampToValueAtTime(0, t + dur); } else { g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); } link(s, fl, g, bus); s.start(t, Math.random()); s.stop(t + dur + .05); };
+    const pad = (fs, at, dur, v, att = 1.2, type = 'triangle') => fs.forEach((f, i) => { const t = T0 + at, o = C.createOscillator(), o2 = C.createOscillator(), g = G(0); o.type = type; o.frequency.value = f; o2.frequency.value = f * 1.003; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setValueAtTime(v, t + Math.max(att, dur - 1)); g.gain.linearRampToValueAtTime(0, t + dur); link(o, g); link(o2, G(.5), g); g.connect(P((i - fs.length / 2) * .18)).connect(bus); o.start(t); o2.start(t); o.stop(t + dur + .1); o2.stop(t + dur + .1); });
+    const bell = (f, at, v = .06, dur = 4, pan = 0) => [[1, 1], [2.76, .4], [5.4, .18], [8.9, .08]].forEach(([m, a]) => osc('sine', f * m, f * m * .999, at, dur / Math.sqrt(m), v * a, .004, pan));
+    const stop = () => { bus.gain.cancelScheduledValues(now()); bus.gain.setTargetAtTime(0, now(), .12); setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 1500); };
+    return {osc, nz, pad, bell, stop};
+  }
+  /* ----- Supernova (≈ 21 s) : géante rouge, battements de cœur, effondrement, fissures, explosion, accord majeur ----- */
+  let SHAPE = null;
+  const crunch = () => { if (SHAPE) return SHAPE; const n = 1024, c = new Float32Array(n); for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; c[i] = Math.tanh(x * 3.2); } return SHAPE = c; };
+  function novaScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const ws = C.createWaveShaper(); ws.curve = crunch(); const dist = G(.55); link(ws, F('lowpass', 2400), dist, bus);
+    const brass = (fs, at, dur, v, f0 = 300, f1 = 3200) => fs.forEach((f, i) => { const t = T0 + at, lp = F('lowpass', f0, 3), g = G(0); lp.frequency.setValueAtTime(f0, t); lp.frequency.exponentialRampToValueAtTime(f1, t + 1.6); lp.frequency.exponentialRampToValueAtTime(f1 * .5, t + dur); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .35); g.gain.setValueAtTime(v, t + dur - 1.6); g.gain.linearRampToValueAtTime(0, t + dur); link(lp, g, P((i - fs.length / 2) * .22), bus); [-8, 0, 8].forEach(d => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = d; link(o, G(.33), lp); o.start(t); o.stop(t + dur + .1); }); });
+    const heart = (at, v) => { [0, .2].forEach((d, k) => { osc('sine', 78, 34, at + d, .32, v * (k ? .6 : 1), .006); nz('lowpass', 260, 60, at + d, .16, v * .5 * (k ? .6 : 1), 'down', BB); }); };
+    const timp = (at, f, v = .6) => { osc('sine', f * 1.5, f, at, 1.6, v, .004); osc('triangle', f * 2.02, f * 2, at, .9, v * .2, .004); nz('lowpass', 1200, 90, at, .4, v * .5, 'down', BB); };
+    const glassTick = (at, v) => { nz('bandpass', 2400 + Math.random() * 4000, 1800 + Math.random() * 3000, at, .05, v, 'down', NB, 14); };
+    /* 1. tremblement + parasites numériques, puis extinction du téléviseur */
+    nz('lowpass', 40, 260, 0, 1.3, .9, 'up', BB);
+    for (let i = 0; i < 20; i++) { const t = T0 + .4 + Math.random() * .8, o = C.createOscillator(), g = G(0); o.type = 'square'; o.frequency.setValueAtTime(80 + Math.random() * 900, t); g.gain.setValueAtTime(.12, t); g.gain.setValueAtTime(0, t + .03 + Math.random() * .06); link(o, g, ws); o.start(t); o.stop(t + .12); }
+    osc('sine', 2600, 40, 1.2, .55, .16, .003); nz('highpass', 4000, 9000, 1.2, .25, .25); osc('sine', 60, 30, 1.75, .35, .5, .003);
+    /* 2. le noir : bourdon grave en ré mineur, souffle, et le cœur de l'étoile */
+    pad([36.7, 73.4], 2.2, 6, .1, 1.5, 'sine'); pad([146.8, 174.6, 220], 2.6, 5.4, .022, 2.5, 'sawtooth');
+    osc('sine', 2349, 2349, 3, 4.4, .008, 2);   // sifflement glacé
+    [2.9, 3.85, 4.7, 5.45, 6.1, 6.65, 7.1].forEach((b, i) => heart(b, .45 + i * .07));
+    /* 3. effondrement : souffle inversé, aspiration… puis silence */
+    nz('highpass', 300, 7000, 6.6, .85, .5, 'up'); osc('sine', 520, 28, 7.45, .6, .6, .003); nz('lowpass', 3000, 50, 7.45, .55, .7, 'down', BB);
+    osc('sine', 5274, 5274, 8.05, .6, .006, .05);   // acouphène
+    /* 4. retour du courant : bourdonnement électrique + fissures de glace */
+    { const t = T0 + 8.7, o = C.createOscillator(), g = G(0); o.type = 'sawtooth'; o.frequency.value = 50; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.09, t + .08); g.gain.setValueAtTime(.09, t + 4.3); g.gain.linearRampToValueAtTime(0, t + 4.5); link(o, g, ws); o.start(t); o.stop(t + 4.6); }
+    const iceCrack = (at, big) => { nz('highpass', 2500, 7000, at, .12, big ? 1 : .7); for (let i = 0; i < (big ? 18 : 9); i++) glassTick(at + Math.random() * (big ? .6 : .3), .25 + Math.random() * .3); bell(big ? 523.3 : 784, at + .02, big ? .05 : .035, 2.2, Math.random() - .5); osc('sawtooth', 110, 55, at, .3, big ? .14 : .08, .004); };
+    iceCrack(9.4, false); iceCrack(10.45, false); iceCrack(11.55, true);
+    /* 5. montée : glissando + battements devenus trémolo */
+    nz('lowpass', 80, 3000, 11.6, 1.6, 1, 'up', BB); osc('sawtooth', 110, 880, 11.6, 1.6, .05, 1.5); osc('sine', 220, 1760, 11.8, 1.4, .06, 1.2);
+    for (let b = 11.7, g2 = .2; b < 13.15; b += g2, g2 = Math.max(.045, g2 * .82)) osc('sine', 90, 40, b, .12, .3, .004);
+    /* 6. EXPLOSION (13.2 s) */
+    const X = 13.2;
+    { const t = T0 + X, o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(18, t + 5); g.gain.setValueAtTime(1.2, t); g.gain.exponentialRampToValueAtTime(.0001, t + 5.2); link(o, g, ws); o.start(t); o.stop(t + 5.3); }
+    osc('sine', 55, 20, X, 5, 1, .003); nz('lowpass', 7000, 40, X, 5.5, 1.3, 'down', BB); nz('highpass', 1500, 9000, X, 3.8, .55, 'down');
+    for (let i = 0; i < 46; i++) glassTick(X + .05 + Math.pow(Math.random(), 1.6) * 2.6, .1 + Math.random() * .3);   // pluie d'éclats
+    nz('bandpass', 300, 2500, X + .2, 2.2, .35, 'swell', NB, .8);
+    /* 7. le titre : accord de ré MAJEUR (la lumière après la mort), timbales */
+    brass([73.4, 110, 146.8, 185, 220, 293.7], X + 1.6, 6.4, .05); timp(X + 1.6, 73.4, .7); timp(X + 2.05, 73.4, .5); timp(X + 2.3, 110, .55);
+    [1174.7, 1480, 1760, 2349.3, 2960, 3520].forEach((f, i) => bell(f, X + 2.2 + i * .23, .022, 2.6, i % 2 ? .55 : -.55));
+    for (let p = X + 3.4; p < X + 7.2; p += .5) { osc('sine', 3136, 3100, p, .05, .035, .002, -.4); osc('sine', 3136, 3100, p + .1, .05, .02, .002, .4); }   // pulsar
+    /* 8. reconstruction */
+    nz('bandpass', 300, 6000, X + 5.4, 1, .3, 'up', NB, 2); bell(293.7, X + 6, .06, 4); bell(440, X + 6.12, .04, 3.5); bell(587.3, X + 6.24, .04, 3.2);
+    return {stop};
+  }
+  /* ----- ◈ Tesseract v2 (≈ 43 s) : 2D→0D, puis 0D→4D, les 4 plans, plongée, patron, retour ----- */
+  function tesScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const shepard = (at, dur, per, v) => { const N = 6, life = per * N, curve = new Float32Array(64); for (let i = 0; i < 64; i++) curve[i] = Math.pow(Math.sin(i / 63 * Math.PI), 2) * v;
+      for (let s = at - life + per; s < at + dur; s += per) { const t0 = Math.max(s, at), t1 = Math.min(s + life, at + dur); if (t1 - t0 < .05) continue; const p0 = (t0 - s) / life, p1 = (t1 - s) / life, t = T0 + t0, o = C.createOscillator(), g = G(0), o2 = C.createOscillator(); o.frequency.setValueAtTime(40 * Math.pow(64, p0), t); o.frequency.exponentialRampToValueAtTime(40 * Math.pow(64, p1), T0 + t1); o2.type = 'triangle'; o2.frequency.setValueAtTime(80 * Math.pow(64, p0), t); o2.frequency.exponentialRampToValueAtTime(80 * Math.pow(64, p1), T0 + t1);
+        const sub = curve.slice(Math.floor(p0 * 63), Math.max(Math.floor(p0 * 63) + 2, Math.ceil(p1 * 63) + 1)); try { g.gain.setValueCurveAtTime(sub, t, t1 - t0); } catch (e) { g.gain.setValueAtTime(v * .5, t); }
+        link(o, g, bus); link(o2, G(.25), g); o.start(t); o2.start(t); o.stop(T0 + t1 + .05); o2.stop(T0 + t1 + .05); } };
+    const kick = (at, v = .55) => { osc('sine', 150, 42, at, .28, v, .004); nz('lowpass', 1200, 100, at, .06, v * .4, 'down'); };
+    const hat = (at, v = .1) => nz('highpass', 7000, 9000, at, .04, v, 'down');
+    const snare = (at, v = .25) => { nz('bandpass', 1800, 1200, at, .14, v, 'down', NB, .8); osc('triangle', 220, 180, at, .08, v * .4, .002); };
+    const clunk = (at, f, v = .6) => { nz('lowpass', 900, 80, at, .22, v, 'down', BB); osc('sine', f * 2, f, at, .45, v * .5, .003); bell(f * 4, at + .01, .03, 1.5, Math.random() - .5); };
+    const boom = at => { osc('sine', 70, 22, at, 3, 1, .002); nz('lowpass', 6000, 60, at, 3, 1.1, 'down', BB); nz('highpass', 2000, 9000, at, 2, .45); };
+    /* 0. contour qui s'allume, puis l'écran s'écrase : 2D → 1D → 0D */
+    osc('sine', 300, 1200, 0, .8, .05, .6); for (let i = 0; i < 8; i++) { const a = .85 + i * .03; osc('square', 300 + Math.random() * 1500, 200, a, .04, .04, .002, Math.random() - .5); }
+    nz('bandpass', 3000, 200, 1.05, .7, .45, 'down', NB, 1.4); bell(493.9, 1.6, .05, 1.6); osc('sine', 900, 60, 1.75, .45, .25, .01); bell(329.6, 2.15, .06, 2.4);
+    /* 1. reconstruction : chaque dimension ajoute une note à l'accord (mi majeur 7e) */
+    bell(1318.5, 2.25, .06, 3); pad([41.2], 2.2, 15, .09, 2, 'sine');
+    osc('sine', 330, 660, 4, 1.4, .04, .3); nz('bandpass', 500, 3000, 4, 1.4, .25, 'swell', NB, 1.5); pad([82.4, 123.5], 4, 13, .045, 1.2, 'triangle'); bell(659.3, 4, .045, 2);
+    nz('bandpass', 400, 2600, 6.6, 1.4, .25, 'swell', NB, 1.5); pad([207.7], 6.6, 10.4, .035, 1.2, 'triangle'); bell(830.6, 6.6, .045, 2);
+    [329.6, 493.9, 415.3, 493.9].forEach((f, i) => { for (let r = 0; r < 2; r++) osc('triangle', f, f, 6.6 + (r * 4 + i) * .32, .3, .03, .004, i % 2 ? .3 : -.3); });
+    nz('bandpass', 300, 2400, 9.2, 1.6, .28, 'swell', NB, 1.5); pad([311.1], 9.2, 7.6, .028, 1.2, 'sawtooth'); bell(987.8, 9.2, .045, 2.2);
+    for (let i = 0; i < 14; i++) osc('triangle', [329.6, 415.3, 493.9, 622.3][i % 4], [329.6, 415.3, 493.9, 622.3][i % 4], 9.2 + i * .25, .2, .03, .004, i % 2 ? .35 : -.35);
+    [9.2, 10.2, 11.2, 12.2].forEach(b => kick(b, .3));
+    /* … et la quatrième direction : gamme de Shepard, montée */
+    shepard(13.2, 3.6, 1.2, .05); nz('highpass', 300, 9000, 13.4, 3.4, .45, 'up'); osc('sawtooth', 55, 440, 13.4, 3.4, .035, 3);
+    for (let i = 0; i < 33; i++) { const f = [659.3, 830.6, 987.8, 1244.5][i % 4] * (i > 16 ? 2 : 1); osc('triangle', f, f, 12.6 + i * .125, .1, .025, .003, Math.sin(i) * .6); }
+    boom(16.8); pad([82.4, 123.5, 164.8, 207.7, 246.9, 311.1, 415.3], 16.85, 3, .045, .05, 'triangle'); [1318.5, 1661.2, 1975.5, 2489, 2637].forEach((f, i) => bell(f, 16.9 + i * .1, .025, 2, (i - 2) * .35));
+    /* 2. les quatre plans : groove, accords mi – do#m – la – si */
+    for (let b = 17.4, n = 0; b < 26.6; b += .5, n++) { kick(b, .45); hat(b + .25); if (n % 2) snare(b, .18); }
+    [[[82.4, 164.8, 207.7, 246.9], 17.4, 2.2], [[69.3, 138.6, 164.8, 207.7], 19.6, 2.2], [[55, 110, 138.6, 164.8], 21.8, 2.2], [[61.7, 123.5, 155.6, 185], 24, 2.6]].forEach(([ch, a, d]) => { pad(ch, a, d, .035, .15, 'sawtooth'); nz('bandpass', 400, 4000, a - .3, .4, .35, 'up', NB, 1.2); for (let i = 0; i < d * 8; i++) { const f = ch[1 + (i % 3)] * 4; osc('triangle', f, f, a + i * .125, .1, .022, .003, i % 2 ? .4 : -.4); } });
+    [523.3, 587.3, 659.3, 784, 880, 1046.5, 1174.7, 1318.5, 1568, 1760, 2093, 2349.3, 2637, 3136, 3520, 4186].forEach((f, i) => bell(f, 18 + i * .085, .025, 1, Math.sin(i) * .7));   // 16 sommets
+    for (let i = 0; i < 32; i++) { nz('bandpass', 2500 + i * 60, 2500 + i * 60, 20.2 + i * (1.25 / 32), .03, .3, 'down', NB, 6); osc('sine', 600 + i * 45, 600 + i * 45, 20.2 + i * (1.25 / 32), .05, .03, .002); }   // 32 arêtes
+    pad([1318.5, 1661.2, 1975.5, 2489], 22.4, 1.6, .02, .1, 'sine'); nz('highpass', 4000, 8000, 22.4, 1.5, .2, 'swell');   // 24 carrés
+    [98, 110, 123.5, 146.8, 164.8, 196, 220, 246.9].forEach((f, i) => clunk(24.6 + i * .22, f, .5));   // 8 cubes
+    /* 3. plongée puis effondrement */
+    shepard(26.6, 4, .7, .06); nz('highpass', 300, 9000, 26.6, 4, .5, 'up'); osc('sawtooth', 55, 880, 26.6, 4, .04, 3.6);
+    for (let s = 26.6, g2 = .25; s < 30.6; s += g2, g2 = Math.max(.035, g2 * .9)) snare(s, .1 + (s - 26.6) * .04);
+    osc('sine', 1200, 40, 30.6, .6, .3, .01); nz('lowpass', 6000, 100, 30.6, .6, .4, 'up');
+    boom(31.2); pad([82.4, 164.8, 246.9], 31.25, 2, .04, .05, 'triangle');
+    /* 4. le patron se déplie, le titre */
+    for (let ci = 0; ci < 8; ci++) clunk(32.4 + ci * .14, [164.8, 185, 207.7, 246.9, 277.2, 311.1, 329.6, 415.3][ci], .35);
+    pad([82.4, 123.5, 164.8, 207.7, 246.9, 329.6, 415.3], 33.4, 5.2, .045, .8, 'sawtooth'); osc('sine', 123.5, 82.4, 33.4, 1.6, .6, .004); osc('sine', 123.5, 82.4, 33.85, 1.4, .4, .004);
+    const arp = [659.3, 830.6, 987.8, 1318.5, 1661.2, 1975.5, 2637]; for (let i = 0; i < 26; i++) bell(arp[(i * 3) % 7], 33.6 + i * .18, .016, 1.8, Math.sin(i * 1.3) * .7);
+    /* 5. repli et retour sur l'écran */
+    nz('bandpass', 3000, 400, 38.4, 1.4, .3, 'swell', NB, 1.2); for (let i = 0; i < 8; i++) bell([2637, 1975.5, 1661.2, 1318.5, 987.8, 830.6, 659.3, 493.9][i], 38.5 + i * .14, .025, 1.6, (i % 2 ? .4 : -.4));
+    osc('sine', 400, 900, 39.6, 1.6, .04, 1.2); bell(329.6, 41.4, .06, 3); bell(82.4, 41.5, .08, 5); pad([164.8, 207.7, 246.9, 329.6], 41.3, 3, .03, .5, 'sine');
+    return {stop};
+  }
+  /* ----- ✺ Genèse (≈ 70 s) : rembobinage, Big Bang, premières étoiles, galaxie, Soleil, Terre, titre ----- */
+  function genScore(starT) {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const ws = C.createWaveShaper(); ws.curve = crunch(); link(ws, F('lowpass', 2200), G(.5), bus);
+    const brass = (fs, at, dur, v, f0 = 260, f1 = 2800) => fs.forEach((f, i) => { const t = T0 + at, lp = F('lowpass', f0, 2.5), g = G(0); lp.frequency.setValueAtTime(f0, t); lp.frequency.exponentialRampToValueAtTime(f1, t + 1.8); lp.frequency.exponentialRampToValueAtTime(f1 * .45, t + dur); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .4); g.gain.setValueAtTime(v, t + dur - 2); g.gain.linearRampToValueAtTime(0, t + dur); link(lp, g, P((i - fs.length / 2) * .2), bus); [-7, 0, 7].forEach(d => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = d; link(o, G(.33), lp); o.start(t); o.stop(t + dur + .1); }); });
+    const strings = (fs, at, dur, v, att = 1.5) => fs.forEach((f, i) => { const t = T0 + at, lp = F('lowpass', 1500, .7), g = G(0); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setValueAtTime(v, t + Math.max(att, dur - 1.2)); g.gain.linearRampToValueAtTime(0, t + dur); link(lp, g, P((i - fs.length / 2) * .25), bus); [-11, -4, 4, 11].forEach(d => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = d; const lf = C.createOscillator(), lg = G(4); lf.frequency.value = 4.5 + Math.random(); link(lf, lg); lg.connect(o.detune); link(o, G(.22), lp); o.start(t); lf.start(t); o.stop(t + dur + .1); lf.stop(t + dur + .1); }); });
+    const timp = (at, f, v = .6) => { osc('sine', f * 1.5, f, at, 1.8, v, .004); osc('triangle', f * 2.02, f * 2, at, 1, v * .2, .004); nz('lowpass', 1100, 80, at, .45, v * .5, 'down', BB); };
+    const kick = (at, v = .4) => { osc('sine', 120, 40, at, .35, v, .004); };
+    /* 0. rembobinage */
+    for (let i = 0; i < 14; i++) { const a = .2 + i * .27 * (1 - i / 22); osc('sawtooth', 300 + i * 90, 1600 + i * 200, a, .2, .025, .01, (i % 2 ? .5 : -.5)); }
+    [1.3, 1.85, 2.3, 2.7, 3.05, 3.4].forEach((a, i) => { osc('sine', 880 * Math.pow(1.19, i), 880 * Math.pow(1.19, i), a, .3, .07, .003); nz('bandpass', 3000, 3000, a, .05, .3, 'down', NB, 3); });
+    nz('lowpass', 2000, 60, .3, 4, .5, 'swell', BB); osc('sine', 600, 40, 3.4, 1, .2, .01);
+    /* le néant avant tout */
+    osc('sine', 4186, 4186, 4.6, 3.2, .006, 1.2); pad([32.7, 49], 4.4, 3.7, .12, 2, 'sine');
+    nz('highpass', 300, 8000, 6.2, 1.75, .6, 'up'); osc('sine', 30, 120, 6.2, 1.75, .3, 1.6);
+    /* 1. BIG BANG */
+    const B = 8;
+    { const t = T0 + B, o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(16, t + 7); g.gain.setValueAtTime(1.3, t); g.gain.exponentialRampToValueAtTime(.0001, t + 7.2); link(o, g, ws); o.start(t); o.stop(t + 7.3); }
+    osc('sine', 60, 18, B, 7, 1, .002); nz('lowpass', 9000, 40, B, 7.5, 1.4, 'down', BB); nz('highpass', 1500, 9000, B, 4, .6, 'down'); nz('bandpass', 200, 3000, B + .3, 5, .3, 'swell', NB, .6);
+    brass([65.4, 98, 130.8, 196], B + .05, 5.5, .05, 2000, 300);
+    strings([130.8, 155.6, 196, 261.6], B + 2.5, 6, .03, 3);   // do mineur qui refroidit
+    /* fond diffus : petites étincelles */
+    for (let i = 0; i < 16; i++) bell([2093, 2349, 2637, 3136, 3520][i % 5], 13.2 + i * .3 + Math.random() * .1, .012, 2, Math.random() * 1.6 - .8);
+    /* âges sombres */
+    pad([32.7, 49, 65.4], 17.5, 6, .09, 2.5, 'sine'); nz('bandpass', 300, 600, 17.5, 6, .25, 'swell', BB, .8); strings([98, 116.5, 146.8], 18, 5, .022, 2.5);
+    /* premières étoiles : une note par étoile */
+    const pent = [523.3, 587.3, 659.3, 784, 880, 1046.5, 1174.7, 1318.5, 1568]; (starT || []).forEach((s, i) => bell(pent[(i * 2 + (i >> 2)) % pent.length], s, .035, 3, Math.sin(i * 1.7) * .7));
+    strings([130.8, 196, 293.7, 329.6], 22.3, 8.5, .03, 3);
+    /* galaxies : thème principal (la mineur – fa – do – sol), arpèges */
+    const prog = [[[110, 164.8, 220, 261.6, 329.6], 30.5], [[87.3, 130.8, 174.6, 220, 261.6], 33.5], [[65.4, 130.8, 196, 261.6, 329.6], 36.5], [[98, 146.8, 196, 246.9, 293.7], 39.5]];
+    prog.forEach(([ch, a]) => { strings(ch, a, 3.3, .026, .9); pad([ch[0] / 2], a, 3.2, .1, .3, 'sine'); for (let k = 0; k < 12; k++) osc('triangle', ch[1 + (k % 4)] * 2, ch[1 + (k % 4)] * 2, a + k * .25, .22, .028, .004, k % 2 ? .35 : -.35); });
+    for (let b = 34.5; b < 42.4; b += 1.5) kick(b, .35);
+    /* le Soleil, les planètes */
+    strings([87.3, 174.6, 220, 261.6, 329.6], 42.4, 5, .028, 1.2); bell(1046.5, 42.5, .05, 4);
+    [47.6, 48.1, 48.6, 49.1, 49.6].forEach((a, i) => bell([659.3, 784, 987.8, 1174.7, 1318.5][i], a, .03, 2.5, (i - 2) * .3));
+    strings([98, 196, 246.9, 293.7, 392], 47.4, 4.5, .028, 1);
+    /* la Terre : montée émotionnelle */
+    [[[65.4, 130.8, 196, 261.6, 329.6], 51.8], [[61.7, 123.5, 196, 246.9, 293.7], 53.8], [[55, 110, 164.8, 220, 261.6], 55.8], [[43.7, 87.3, 174.6, 220, 261.6], 57.8]].forEach(([ch, a]) => { strings(ch, a, 2.2, .032, .5); pad([ch[0]], a, 2.1, .11, .2, 'sine'); });
+    nz('highpass', 300, 9000, 57.3, 2.4, .5, 'up'); osc('sawtooth', 110, 880, 57.3, 2.4, .035, 2.2);
+    for (let s = 58, g2 = .2; s < 59.7; s += g2, g2 = Math.max(.04, g2 * .85)) nz('bandpass', 1800, 1300, s, .12, .14 + (s - 58) * .1, 'down', NB, .8);
+    /* 2. arrivée : impact + grand accord de do majeur */
+    const A = 59.7;
+    osc('sine', 80, 20, A, 4, 1, .002); nz('lowpass', 7000, 60, A, 4, 1.1, 'down', BB); nz('highpass', 2000, 9000, A, 2.2, .45);
+    { const t = T0 + A, o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(30, t + .6); g.gain.setValueAtTime(1, t); g.gain.exponentialRampToValueAtTime(.0001, t + .7); link(o, g, ws); o.start(t); o.stop(t + .8); }
+    brass([65.4, 98, 130.8, 164.8, 196, 261.6], A + .5, 7.5, .045); strings([261.6, 329.6, 392, 523.3, 659.3], A + .5, 7.5, .022, 1);
+    timp(A + .5, 65.4, .75); timp(A + .95, 65.4, .5); timp(A + 1.2, 98, .55);
+    [1046.5, 1318.5, 1568, 2093, 2637, 3136, 4186].forEach((f, i) => bell(f, A + 1.1 + i * .2, .022, 3, i % 2 ? .55 : -.55));
+    /* le nouveau monde */
+    [523.3, 659.3, 784, 1046.5, 1318.5].forEach((f, i) => bell(f, 67.2 + i * .1, .03, 3, (i - 2) * .3)); bell(65.4, 67.4, .08, 6); pad([130.8, 196, 261.6, 329.6], 67, 3.5, .03, .6, 'sine');
+    return {stop};
+  }
+  /* ----- ♛ Créateur (≈ 65 s) : terminal, code, six reliques, fusion, cristal, fanfare ----- */
+  function creaScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const ws = C.createWaveShaper(); ws.curve = crunch(); link(ws, F('lowpass', 2400), G(.5), bus);
+    const brass = (fs, at, dur, v, f0 = 280, f1 = 3000) => fs.forEach((f, i) => { const t = T0 + at, lp = F('lowpass', f0, 2.5), g = G(0); lp.frequency.setValueAtTime(f0, t); lp.frequency.exponentialRampToValueAtTime(f1, t + 1.4); lp.frequency.exponentialRampToValueAtTime(f1 * .5, t + dur); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .3); g.gain.setValueAtTime(v, t + dur - 1.5); g.gain.linearRampToValueAtTime(0, t + dur); link(lp, g, P((i - fs.length / 2) * .2), bus); [-7, 0, 7].forEach(d => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = d; link(o, G(.33), lp); o.start(t); o.stop(t + dur + .1); }); });
+    const strings = (fs, at, dur, v, att = 1.2) => fs.forEach((f, i) => { const t = T0 + at, lp = F('lowpass', 1600, .7), g = G(0); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setValueAtTime(v, t + Math.max(att, dur - 1)); g.gain.linearRampToValueAtTime(0, t + dur); link(lp, g, P((i - fs.length / 2) * .25), bus); [-10, -3, 4, 11].forEach(d => { const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = d; link(o, G(.22), lp); o.start(t); o.stop(t + dur + .1); }); });
+    const timp = (at, f, v = .6) => { osc('sine', f * 1.5, f, at, 1.6, v, .004); nz('lowpass', 1100, 80, at, .4, v * .5, 'down', BB); };
+    const kick = (at, v = .5) => { osc('sine', 140, 40, at, .3, v, .004); nz('lowpass', 1200, 100, at, .05, v * .4, 'down'); };
+    const key = at => nz('bandpass', 2400 + Math.random() * 1800, 2000, at, .02, .35, 'down', NB, 6);
+    const hit = (at, v = .8) => { osc('sine', 70, 24, at, 2, v, .003); nz('lowpass', 5000, 60, at, 2, v, 'down', BB); };
+    /* I. terminal : frappe au clavier, bip de validation, glitch */
+    [[.2, 34], [1.5, 30]].forEach(([a, n]) => { for (let i = 0; i < n; i++) key(a + i * .034 + Math.random() * .01); });
+    osc('square', 880, 880, 2.6, .08, .05, .002); osc('square', 1320, 1320, 2.7, .12, .05, .002);
+    for (let i = 0; i < 20; i++) key(3.3 + i * .025);
+    for (let i = 0; i < 18; i++) { const t = T0 + 4.1 + Math.random() * 1.5, o = C.createOscillator(), g = G(0); o.type = 'square'; o.frequency.setValueAtTime(100 + Math.random() * 1500, t); g.gain.setValueAtTime(.1, t); g.gain.setValueAtTime(0, t + .04 + Math.random() * .05); link(o, g, ws); o.start(t); o.stop(t + .12); }
+    osc('sine', 1800, 40, 5.5, .4, .2, .003);
+    /* II. le code : séquenceur numérique qui accélère */
+    const sq = [329.6, 392, 493.9, 587.3, 659.3, 587.3, 493.9, 392];
+    for (let t = 6, k = 0, st = .25; t < 13.6; t += st, k++, st = Math.max(.07, st * .975)) osc('triangle', sq[k % 8] * (t > 10 ? 2 : 1), sq[k % 8] * (t > 10 ? 2 : 1), t, .1, .03, .003, k % 2 ? .4 : -.4);
+    pad([82.4, 123.5], 6, 7.6, .09, 1.5, 'sine'); strings([164.8, 196, 246.9], 7, 6.6, .02, 2);
+    nz('highpass', 300, 8000, 12, 2, .5, 'up');
+    /* III. les six légendes : chacune a son motif (4,6 s) */
+    const R0 = 14, RD = 4.6;
+    // ✸ supernova : cœur qui bat, effondrement, explosion, accord de ré, pulsar
+    [.15, .55, .88, 1.12].forEach((b, i) => { osc('sine', 78, 34, R0 + b, .3, .5 + i * .1, .006); nz('lowpass', 260, 60, R0 + b, .14, .3, 'down', BB); });
+    osc('sine', 520, 28, R0 + 1.3, .25, .5, .003); hit(R0 + 1.5, 1); nz('highpass', 1500, 9000, R0 + 1.5, 2.5, .45); brass([73.4, 110, 146.8, 185, 220], R0 + 1.6, 3, .045); timp(R0 + 1.7, 73.4); for (let p = R0 + 2.4; p < R0 + 4.4; p += .45) { osc('sine', 3136, 3100, p, .05, .03, .002, -.4); osc('sine', 3136, 3100, p + .1, .05, .02, .002, .4); }
+    // ✦ singularité : grave qui aspire, tic-tac qui ralentit, chœur doré
+    hit(R0 + RD, .7); osc('sine', 28, 75, R0 + RD, 4.4, .5, 2.4); nz('lowpass', 50, 900, R0 + RD, 4.2, .6, 'up', BB); { let tt = R0 + RD + .4, gp = .18, f = 1900; while (tt < R0 + 2 * RD - .3) { osc('sine', f, f, tt, .06, .06, .002); tt += gp; gp *= 1.28; f *= .9; } } pad([65.4, 98, 130.8, 196], R0 + RD + .5, 4, .035, 1.2);
+    // ∞ infini : la comète trace l'infini (glissando) puis arpège arc-en-ciel
+    hit(R0 + 2 * RD, .5); osc('sine', 220, 1760, R0 + 2 * RD + .05, 1.6, .05, 1.2); nz('bandpass', 400, 5000, R0 + 2 * RD, 1.7, .25, 'up'); { const ar = [440, 523.3, 659.3, 880, 1046.5, 880, 659.3, 523.3]; for (let k = 0; k < 34; k++) osc('triangle', ar[k % 8] * (k > 16 ? 2 : 1), ar[k % 8] * (k > 16 ? 2 : 1), R0 + 2 * RD + 1.7 + k * .08, .12, .035, .003, Math.sin(k) * .7); } pad([110, 164.8, 220, 329.6], R0 + 2 * RD + 1.6, 3, .04, .3);
+    // ∅ néant : silence… une goutte, une cloche, le pinceau, le sceau
+    osc('sine', 1400, 300, R0 + 3 * RD + .55, .18, .24, .002); osc('sine', 600, 900, R0 + 3 * RD + .67, .12, .08, .002); bell(130.8, R0 + 3 * RD + .6, .08, 4.5); nz('bandpass', 400, 2400, R0 + 3 * RD + 1.05, 1.9, .3, 'swell', NB, .7); bell(392, R0 + 3 * RD + 2.4, .03, 3); nz('lowpass', 900, 120, R0 + 3 * RD + 3.05, .12, .6, 'down', BB); osc('sine', 180, 90, R0 + 3 * RD + 3.05, .2, .25, .003);
+    // ◈ tesseract : quatre « clonc », la 4e dimension s'ouvre (glissando sans fin)
+    hit(R0 + 4 * RD, .6); [0, .3, .6, .9].forEach((d, i) => { nz('lowpass', 900, 80, R0 + 4 * RD + .2 + d, .2, .6, 'down', BB); bell([98, 110, 123.5, 146.8][i] * 4, R0 + 4 * RD + .21 + d, .035, 1.4); }); osc('sine', 110, 1760, R0 + 4 * RD + 1.3, 3, .05, 2.5); osc('sine', 55, 880, R0 + 4 * RD + 1.6, 2.8, .04, 2.4); pad([82.4, 123.5, 185, 246.9], R0 + 4 * RD + 1.3, 3.2, .03, .8, 'sawtooth');
+    // ✺ genèse : un point, un Big Bang, puis les cordes en do majeur
+    osc('sine', 4186, 4186, R0 + 5 * RD, .35, .01, .2); hit(R0 + 5 * RD + .35, 1); nz('highpass', 2000, 9000, R0 + 5 * RD + .35, 2, .4); strings([130.8, 196, 261.6, 329.6, 392], R0 + 5 * RD + .6, 4.2, .032, 1); [1046.5, 1318.5, 1568, 2093, 2637].forEach((f, i) => bell(f, R0 + 5 * RD + 1.6 + i * .3, .025, 2.5, (i - 2) * .35));
+    /* IV. fusion : les six motifs ensemble, montée */
+    const F0 = 41.8; strings([110, 164.8, 220, 261.6, 329.6], F0, 4.6, .028, 1.5); strings([87.3, 174.6, 220, 261.6, 349.2], F0 + 4.6, 4.8, .03, .5);
+    for (let b = F0, gp = .5; b < 51.1; b += gp, gp = Math.max(.08, gp * .94)) kick(b, .35 + (b - F0) * .04);
+    nz('highpass', 300, 9000, 46.6, 4.6, .55, 'up'); osc('sawtooth', 55, 1100, 46.6, 4.6, .04, 4.2); osc('sine', 220, 1760, 47.6, 3.6, .05, 3);
+    /* V. le cristal : impact + chœur scintillant en mi majeur */
+    const X = 51.2;
+    { const t = T0 + X, o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(20, t + 4); g.gain.setValueAtTime(1.2, t); g.gain.exponentialRampToValueAtTime(.0001, t + 4.2); link(o, g, ws); o.start(t); o.stop(t + 4.3); }
+    hit(X, 1); nz('highpass', 2000, 9000, X, 2.5, .5);
+    pad([82.4, 123.5, 164.8, 207.7, 246.9, 329.6, 415.3], X + .3, 8, .045, 1.6, 'triangle'); strings([329.6, 415.3, 493.9, 659.3], X + 1, 7, .02, 2.5);
+    const arp = [659.3, 830.6, 987.8, 1318.5, 1661.2, 1975.5, 2637]; for (let i = 0; i < 30; i++) bell(arp[(i * 3) % 7], X + 1 + i * .2, .018, 2, Math.sin(i * 1.3) * .7);
+    /* VI. titre : fanfare en mi majeur, timbales */
+    const TT = 58.2;
+    brass([82.4, 123.5, 164.8, 207.7, 246.9, 329.6], TT, 8.6, .05); timp(TT, 82.4, .8); timp(TT + .45, 82.4, .5); timp(TT + .7, 123.5, .6);
+    brass([110, 138.6, 164.8, 220, 277.2], TT + 3.2, 2.2, .035); brass([123.5, 155.6, 185, 246.9, 311.1], TT + 5.4, 1.9, .035);
+    [1318.5, 1661.2, 1975.5, 2637, 3322.4].forEach((f, i) => bell(f, TT + .5 + i * .18, .025, 3, i % 2 ? .5 : -.5));
+    /* VII. la réalité se recompose */
+    nz('bandpass', 300, 6000, 66.8, 1.4, .3, 'up', NB, 2); [659.3, 830.6, 987.8, 1318.5].forEach((f, i) => bell(f, 67 + i * .1, .03, 3, (i - 1.5) * .3)); bell(82.4, 67.2, .08, 5);
+    return {stop};
+  }
+  /* ----- 🚂 Le Dernier Train (≈ 44 s) : billet, sifflet, vapeur, quai, voyage, valse ----- */
+  function trainScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const whistle = (at, dur = 1.4, v = .07) => [523.3, 659.3, 784].forEach((f, i) => { const t = T0 + at, o = C.createOscillator(), g = G(0), lf = C.createOscillator(), lg = G(6); o.type = 'triangle'; o.frequency.value = f * .98; o.frequency.linearRampToValueAtTime(f, t + .15); lf.frequency.value = 5.5; link(lf, lg); lg.connect(o.frequency); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .12); g.gain.setValueAtTime(v, t + dur - .3); g.gain.linearRampToValueAtTime(0, t + dur); link(o, F('bandpass', f * 1.5, .8), g, bus); o.start(t); lf.start(t); o.stop(t + dur + .1); lf.stop(t + dur + .1); nz('bandpass', f * 2, f * 2, at, dur, .05, 'swell', NB, 2); });
+    const clack = (at, v = .5) => { nz('bandpass', 900, 700, at, .05, v, 'down', NB, 3); nz('bandpass', 700, 600, at + .13, .05, v * .9, 'down', NB, 3); osc('sine', 120, 60, at, .08, v * .3, .003); };
+    const chuff = (at, v = .5) => nz('lowpass', 1800, 300, at, .22, v, 'down', NB, .7);
+    const piano = (f, at, v = .05, pan = 0) => { osc('triangle', f, f, at, 1.4, v, .004, pan); osc('sine', f * 2, f * 2, at, .8, v * .3, .004, pan); };
+    /* 1. le billet d'or : scintillement, machine à composter */
+    [1568, 1975.5, 2349.3, 3136].forEach((f, i) => bell(f, .15 + i * .12, .025, 1.6, (i - 1.5) * .4));
+    for (let i = 0; i < 6; i++) nz('bandpass', 3000, 3000, 1.2 + i * .09, .03, .25, 'down', NB, 5);
+    nz('lowpass', 1200, 100, 2.8, .2, .9, 'down', BB); osc('sine', 180, 60, 2.8, .25, .5, .003); nz('bandpass', 4000, 2000, 2.85, .08, .5, 'down', NB, 2);
+    /* 2. sifflet, vapeur, quai */
+    whistle(3.7, 1.6, .08); nz('highpass', 600, 3000, 3.6, 3.6, .5, 'swell'); for (let i = 0; i < 4; i++) chuff(4.2 + i * .6, .4);
+    pad([73.4, 110], 5.5, 7, .07, 2, 'sine'); pad([293.7, 370, 440], 6, 6, .018, 2.5, 'sine');
+    nz('lowpass', 60, 500, 7, 3.6, 1, 'up', BB); osc('sine', 40, 70, 7, 3.6, .3, 3);
+    whistle(9.4, 1.2, .1); { for (let i = 0; i < 16; i++) clack(10.3 + i * (.12 + i * .02), .5 - i * .02); } nz('highpass', 2000, 800, 11.2, 1, .3, 'down');
+    /* portes */
+    nz('lowpass', 900, 80, 12.9, .3, .9, 'down', BB); osc('sine', 110, 50, 12.9, .3, .4, .003); bell(880, 13.2, .03, 1.2); bell(1108.7, 13.4, .03, 1.2);
+    /* 3. départ : le train accélère */
+    for (let t = 13.6, gp = .7; t < 18; t += gp, gp = Math.max(.24, gp * .86)) chuff(t, .5);
+    for (let t = 15, gp = 1.1; t < 41.5; t += gp) clack(t, (t > 19.8 && t < 21.8) || (t > 33.8 && t < 36) ? .7 : .38);
+    { const t = T0 + 13.6, s = src(BB, true), g = G(0), lp = F('lowpass', 160); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.5, t + 4); g.gain.setValueAtTime(.5, t + 25); g.gain.linearRampToValueAtTime(0, t + 30); link(s, lp, g, bus); s.start(t); s.stop(t + 30.2); }
+    /* la valse du voyage (ré majeur, 3 temps) */
+    const W0 = 15, BT = .42, chords = [[73.4, 146.8, 185, 220], [61.7, 123.5, 146.8, 185], [49, 98, 123.5, 146.8], [55, 110, 138.6, 164.8]];
+    const mel = [587.3, 659.3, 740, 880, 740, 659.3, 587.3, 493.9, 587.3, 659.3, 587.3, 554.4, 587.3, 740, 880, 987.8, 880, 740, 659.3, 587.3, 659.3, 554.4, 587.3, 440];
+    for (let bar = 0; bar < 16; bar++) { const a = W0 + bar * BT * 3, ch = chords[(bar >> 1) % 4], muf = (a > 19.8 && a < 21.6) || (a > 33.8); if (muf) continue; piano(ch[0], a, .06); piano(ch[1], a + BT, .025, -.3); piano(ch[2], a + BT, .025, .3); piano(ch[1], a + BT * 2, .025, -.3); piano(ch[3], a + BT * 2, .025, .3); piano(mel[(bar * 3) % mel.length], a, .045, .1); piano(mel[(bar * 3 + 1) % mel.length], a + BT * 1.5, .035, .1); }
+    /* tunnels : grondement */
+    [[19.8, 2], [27.7, 1.3], [33.8, 2.2]].forEach(([a, d]) => { nz('lowpass', 300, 120, a, d, .8, 'swell', BB); nz('bandpass', 400, 400, a, d, .2, 'swell', NB, .5); });
+    /* aurores : nappe scintillante */
+    pad([146.8, 220, 277.2, 329.6, 440], 22, 6.4, .03, 2, 'sine'); for (let i = 0; i < 14; i++) bell([1174.7, 1318.5, 1480, 1760][i % 4], 22.4 + i * .42, .016, 2.2, Math.sin(i) * .7);
+    /* la mer */
+    pad([98, 146.8, 196, 246.9, 293.7], 29, 5, .03, 1.5, 'sine'); nz('lowpass', 400, 900, 29, 5, .3, 'swell', BB);
+    /* 4. éclair + titre : grand accord et sifflet final */
+    osc('sine', 70, 22, 35.2, 3, .9, .002); nz('lowpass', 6000, 60, 35.2, 3, 1, 'down', BB); nz('highpass', 2000, 9000, 35.2, 2, .4);
+    [[73.4, 146.8, 220, 293.7, 370, 440, 587.3], [55, 138.6, 220, 277.2, 329.6, 440]].forEach((ch, k) => ch.forEach((f, i) => { const t = 35.7 + k * 3.4; osc('sawtooth', f, f, t, 3.4, .012, .3, (i - 3) * .15); osc('triangle', f, f, t, 3.6, .03, .4, (i - 3) * .15); }));
+    [1174.7, 1480, 1760, 2349.3].forEach((f, i) => bell(f, 36 + i * .25, .03, 3, (i - 1.5) * .4));
+    whistle(38.6, 2, .09); pad([73.4, 146.8, 220, 293.7], 40.8, 3.6, .04, .8, 'sine'); bell(587.3, 42.6, .05, 3); bell(73.4, 42.8, .08, 5);
+    return {stop};
+  }
+  /* ----- 👁 La Présence (≈ 27 s) : grésillement, caméras, pas qui approchent, JUMPSCARE, boîte à musique ----- */
+  function presScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const ws = C.createWaveShaper(); ws.curve = crunch(); link(ws, F('lowpass', 5000), G(.7), bus);
+    const step = (at, v) => { nz('lowpass', 500, 90, at, .16, v, 'down', BB); osc('sine', 90, 45, at, .12, v * .4, .003); };
+    const stat = (at, d, v = .3) => nz('bandpass', 3000, 2500, at, d, v, 'down', NB, .4);
+    /* 1. néons qui grésillent puis coupure */
+    { const t = T0, o = C.createOscillator(), g = G(0); o.type = 'sawtooth'; o.frequency.value = 100; g.gain.setValueAtTime(.05, t); for (let i = 0; i < 10; i++) { const a = t + .2 + i * .22 + Math.random() * .08; g.gain.setValueAtTime(Math.random() < .5 ? 0 : .07, a); } g.gain.setValueAtTime(0, t + 2.4); link(o, F('lowpass', 900), g, bus); o.start(t); o.stop(t + 2.5); }
+    for (let i = 0; i < 9; i++) nz('highpass', 3000, 6000, .2 + i * .24, .03, .4, 'down');
+    osc('sine', 60, 30, 2.4, .5, .5, .003); nz('lowpass', 800, 60, 2.4, .5, .5, 'down', BB);
+    /* 2. caméras : statique à chaque changement, drone, cœur */
+    [4, 7, 10].forEach((a, i) => { stat(a, .35, .45); osc('sine', 50, 30, a, .6, .35 + i * .1, .003); });
+    pad([36.7, 38.9], 4, 9, .1, 1.5, 'sine'); pad([73.4, 77.8], 7, 6, .025, 2, 'sawtooth');
+    for (let b = 5, gp = 1.1; b < 13; b += gp, gp = Math.max(.45, gp * .92)) { osc('sine', 70, 34, b, .28, .4, .005); osc('sine', 70, 34, b + .2, .2, .25, .005); }
+    /* « il t'a vu » : grappe dissonante */
+    [1046.5, 1108.7, 1174.7, 1244.5].forEach((f, i) => { osc('sawtooth', f, f * 1.01, 11.2, 1.6, .012, .05, (i - 1.5) * .5); osc('sine', f / 2, f / 2 * 1.02, 11.2, 1.8, .03, .05); });
+    /* 3. signal perdu… silence… des pas qui approchent */
+    stat(13, 1.2, .5); nz('bandpass', 3000, 2000, 13.6, 3.5, .06, 'swell', NB, .5);
+    [13.9, 14.7, 15.4, 15.95, 16.4, 16.75, 17.0].forEach((a, i) => step(a, .12 + i * .09));
+    osc('sine', 3000, 4200, 15.5, 1.65, .02, 1.5);   // tension aiguë
+    /* LE JUMPSCARE */
+    const J = 17.2;
+    [[420, 1400], [455, 1520], [610, 2100], [890, 2700]].forEach(([a, b], i) => { const t = T0 + J, o = C.createOscillator(), g = G(0); o.type = 'sawtooth'; o.frequency.setValueAtTime(a, t); o.frequency.exponentialRampToValueAtTime(b, t + .25); o.frequency.exponentialRampToValueAtTime(b * .8, t + .85); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .02); g.gain.setValueAtTime(.32, t + .9); g.gain.linearRampToValueAtTime(0, t + 1.1); link(o, g, P((i - 1.5) * .4), ws); o.start(t); o.stop(t + 1.15); });
+    nz('bandpass', 2500, 4000, J, 1.1, 1.2, 'down', NB, .6); osc('sine', 90, 25, J, 1.2, 1, .002); nz('lowpass', 4000, 60, J, 1.4, 1, 'down', BB);
+    /* silence, puis la boîte à musique désaccordée */
+    const MB = J + 3.4, lul = [659.3, 587.3, 523.3, 493.9, 523.3, 440, 493.9, 392, 440, 523.3, 493.9, 440];
+    lul.forEach((f, i) => { const dt = (Math.random() - .5) * .06; osc('triangle', f * (1 + (Math.random() - .5) * .012), f * .995, MB + i * .55 + dt, 1.4, .05, .003, -.3 + Math.sin(i) * .3); osc('sine', f * 2.01, f * 2, MB + i * .55 + dt, .6, .015, .003); });
+    pad([55, 58.3], MB - 1, 8, .08, 2.5, 'sine');
+    stat(MB + 6.6, 1.4, .2);
+    return {stop};
+  }
+  /* ----- ✨ Singularité shiny (≈ 31 s) : scintillement, trou noir, déchirure, explosion, pulsar ----- */
+  function x0sScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    const ws = C.createWaveShaper(); ws.curve = crunch(); link(ws, F('lowpass', 3000), G(.55), bus);
+    /* ✨ le son « shiny » */
+    [2637, 3136, 3951, 4699, 5274].forEach((f, i) => bell(f, .2 + i * .07, .03, 1.4, (i - 2) * .35)); [2637, 3951].forEach((f, i) => bell(f, .9 + i * .1, .025, 1.2, i ? .5 : -.5));
+    /* aspiration de l'écran */
+    nz('lowpass', 60, 1400, 2.6, 1.5, .8, 'up', BB); osc('sine', 600, 40, 2.8, 1.3, .25, .01);
+    /* le trou noir : grave qui enfle, chœur cristallin */
+    pad([36.7, 55], 3.6, 10, .1, 2, 'sine'); pad([220, 277.2, 329.6, 440], 5, 8, .018, 3, 'sawtooth');
+    for (let i = 0; i < 16; i++) bell([1760, 2217.5, 2637, 3520][i % 4], 5.2 + i * .45, .014, 1.6, Math.sin(i) * .7);
+    /* instabilité : crépitements, le grave monte */
+    for (let i = 0; i < 26; i++) nz('highpass', 3000, 7000, 10.4 + Math.random() * 2.8, .04, .3 + Math.random() * .3, 'down');
+    osc('sawtooth', 55, 220, 9, 4.2, .06, 3.5); nz('highpass', 400, 8000, 11, 2.2, .45, 'up');
+    /* LA DÉCHIRURE (13,2) */
+    const S = 13.2; { const t = T0 + S, o = C.createOscillator(), g = G(0); o.type = 'sawtooth'; o.frequency.setValueAtTime(90, t); o.frequency.exponentialRampToValueAtTime(30, t + 2.3); g.gain.setValueAtTime(.7, t); g.gain.exponentialRampToValueAtTime(.0001, t + 2.4); link(o, g, ws); o.start(t); o.stop(t + 2.5); }
+    nz('bandpass', 4000, 300, S, 2.3, .8, 'down', NB, 1.2); osc('sine', 3000, 6000, S, 2.3, .03, 2);
+    /* EXPLOSION (15,6) */
+    const B = 15.6; osc('sine', 70, 18, B, 4.5, 1, .002); nz('lowpass', 8000, 40, B, 4.8, 1.3, 'down', BB); nz('highpass', 2000, 9000, B, 3, .5);
+    { const t = T0 + B, o = C.createOscillator(), g = G(0); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(25, t + .8); g.gain.setValueAtTime(1, t); g.gain.exponentialRampToValueAtTime(.0001, t + .9); link(o, g, ws); o.start(t); o.stop(t + 1); }
+    /* le pulsar : des « tic » qui accélèrent jusqu'à devenir une note */
+    let tt = B + .4, gp = .6; while (tt < 27.6) { osc('sine', 1400, 900, tt, .03, .08, .001, Math.sin(tt * 3) * .5); tt += gp; gp = Math.max(.045, gp * .94); }
+    { const t = T0 + 22.5, o = C.createOscillator(), g = G(0), lf = C.createOscillator(), lg = G(.06); o.frequency.value = 440; lf.frequency.value = 22; link(lf, lg); lg.connect(g.gain); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + 1); g.gain.setValueAtTime(.05, t + 4.6); g.gain.linearRampToValueAtTime(0, t + 5.6); link(o, g, bus); o.start(t); lf.start(t); o.stop(t + 5.7); lf.stop(t + 5.7); }
+    /* titre : accord de la majeur lumineux + scintillement shiny */
+    pad([55, 110, 164.8, 220, 277.2, 329.6, 440], 22, 6.4, .045, 1.2, 'triangle');
+    [1760, 2217.5, 2637, 3520, 4434.9].forEach((f, i) => bell(f, 22.3 + i * .16, .028, 2.4, (i - 2) * .4));
+    [2637, 3136, 3951, 4699, 5274].forEach((f, i) => bell(f, 24.5 + i * .07, .03, 1.4, (i - 2) * .35));
+    bell(110, 28.2, .07, 4); [2637, 3951].forEach((f, i) => bell(f, 28.3 + i * .1, .025, 1.4, i ? .5 : -.5));
+    return {stop};
+  }
+  /* ----- ∅ Néant (≈ 40 s) : effacement, silence, goutte d'encre, cercle, réécriture ----- */
+  function voidScore() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    for (let i = 0; i < 30; i++) nz('bandpass', 3000 + Math.random() * 5000, 1000 + Math.random() * 2000, Math.random() * 6, .3 + Math.random() * .6, .05, 'swell', NB, 3);   // poussière qui s'envole
+    nz('lowpass', 900, 80, 0, 6.5, .4, 'swell', BB); osc('sine', 220, 55, 2, 4.5, .06, 2);
+    osc('sine', 3520, 3520, 8, 4.5, .008, 2);   // presque le silence
+    /* la goutte */
+    osc('sine', 1400, 300, 12.2, .18, .25, .002); osc('sine', 600, 900, 12.32, .12, .08, .002); osc('sine', 65.4, 65.4, 12.2, 7, .18, .02); bell(130.8, 12.25, .05, 7);
+    for (let i = 0; i < 6; i++) bell(261.6 * [1, 1.5, 2, 1.25, 3, 2.5][i], 13.6 + i * 1.05, .022, 5, Math.sin(i) * .6);
+    /* le cercle à l'encre + titre */
+    nz('bandpass', 400, 2400, 20, 3, .35, 'swell', NB, .7); bell(98, 23.2, .1, 9); bell(146.8, 23.25, .05, 8); pad([65.4, 98, 130.8, 196], 23.2, 9, .035, 2.5, 'sine');
+    /* la réécriture : petites notes pentatoniques */
+    const pent = [523.3, 587.3, 659.3, 784, 880, 1046.5]; for (let i = 0; i < 18; i++) bell(pent[(i * 3 + (i >> 2)) % 6], 30 + i * .42, .03, 2.4, (i % 3 - 1) * .5);
+    bell(65.4, 38.4, .07, 6); pad([130.8, 196, 261.6], 37.8, 4, .03, 1, 'sine');
+    return {stop};
+  }
+  /* ----- Singularité (≈ 31 s) : aspiration, temps ralenti, traversée, trou blanc ----- */
+  function x0Score() {
+    const T0 = now() + .03, bus = G(1); bus.connect(M); const {osc, nz, pad, bell, stop} = kit(T0, bus);
+    for (let i = 0; i < 22; i++) osc('square', 200 + Math.random() * 2800, 120 + Math.random() * 500, Math.random() * 2.8, .05 + Math.random() * .08, .045, .003, Math.random() * 2 - 1);
+    /* aspiration de l'interface */
+    nz('lowpass', 50, 1200, 3, 6, 1, 'up', BB); osc('sine', 28, 90, 3, 6, .5, 4); osc('sawtooth', 55, 220, 4, 5, .03, 4);
+    for (let i = 0; i < 18; i++) nz('bandpass', 4000, 300, 3.5 + i * .3, .5, .12, 'down', NB, 2);   // morceaux aspirés
+    osc('sine', 60, 25, 9, 2.5, .8, .005); nz('lowpass', 2000, 60, 9, 2.5, .9, 'down', BB);
+    /* le temps ralentit : tic-tac de plus en plus lent et grave */
+    let tt = 9.6, gap = .25, f = 1800; while (tt < 14) { osc('sine', f, f, tt, .06, .06, .002); tt += gap; gap *= 1.22; f *= .9; }
+    pad([41.2, 61.7], 9.5, 5, .08, 2, 'sine');
+    /* traversée de l'horizon */
+    nz('highpass', 300, 9000, 14, 8, .5, 'up'); osc('sine', 110, 1760, 14, 8, .08, 6); pad([110, 138.6, 164.8, 220], 14, 4, .05); pad([98, 123.5, 146.8, 196], 18, 4, .05);
+    for (let b = 14; b < 22; b += .5 - (b - 14) * .04) osc('sine', 120, 40, b, .25, .4, .004);
+    /* trou blanc : explosion lumineuse + chœur */
+    osc('sine', 70, 22, 22, 4, 1, .004); nz('lowpass', 5000, 80, 22, 4, 1.1, 'down', BB); nz('highpass', 2000, 9000, 22, 3, .5);
+    pad([65.4, 130.8, 196, 261.6, 329.6, 392, 523.3], 22.2, 8.5, .05, 1.2);
+    [1568, 2093, 2637, 3136, 3520, 4186, 3136, 2637].forEach((fq, i) => bell(fq, 22.6 + i * .2, .025, 2.5, (i % 2 ? .5 : -.5)));
+    bell(130.8, 28.5, .06, 5);
+    return {stop};
+  }
+  /* ----- Boucle des sons ponctuels ----- */
+  const RATE = {steps: 0, ping: 0, drop: 0, hail: 0, bird: 0, cricket: 0, owl: 0, chime: 0, key: 0, siren: 0};
+  function tickEv() {
+    if (!C || C.state !== 'running' || !vol) return;
+    Object.keys(RATE).forEach(k => { const r = RATE[k] * (lite ? .5 : 1); if (r && Math.random() < r * .1) ONE[k](k === 'drop' || k === 'hail' ? (lvl[k] || 1) : undefined); });
+    if (ch.train && lvl.train) { if (!ev.clk || now() >= ev.clk) { ONE.clack(lvl.train * .7); ev.clk = now() + 1.1 + R(-.04, .04); } }
+    if (ch.wind && lvl.wind && Math.random() < .05) { const w = lvl.wind; ramp(ch.wind.bp.frequency, R(250, 950), .8); ramp(ch.wind.g.gain, R(.35, 1) * (1 + w * .4), .7); if (RATE.chime && Math.random() < .5) ONE.chime(.8); }
+    if (ch.sea && lvl.sea) { const ph = (now() % 9) / 9; ch.sea.g.gain.setTargetAtTime(.18 + .5 * Math.pow(Math.sin(ph * Math.PI), 2), now(), .5); }
+    if (ch.pad && lvl.pad && Math.random() < .012) setChord();
+  }
+  const CHORDS = [[261.6, 329.6, 392, 493.9], [220, 261.6, 329.6, 392], [174.6, 220, 261.6, 329.6], [196, 246.9, 293.7, 349.2]];
+  function setChord() { if (!ch.pad) return; chordI = (chordI + 1) % CHORDS.length; ch.pad.osc.forEach((o, i) => o.frequency.setTargetAtTime(CHORDS[chordI][i] / 2, now(), 1.4)); }
+
+  /* ----- API ----- */
+  return {
+    state: () => !C ? 'off' : C.state === 'running' ? 'on' : 'locked',
+    unlock() { if (!init()) return; if (C.state !== 'running') C.resume().catch(() => {}); },
+    setVol(v, isLite) { lite = !!isLite; const w = Math.max(0, Math.min(1, +v || 0)); vol = w; if (!w && !C) return; if (!init()) return; ramp(M.gain, w * w, .6); if (w && C.state !== 'running') C.resume().catch(() => {}); },
+    /* scene : niveaux 0..1 des sons continus + fréquence (par seconde) des sons ponctuels */
+    scene(s) {
+      if (!init()) return;
+      ['rain', 'wind', 'sea', 'city', 'pad', 'snow', 'drone', 'train'].forEach(k => { const v = +s[k] || 0; lvl[k] = v; if (v || ch[k]) ramp(CH(k).o.gain, k === 'pad' ? v * .08 : k === 'city' ? v * .5 : v * .55, 1.6); });
+      if (s.pad && ch.pad && !chordI) setChord();
+      Object.keys(RATE).forEach(k => RATE[k] = +s['r_' + k] || 0);
+      lvl.drop = s.dropV || 1; lvl.hail = s.hailV || 1; lvl.thunder = s.thunder == null ? 1 : s.thunder;
+    },
+    thunder, one: k => { if (init() && ONE[k]) ONE[k](); },
+    /* bande-son de la cinématique ∞ (≈ 60 s) : renvoie {stop} pour la couper si on passe */
+    inf() { if (!init() || !vol) return null; return infScore(); },
+    nova() { if (!init() || !vol) return null; return novaScore(); },
+    void() { if (!init() || !vol) return null; return voidScore(); },
+    x0big() { if (!init() || !vol) return null; return x0Score(); },
+    tes() { if (!init() || !vol) return null; return tesScore(); },
+    gen(st) { if (!init() || !vol) return null; return genScore(st); },
+    crea() { if (!init() || !vol) return null; return creaScore(); },
+    train() { if (!init() || !vol) return null; return trainScore(); },
+    pres() { if (!init() || !vol) return null; return presScore(); },
+    x0s() { if (!init() || !vol) return null; return x0sScore(); },
+    type: n => { if (!C || !vol || C.state !== 'running' || !RATE.key) return; let at = 0; for (let i = 0; i < Math.min(n, 40); i++) { at += R(.04, .1); tick(R(2400, 4200), 6, .012, .2, R(-.3, .3), at); } }
+  };
+})();
+/* Scène sonore à partir de la météo (utilisé par l'écran et l'admin) */
+function sndScene(k, o) {
+  o = o || {}; const S = o.cfg || {}, hr = o.hour == null ? 12 : o.hour, T = o.T == null ? 15 : o.T, mo = o.month == null ? 6 : o.month, gu = o.gust || 0, st = o.style || '';
+  const s = {};
+  const wet = {drizzle: .22, rain: .55, pour: .95, storm: .8, hail: .65, sleet: .45}[k] || 0;
+  if (S.rain !== false && wet) { s.rain = wet; s.r_drop = wet * 14; s.dropV = .6 + wet * .6; if (k === 'hail') { s.r_hail = 9; s.hailV = 1; } }
+  if (S.wind !== false) { let w = {wind: .75, blizzard: .85, storm: .35, pour: .25, fog: .06}[k] || 0; w = Math.max(w, Math.min(.9, (gu - 25) / 70)); if (w > .03) s.wind = w; if (k === 'snow') s.snow = .35; if (k === 'blizzard') s.snow = .5; }
+  s.thunder = S.thunder === false ? 0 : 1;
+  const calm = !wet && !['wind', 'blizzard', 'snow', 'fog'].includes(k), day = hr >= 6 && hr < 21;
+  if (S.nature !== false && calm) {
+    if (day && T > -2) s.r_bird = (hr < 10 ? .55 : .22) * (k === 'cloudy' ? .5 : 1);
+    if (!day && T >= 13 && mo >= 4 && mo <= 9) s.r_cricket = .9;
+    if (!day && (hr >= 22 || hr < 5)) s.r_owl = .012 + (st === 'spooky' ? .03 : 0);
+  }
+  if (S.style !== false) {
+    const X = {marin: {sea: .7}, cyber: {city: .55, r_siren: .006}, vapor: {pad: 1}, hacker: {r_key: .5}, ukiyo: {r_chime: .14}, spooky: {r_owl: .05}, x0: {drone: 1, r_ping: .025}, nova: {drone: .5, r_ping: .03}, void: {r_chime: .04}, tes: {pad: .7, drone: .3, r_ping: .02}, gen: {pad: .9, r_chime: .03}, crea: {pad: .8, r_chime: .05, r_ping: .015}, train: {train: 1}, pres: {drone: .7, city: .25, r_steps: .004}, x0s: {drone: .6, r_ping: .03}}[st];
+    if (X) Object.keys(X).forEach(q => s[q] = Math.max(s[q] || 0, X[q]));
+  }
+  return s;
+}
+
+let S = norm(JSON.parse(JSON.stringify(DEF)));
+const WT = {
+  text: ['Texte', [['title', 'Titre'], ['text', 'Texte', 'area'], ['big', 'Grande police', 'chk']]],
+  value: ['Valeur (URL)', [['title', 'Titre'], ['url', 'URL (JSON ou texte)'], ['path', 'Chemin JSON'], ['unit', 'Unité'], ['every', 'Rafraîchir (s)']]],
+  image: ['Image', [['title', 'Titre'], ['url', "URL de l'image"]]],
+  clock: ['Horloge', [['title', 'Titre'], ['tz', 'Fuseau horaire']]],
+  count: ['Compte à rebours', [['title', 'Titre'], ['date', 'Date AAAA-MM-JJ HH:MM']]],
+  web: ['Page web (URL)', [['title', 'Titre'], ['url', 'URL de la page (https://…)'], ['every', 'Recharger toutes les (s, 0 = jamais)']]],
+  link: ['Lien (URL)', [['title', 'Titre'], ['text', 'Texte du lien'], ['url', 'URL (https://…)']]]
+};
+const R = (l, h, c = '') => `<div class="row ${c}"><label>${l}</label>${h}</div>`;
+const getK = k => k.split('.').reduce((a, x) => a == null ? a : a[x], S);
+const sel = (k, opts) => `<select data-g="${k}">${opts.map(o => `<option value="${o[0]}" ${String(getK(k)) === String(o[0]) ? 'selected' : ''}>${o[1]}</option>`).join('')}</select>`;
+const num = (k, ex = '') => `<input type="number" data-g="${k}" value="${esc(getK(k))}" ${ex}>`;
+const yn = [[true, 'Oui'], [false, 'Non']];
+
+/* ----- Styles d'interface : galerie ----- */
+const VARIANTS = [['ios-flat', 'iOS épuré'], ['bulles', 'Bulles'], ['cristal', 'Cristal'], ['minimal-ios', 'Minimal (iOS)'], ['hud-cyan', 'HUD Cyan'], ['terminal', 'Terminal vert'], ['crt-ambre', 'CRT ambre'], ['alerte', 'Alerte rouge'], ['cyber-neon', 'Cyber néon'], ['sci-orange', 'Sci-fi orange'], ['sonar', 'Sonar'], ['tron', 'Tron'], ['warp', 'Violet warp'], ['lime', 'Lime acide'], ['militaire', 'Militaire'], ['glace', 'Glace polaire'], ['hologramme', 'Hologramme'], ['furtif', 'Furtif'], ['papier', 'Papier'], ['journal', 'Journal'], ['console', 'Console'], ['vaporwave', 'Vaporwave'], ['synthwave', 'Synthwave'], ['c64', 'Commodore 64'], ['dos', 'DOS bleu'], ['material', 'Material'], ['neumorphisme', 'Neumorphisme'], ['brutaliste', 'Brutaliste'], ['verre-noir', 'Verre noir'], ['verre-clair', 'Verre clair'], ['pilules', 'Pilules'], ['carre', 'Carré net'], ['double', 'Double filet'], ['pointille', 'Pointillé'], ['fil', 'Fil fin'], ['elegant', 'Élégant'], ['luxe', 'Luxe noir et or'], ['ludique', 'Ludique'], ['aurore', 'Aurore'], ['degrades', 'Cartes dégradées'], ['sobre-mono', 'Sobre mono'], ['condense', 'Condensé'], ['serif-doux', 'Serif doux'], ['impact', 'Impact']];
+const PRE = {classic: {now: 'left', days: 'side', hours: 'bottom', size: 'L'}, mirror: {now: 'right', days: 'side', hours: 'bottom', size: 'L'}, center: {now: 'center', days: 'row', hours: 'bottom', size: 'L'}, compact: {now: 'left', days: 'row', hours: 'top', size: 'M'}};
+document.addEventListener('change', e => { const t = e.target; if (t.id !== 'lpre' || !t.value) return; S.layout = Object.assign({}, S.layout, PRE[t.value]); drawForm(); pvSched(); schedSave(); });
+const FXO = [['none', 'Aucun'], ['rain', 'Pluie'], ['storm', 'Pluie + éclairs'], ['drizzle', 'Bruine'], ['sleet', 'Pluie verglaçante'], ['hail', 'Grêle'], ['snow', 'Neige'], ['blizzard', 'Tempête de neige'], ['frost', 'Givre (bords gelés)'], ['fog', 'Brouillard'], ['wind', 'Vent + feuilles'], ['sand', 'Tempête de sable'], ['heat', 'Canicule'], ['sunrays', 'Rayons de soleil'], ['rainbow', 'Arc-en-ciel'], ['stars', 'Étoiles'], ['meteors', 'Étoiles filantes'], ['aurora', 'Aurore boréale'], ['fireflies', 'Lucioles'], ['bubbles', 'Bulles'],
+  ['confetti', 'Confettis'], ['fireworks', "Feux d'artifice"], ['hearts', 'Cœurs'], ['leaves', 'Feuilles'], ['petals', 'Pétales'], ['notes', 'Notes de musique'], ['clovers', 'Trèfles'], ['crepes', 'Crêpes'], ['eggs', 'Œufs de Pâques'], ['halloween', 'Halloween (chauves-souris, fantômes, brume)'], ['bats', 'Chauves-souris'], ['ghosts', 'Fantômes'], ['santa', 'Père Noël + neige'], ['matrix', 'Code Matrix'], ['sparkles', 'Paillettes kawaii'], ['emoji', 'Emoji personnalisés'], ['lucky', 'Jour de chance']];
+const POSO = [['auto', 'Auto'], ['r', 'En haut à droite'], ['c', 'En haut au centre'], ['l', 'En haut à gauche'], ['m', 'Au milieu'], ['h', 'À l\'horizon']];
+const BOLTO = [['auto', 'Auto (si orage)'], ['none', 'Jamais'], ['rare', 'Rares'], ['normal', 'Normaux'], ['often', 'Fréquents']];
+const MPHO = [['', 'Phase réelle'], ['full', 'Pleine lune'], ['half', 'Demi-lune'], ['crescent', 'Croissant']];
+const opt = (cur, list) => list.map(o => `<option value="${o[0]}" ${String(cur) === String(o[0]) ? 'selected' : ''}>${o[1]}</option>`).join('');
+const grad = o => `linear-gradient(${isNaN(+o.ang) ? 90 : +o.ang - 80}deg,${o.c[0]},${o.c[1]},${o.c[2]})`;
+const forceOpts = () => [['auto', 'Automatique (météo + fêtes)']].concat(Object.keys(S.themes).map(k => [k, S.themes[k].name])).concat(S.events.map(e => [e.id, '🎉 ' + e.name]));
+const rng = (at, k, v, a, b, st) => `<div class="rg"><input type="range" ${at} data-k="${k}" min="${a}" max="${b}" step="${st}" value="${v}"><span>${v}</span></div>`;
+const col = (at, k, v) => `<div class="cc"><input type="color" ${at} data-k="${k}" value="${/^#[0-9a-f]{6}$/i.test(v || '') ? v : '#ffffff'}" class="${v ? '' : 'auto'}" title="Couleur personnalisée"><button class="mini" data-clr="1" ${at} data-k="${k}" title="Revenir à la couleur automatique">auto</button></div>`;
+const ADVOPEN = new Set();
+document.addEventListener('toggle', e => { const d = e.target; if (d.classList && d.classList.contains('adv')) d.open ? ADVOPEN.add(d.dataset.key) : ADVOPEN.delete(d.dataset.key); }, true);
+const thFields = (at, o) => `<div class="pv" style="background:${grad(o)}"></div>` +
+  `<div class="row full" title="Couleurs : haut / milieu / bas"><div class="cc">${[0, 1, 2].map(n => `<input type="color" ${at} data-k="c.${n}" value="${o.c[n]}">`).join('')}</div></div>` +
+  R('Effet', `<select ${at} data-k="fx">${opt(o.fx, FXO)}</select>`) +
+  R('Nuages', `<select ${at} data-k="clouds">${opt(o.clouds, [[0, 'Aucun'], [1, 'Peu'], [2, 'Moyen'], [3, 'Beaucoup'], [4, 'Énormément']])}</select>`) +
+  R('Lune', `<select ${at} data-k="moon">${opt(o.moon, yn)}</select>`) + R('Soleil', `<select ${at} data-k="sun">${opt(o.sun, yn)}</select>`) +
+  `<details class="adv" data-key="${esc(at)}" ${ADVOPEN.has(at) ? 'open' : ''}><summary>Réglages avancés</summary><div class="g s">` +
+  R('Effet n°2 (en plus)', `<select ${at} data-k="fx2">${opt(o.fx2, FXO)}</select>`, 'full') +
+  R('Intensité', rng(at, 'dens', o.dens, 0, 3, .1)) + R('Vitesse', rng(at, 'spd', o.spd, .2, 3, .1)) + R('Vent ← →', rng(at, 'wind', o.wind, -5, 5, .5)) + R('Taille', rng(at, 'ps', o.ps, .4, 3, .1)) +
+  R('Couleur des particules', col(at, 'pc', o.pc)) + R('Couleur des nuages', col(at, 'cc', o.cc)) + R('Vitesse des nuages', rng(at, 'cs', o.cs, 0, 4, .1)) +
+  R('Étoiles en plus', `<select ${at} data-k="stars">${opt(o.stars, yn)}</select>`) + R('Éclairs', `<select ${at} data-k="bolt">${opt(o.bolt, BOLTO)}</select>`) +
+  R('Position soleil / lune', `<select ${at} data-k="pos">${opt(o.pos, POSO)}</select>`) + R('Taille de la lune', rng(at, 'mr', o.mr, 14, 80, 1)) + R('Couleur de la lune', col(at, 'mc', o.mc)) + R('Phase de la lune', `<select ${at} data-k="mph">${opt(o.mph, MPHO)}</select>`) +
+  R('Angle du dégradé', rng(at, 'ang', o.ang, 0, 360, 5)) + R('Dégradé animé', `<select ${at} data-k="anim">${opt(o.anim, yn)}</select>`) +
+  R('Emoji qui tombent (effet « Emoji »)', `<input ${at} data-k="emo" value="${esc(o.emo)}" placeholder="🍂🍁🌰">`, 'full') +
+  R('Texte à la place de la description', `<input ${at} data-k="desc" value="${esc(o.desc)}" placeholder="vide = texte automatique du style">`, 'full') +
+  R('Message du bandeau (| pour alterner)', `<input ${at} data-k="msg" value="${esc(o.msg)}" placeholder="ex : Prenez un parapluie ! | Bonne journée">`, 'full') +
+  R('Image de fond (URL)', `<input ${at} data-k="img" value="${esc(o.img)}" placeholder="https://… (vide = dégradé)">`, 'full') + R('Visibilité de l\'image', rng(at, 'imgo', o.imgo, 0, 1, .05)) +
+  '</div></details>';
+function drawStyle() {
+  $('gal').innerHTML = `<button class="hc hcrea ${S.hud === 'crea' ? 'on' : ''}" data-hudcrea="1"><div class="sw"><b>♛</b><i>RÉSERVÉ À L'ADMIN</i></div><div class="nm">♛ Style créateur${S.hud === 'crea' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Le style exclusif de l'admin : introuvable au roll, il réunit les six reliques secrètes autour du cristal du créateur. La plus grosse cinématique de toutes (≈ 65 s).</div></button>` + SIGLIST.map(([id, n, tg, bg, fg, ft, fw, sm]) => `<button class="hc ${S.hud === id ? 'on' : ''}" data-hud="${id}"><div class="sw" style="background:${bg};color:${fg};font-family:${esc(ft)}"><b style="font-weight:${fw}">14°</b><i>${esc(sm)}</i></div><div class="nm">${esc(n)}${S.hud === id ? '<em>✓ actif</em>' : ''}</div><div class="tg">${esc(tg)}</div></button>`).join('') +
+    `<button class="hc hx ${S.hud === 'x0' ? 'on' : ''}" data-hudx="1"><div class="sw"><b>✦</b><i>? ? ?</i></div><div class="nm">✦ Style secret${S.hud === 'x0' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Normalement, on ne l'obtient qu'avec 0,2 % de chance au roll. Clique pour l'activer quand tu veux (attention, spoil !).</div></button>` +
+    `<button class="hc hx hx0s ${S.hud === 'x0s' ? 'on' : ''}" data-hudx0s="1"><div class="sw"><b>✨</b><i>SHINY</i></div><div class="nm">✨ Singularité shiny${S.hud === 'x0s' ? '<em>✓ actif</em>' : ''}</div><div class="tg">La version chromatique : quand la Singularité tombe au roll, 1 chance sur 4096 qu'elle soit shiny (1 sur 2 048 000 au total). Le trou noir se fend en deux et explose en pulsar.</div></button>` +
+    `<button class="hc hx hinf ${S.hud === 'inf' ? 'on' : ''}" data-hudinf="1"><div class="sw"><b>∞</b><i>? ? ?</i></div><div class="nm">∞ Style infini${S.hud === 'inf' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Le plus rare : 0,1 % au roll, avec une cinématique d'une minute. Clique pour l'activer quand tu veux (attention, spoil !).</div></button>` +
+    `<button class="hc hx hvoid ${S.hud === 'void' ? 'on' : ''}" data-hudvoid="1"><div class="sw"><b>∅</b><i>· · ·</i></div><div class="nm">∅ Style néant${S.hud === 'void' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Ultra rare : 0,01 % au roll (1 chance sur 10 000), avec sa cinématique. Clique pour l'activer quand tu veux (attention, spoil !).</div></button>` +
+    `<button class="hc hx htrain ${S.hud === 'train' ? 'on' : ''}" data-hudtrain="1"><div class="sw"><b>🎫</b><i>1 / 10 000 000</i></div><div class="nm">🎫 Style billet d'or${S.hud === 'train' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Le plus rare de TOUS : 1 chance sur 10 000 000 au roll, avec sa cinématique (≈ 44 s). Clique pour l'activer quand tu veux (attention, spoil !).</div></button>` +
+    `<button class="hc hx hgen ${S.hud === 'gen' ? 'on' : ''}" data-hudgen="1"><div class="sw"><b>✺</b><i>1 / 1 000 000</i></div><div class="nm">✺ Style légendaire${S.hud === 'gen' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Ultra rare : 1 chance sur 1 000 000 au roll, avec une très longue cinématique (≈ 70 s). Clique pour l'activer quand tu veux (attention, énorme spoil !).</div></button>` +
+    `<button class="hc hx htes ${S.hud === 'tes' ? 'on' : ''}" data-hudtes="1"><div class="sw"><b>◈</b><i>? ? ? ?</i></div><div class="nm">◈ Style ultime${S.hud === 'tes' ? '<em>✓ actif</em>' : ''}</div><div class="tg">Hyper rare : 0,001 % au roll (1 chance sur 100 000), avec une énorme cinématique. Clique pour l'activer quand tu veux (attention, gros spoil !).</div></button>` +
+    `<button class="hc hxr ${S.hud === 'xr' ? 'on' : ''}" data-hudxr="1"><div class="sw"><b>🔒</b><i>ACCÈS RESTREINT</i></div><div class="nm">🔒 Accès restreint${S.hud === 'xr' ? '<em>✓ actif</em>' : ''}</div><div class="tg">★ Ultra légendaire. Se déverrouille uniquement avec ton code${S.xlock ? '' : ' (tu le choisis au premier clic)'}. Code oublié : supprime « xlock » dans l'onglet Sauvegarde.</div></button>`;
+  $('vars').innerHTML = VARIANTS.map(([id, n]) => `<button class="btn xs ${S.hud === id ? '' : 's'}" data-hud="${id}">${esc(n)}</button>`).join('');
+  $('rollf').innerHTML = R('Roll automatique', sel('roll.mode', [['off', 'Désactivé (seulement à la demande)'], ['boot', 'À chaque démarrage'], ['daily', 'Une fois par jour'], ['interval', 'Toutes les N heures']])) + R('Heure (une fois par jour)', sel('roll.hour', Array.from({length: 24}, (_, h) => [h, h + ' h']))) + R('Toutes les (heures)', num('roll.every', 'min="1" max="168"')) + R('Triple tape sur le nom = roll', sel('roll.tap', yn)) +
+    `<div class="row full"><label>Chances</label><div style="font-size:12px;display:flex;flex-wrap:wrap;gap:10px">${RARITY.map(r => `<span style="color:${r[2]};font-weight:700">■ ${r[1]} ${String(r[3]).replace('.', ',')} %</span>`).join('')}</div></div>`;
+  const pool = S.roll.pool || [];
+  $('rpool').innerHTML = SIGLIST.filter(x => x[0] !== 'pres').map(([id, n]) => { const q = RARITY.find(r => r[0] === (RAR[id] || 'blue')); return `<label style="--rc:${q[2]}" title="${esc(q[1])}"><input type="checkbox" data-pool="${id}" ${!pool.length || pool.includes(id) ? 'checked' : ''}>${esc(n)}</label>`; }).join('');
+  $('app').innerHTML = R('Textes d\'ambiance (phrases du style)', sel('voice', [[true, 'Activés'], [false, 'Désactivés (texte météo simple)']])) +
+    R('Style festif automatique', sel('festHud', [['all', 'Oui, remplace le style'], [true, 'Seulement si style iOS'], [false, 'Non']])) +
+    R('Code OACI (style Cockpit)', `<input data-g="icao" value="${esc(S.icao)}" maxlength="4" style="text-transform:uppercase">`);
+}
+function drawThemes() {
+  $('thm').innerHTML = Object.keys(S.themes).map(k => `<div class="w"><div class="wh"><input class="nm" data-th="${k}" data-k="name" value="${esc(S.themes[k].name)}"><button class="mini ${pvForce === k ? 'on' : ''}" data-eye="${k}" title="Voir dans l'aperçu">👁</button></div><div class="g s">${thFields(`data-th="${k}"`, S.themes[k])}</div></div>`).join('');
+  $('evl').innerHTML = S.events.map((e, i) => `<div class="w"><div class="wh"><input class="nm" data-ev="${i}" data-k="name" value="${esc(e.name)}"><button class="mini ${pvForce === e.id ? 'on' : ''}" data-eye="${esc(e.id)}" title="Voir dans l'aperçu">👁</button><button class="mini" style="color:var(--bad)" data-ea="del" data-i="${i}">Supprimer</button></div><div class="g s">` +
+    R('Active', `<select data-ev="${i}" data-k="on">${opt(e.on, yn)}</select>`) + R('Début (MM-JJ)', `<input data-ev="${i}" data-k="from" value="${esc(e.from)}">`) + R('Fin (MM-JJ)', `<input data-ev="${i}" data-k="to" value="${esc(e.to)}">`) +
+    R('Message affiché (| pour alterner)', `<input data-ev="${i}" data-k="msg" value="${esc(e.msg)}">`, 'full') + thFields(`data-ev="${i}"`, e) + '</div></div>').join('');
+}
+/* ----- Surprises (easter eggs) ----- */
+const EGGLIST = [
+  ['halloween', '🎃 Halloween', 'Pendant la fête : fantômes qui surgissent derrière les cadres, araignées qui descendent, nuées de chauves-souris, chat noir, citrouilles à toucher (pluie de bonbons !) et toiles d\'araignée. Le 31 au soir, c\'est encore plus fréquent. Avec « Style festif », l\'écran passe en Manoir hanté.', [['halloween', 'Démo'], ['ghost', 'Fantôme'], ['spider', 'Araignée'], ['bats', 'Chauves-souris'], ['cat', 'Chat noir'], ['pumpkin', 'Bonbons']]],
+  ['fri13', '🐈‍⬛ Vendredi 13', 'Un chat noir traverse l\'écran de temps en temps (et s\'il fait 13°, il passe à coup sûr).', [['cat', 'Chat noir']]],
+  ['newyear', '🎆 Nouvel An', 'Compte à rebours géant à 23:59:50 le 31 décembre, puis pluie de feux d\'artifice.', [['countdown', 'Compte à rebours']]],
+  ['april', '🐟 1er avril', 'Un poisson en papier est collé sur un cadre (on peut le toucher) et de fausses prévisions apparaissent.', [['fish', 'Fausse prévision']]],
+  ['starwars', '✨ 4 mai', 'Saut en hyperespace de temps en temps.', [['hyper', 'Hyperespace']]],
+  ['xmas', '🎄 Noël', 'Neige sur le haut des cadres et guirlande lumineuse, quel que soit le style.', []],
+  ['easter', '🐣 Pâques', '3 œufs sont cachés sur les cadres : touche-les pour les trouver !', []],
+  ['konami', '🕹 Code secret', 'Au clavier ↑ ↑ ↓ ↓ ← → ← → B A, ou 7 tapes rapides sur la température : mode disco !', [['disco', 'Mode disco']]],
+  ['ufo', '🛸 OVNI', 'Très rare, seulement la nuit : une soucoupe traverse le ciel et allume son rayon.', [['ufo', 'OVNI']]],
+  ['wolf', '🐺 Loup-garou', 'Les nuits de pleine lune, un loup hurle devant la lune.', [['wolf', 'Loup-garou']]],
+  ['bzh', '🌧 Crachin breton', 'En Bretagne, la bruine devient « Crachin breton » et les averses « Il fait beau plusieurs fois par jour ».', []],
+  ['snow1', '❄ Première neige', 'Un message spécial s\'affiche à la première neige de la saison.', [['snow1', 'Message']]],
+  ['nums', '🔢 Nombres rigolos', 'Petits messages quand il fait 42°, 37°, 0° ou -1°.', []],
+  ['lcd', '💡 Rétroéclairage', 'Avec le style « Station LCD », toucher LIGHT allume l\'écran comme une vraie montre.', [['light', 'Allumer']]],
+  [null, '🍀 Jour de chance', 'Une chance sur 100 000 à chaque actualisation : la météo devient dorée toute la journée. Toujours actif.', []],
+  [null, '🖥 Petits bonus de style', 'Démarrage BIOS du Terminal rétro, virevoltants du Far West quand il y a du vent…', [['boot', 'Démarrage BIOS'], ['tumble', 'Virevoltant'], ['impact', 'Impact manga']]],
+  [null, '✨ Singularité shiny', 'Rejoue la cinématique de la version shiny : le trou noir se fend en deux et explose en pulsar. Deux touchers rapides pour la passer.', [['x0scin', 'Cinématique ✨']]],
+  [null, '👁 La Présence', 'Rejoue l\'animation d\'activation du style qui fait peur (avec le jumpscare !). Deux touchers rapides pour la passer.', [['prescin', 'Animation 👁']]],
+  [null, '🚂 Style billet d\'or', 'Rejoue la cinématique (≈ 44 s) du style à 1 chance sur 10 000 000 (attention, spoil !). Deux touchers rapides pour la passer.', [['traincin', 'Cinématique 🚂']]],
+  [null, '♛ Style créateur', 'Rejoue la cinématique (≈ 65 s) du style exclusif de l\'admin : accès administrateur, code source, les six reliques, le cristal. Deux touchers rapides pour la passer.', [['creacin', 'Cinématique ♛']]],
+  [null, '✺ Style légendaire', 'Rejoue la très longue cinématique (≈ 70 s) du style à 1 chance sur 1 000 000 (attention, énorme spoil !). Deux touchers rapides pour la passer.', [['gencin', 'Cinématique ✺']]],
+  [null, '◈ Style ultime', 'Rejoue la cinématique (≈ 43 s) du style à 1 chance sur 100 000 (attention, gros spoil !). Deux touchers rapides pour la passer. Sur l\'écran, touche l\'objet pour le faire réagir.', [['tescin', 'Cinématique ◈']]],
+  [null, '∅ Style néant', 'Rejoue la cinématique du style le plus rare (attention, spoil !). Deux touchers rapides pour la passer.', [['voidcin', 'Cinématique ∅']]],
+  [null, '✸ Supernova', 'Rejoue l\'animation du style Supernova (≈ 21 s) : coupure de l\'écran, l\'étoile qui meurt, fissures, explosion en morceaux. Deux touchers rapides pour la passer.', [['novacin', 'Explosion supernova']]],
+  [null, '∞ Style infini', 'Rejoue la cinématique d\'une minute du style infini (attention, spoil !). Deux touchers rapides pour la passer.', [['infcin', 'Cinématique ∞ (1 min)']]],
+  [null, '🔒 Accès restreint', 'Rejoue l\'ouverture du coffre-fort du style à code.', [['xrvault', 'Coffre-fort']]],
+  [null, '✦ Style secret', 'Rejoue la grande cinématique (≈ 30 s) du style secret (attention, spoil !). Deux touchers rapides pour la passer. Elle se joue aussi toute seule quand on l\'obtient au roll ou quand on l\'active.', [['x0cin', 'Animation secrète']]]
+];
+function drawEggs() {
+  $('egl').innerHTML = EGGLIST.map(([k, t, d, tests]) => `<div class="eg"><div class="t"><span>${t}</span>${k ? `<label class="sw2" title="Activer / désactiver"><input type="checkbox" data-egg="${k}" ${S.eggs[k] ? 'checked' : ''}><i></i></label>` : ''}</div><p>${esc(d)}</p>${tests.length ? `<div class="b">${tests.map(([e, l]) => `<button class="btn s xs" data-test="${e}">▶ ${esc(l)}</button>`).join('')}</div>` : ''}</div>`).join('');
+}
+function drawForm() {
+  $('gen').innerHTML = R('Ville et position', sel('geo', [[true, 'Automatique (l\'écran détecte sa ville)'], [false, 'Manuelle (latitude / longitude ci-dessous)']]), 'full') + `<div class="row full"><span class="foot" id="geoinfo">${esc(geoTxt())}</span></div>` + R('Nom affiché', `<input data-g="name" value="${esc(S.name)}">`) + R('Latitude', num('lat', 'step="0.0001"' + (S.geo !== false ? ' disabled' : ''))) + R('Longitude', num('lon', 'step="0.0001"' + (S.geo !== false ? ' disabled' : ''))) + R('Météo : rafraîchir (min)', num('refresh', 'min="2"')) + R('Zoom du radar (5-10)', num('zoom', 'min="5" max="10" step="0.5"')) + R('Unité de température', sel('unit', [['C', '°C'], ['F', '°F']]));
+  $('aff').innerHTML = R('Page au démarrage', sel('view', [['meteo', 'Météo'], ['radar', 'Radar'], ['infos', 'Infos']])) +
+    R('Fond animé', sel('force', forceOpts())) + R('Thèmes de fête automatiques', sel('festAuto', yn)) +
+    R('Onglet Radar', sel('tabs.radar', [[true, 'Visible'], [false, 'Masqué']])) + R('Onglet Infos', sel('tabs.infos', [[true, 'Visible'], [false, 'Masqué']])) +
+    R('Radar : pluie au démarrage', sel('rain', yn)) + R('Radar : orages au démarrage', sel('bolt', yn)) +
+    R('Mode léger (Raspberry Pi)', sel('lite', [[true, 'Activé'], [false, 'Désactivé']])) + R('Radar : nombre d\'images', sel('radarQ', [[5, '5 (léger)'], [8, '8 (normal)'], [12, '12 (complet)']])) +
+    R('Bandeau défilant', sel('tickerOn', [[true, 'Activé'], [false, 'Désactivé']])) + `<div class="row col"><label>Texte du bandeau</label><textarea data-g="ticker" rows="2">${esc(S.ticker)}</textarea></div>`;
+  $('lay').innerHTML = R('Disposition rapide', `<select id="lpre"><option value="">Choisir…</option><option value="classic">Classique</option><option value="mirror">Inversée</option><option value="center">Centrée</option><option value="compact">Compacte</option></select>`) + R('Température', sel('layout.now', [['left', 'À gauche'], ['center', 'Au centre'], ['right', 'À droite']])) + R('Taille des degrés', sel('layout.size', [['S', 'Petite'], ['M', 'Moyenne'], ['L', 'Grande'], ['XL', 'Géante']])) + R('Jours suivants', sel('layout.days', [['side', 'En colonne'], ['row', 'En ligne']])) + R('Prochaines heures', sel('layout.hours', [['bottom', 'En bas'], ['top', 'En haut']])) +
+    R('Nom onglet 1', `<input data-g="labels.meteo" value="${esc(S.labels.meteo)}">`) + R('Nom onglet 2', `<input data-g="labels.radar" value="${esc(S.labels.radar)}">`) + R('Nom onglet 3', `<input data-g="labels.infos" value="${esc(S.labels.infos)}">`) +
+    R('Afficher la date et l\'heure', sel('show.date', yn)) + R('Afficher les détails (vent…)', sel('show.details', yn)) + R('Afficher les prochaines heures', sel('show.hours', yn)) + R('Afficher les 5 jours', sel('show.days', yn)) + R('Qualité de l\'air', sel('show.air', yn)) + R('Pollens', sel('show.pollen', yn));
+  $('wxc').innerHTML = R('Lever / coucher du soleil', sel('wx.golden', yn)) + R('Gel (≤ 0°)', sel('wx.frost', yn)) + R('Pleine lune', sel('wx.fullmoon', yn)) + R('Nuit nuageuse', sel('wx.cloudnight', yn)) + R('Arc-en-ciel après la pluie', sel('wx.rainbow', yn)) +
+    R('Canicule à partir de (°C)', num('wx.heat', 'min="20" max="50"')) + R('Vent fort : rafales (km/h)', num('wx.windG', 'min="30" max="150"')) + R('Tempête de neige : rafales (km/h)', num('wx.blizG', 'min="20" max="150"'));
+  const hrs = Array.from({length: 24}, (_, h) => [h, h + ' h']);
+  $('bootf').innerHTML = R('Animation de démarrage', sel('boot.on', [[true, 'Activée'], [false, 'Désactivée']])) + R('Style', sel('boot.style', [['linux', 'Linux (GRUB, messages du noyau, logo, connexion)'], ['azure', 'Cinématique (particules et logo)']])) + R('Petit texte au-dessus', `<input data-g="boot.sub" value="${esc(S.boot.sub)}" maxlength="40">`) + R('Grand titre', `<input data-g="boot.title" value="${esc(S.boot.title)}" maxlength="24" style="text-transform:uppercase">`, 'full');
+  $('slp').innerHTML = R('Mode veille', sel('night.on', [[true, 'Activé'], [false, 'Désactivé']])) + R('Affichage', sel('night.mode', [['clock', 'Horloge sur fond noir'], ['dim', 'Écran assombri']])) +
+    R('De', sel('night.from', hrs)) + R('À', sel('night.to', hrs)) + R('Luminosité', rngG('night.lum', .05, 1, .05)) + R('Réveil au toucher (1 min)', sel('night.wake', yn));
+  drawW(); drawStyle(); drawThemes(); drawEggs(); drawAmb();
+}
+function drawW() {
+  $('wl').innerHTML = S.widgets.map((w, i) => `<div class="w"><div class="wh"><span>${WT[w.t][0]}</span><button class="mini" data-a="up" data-i="${i}">↑</button><button class="mini" data-a="dn" data-i="${i}">↓</button><button class="mini" style="color:var(--bad)" data-a="del" data-i="${i}">Supprimer</button></div><div class="g s">` +
+    WT[w.t][1].map(([k, l, ty]) => ty === 'area' ? R(l, `<textarea data-w="${i}" data-k="${k}" rows="2">${esc(w[k])}</textarea>`, 'full') : ty === 'chk' ? R(l, `<input type="checkbox" data-w="${i}" data-k="${k}" ${w[k] ? 'checked' : ''}>`) : R(l, `<input data-w="${i}" data-k="${k}" value="${esc(w[k])}">`, ['title', 'url', 'text'].includes(k) ? 'full' : '')).join('') +
+    R('Largeur', `<select data-w="${i}" data-k="w">${opt(w.w || 1, [[1, '1 colonne'], [2, '2 colonnes'], [3, '3 colonnes']])}</select>`) + R('Hauteur', `<select data-w="${i}" data-k="h">${opt(w.h || 1, [[1, '1 ligne'], [2, '2 lignes'], [3, '3 lignes']])}</select>`) + '</div></div>').join('');
+}
+const thObj = t => t.dataset.th ? S.themes[t.dataset.th] : S.events[+t.dataset.ev];
+document.addEventListener('input', e => {
+  const t = e.target; if (!t.closest('main')) return; let v = t.type === 'checkbox' ? t.checked : t.value; if (v === 'true') v = true; if (v === 'false') v = false;
+  if (t.type === 'range') { v = +v; const s = t.nextElementSibling; if (s) s.textContent = v; }
+  if (t.dataset.egg && t.type === 'checkbox') { S.eggs[t.dataset.egg] = t.checked; return; }
+  if (t.dataset.g) { const p = t.dataset.g.split('.'); if (p.length === 2) S[p[0]][p[1]] = (t.type === 'number' && v !== '') ? +v : v; else S[p[0]] = (t.type === 'number' && v !== '') ? +v : v; }
+  else if (t.dataset.w) S.widgets[+t.dataset.w][t.dataset.k] = (t.dataset.k === 'w' || t.dataset.k === 'h') ? +v : v;
+  else if (t.dataset.th || t.dataset.ev !== undefined) {
+    const o = thObj(t), p = t.dataset.k.split('.');
+    if (p.length === 2) o[p[0]][+p[1]] = v; else o[p[0]] = p[0] === 'clouds' ? +v : v;
+    if (t.type === 'color') t.classList.remove('auto');
+    const pv = t.closest('.w').querySelector('.pv'); if (pv) pv.style.background = grad(o);
+  }
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.ea === 'del') { if (!confirm('Supprimer « ' + S.events[+t.dataset.i].name + ' » ?')) return; S.events.splice(+t.dataset.i, 1); drawForm(); schedSave(); }
+  else if (t.dataset.hud) { S.hud = t.dataset.hud; drawStyle(); pvSched(); schedSave(); }
+  else if (t.dataset.clr) { const o = thObj(t); o[t.dataset.k] = ''; const c = t.previousElementSibling; if (c) c.classList.add('auto'); pvSched(); schedSave(); }
+  else if (t.dataset.eye !== undefined) { pvForce = pvForce === t.dataset.eye ? '' : t.dataset.eye; drawThemes(); showDock(true); pvLast(); pvSched(); }
+  else if (t.dataset.test) {
+    const egg = t.dataset.test;
+    if ($('eggto').value === 'scr') { S.fire = {id: Date.now(), egg}; push('Surprise envoyée à l\'écran'); }
+    else { showDock(true); setTimeout(() => pvEgg(egg), PVF.some(P => P.loaded) ? 0 : 2500); }
+  }
+});
+$('eva').onclick = () => { S.events.push(Object.assign({}, TADV, {id: 'ev' + Date.now(), name: 'Mon événement', from: '01-01', to: '01-01', on: true, c: ['#2b0a4a', '#7a1fa2', '#ff6fb1'], fx: 'confetti', clouds: 0, moon: false, msg: '🎉 Mon message'})); drawForm(); schedSave(); };
+
+/* ----- Enregistrement automatique ----- */
+let saveT;
+const schedSave = () => { clearTimeout(saveT); status('Modification…', null); saveT = setTimeout(() => { try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {} push('Enregistré'); }, 700); };
+document.addEventListener('change', e => { const d = e.target.dataset; if (e.target.closest('main') && (d.g || d.w || d.th || d.ev !== undefined || d.egg)) schedSave(); });
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.dataset.a) { const i = +t.dataset.i, W = S.widgets; if (t.dataset.a === 'del') W.splice(i, 1); else { const j = t.dataset.a === 'up' ? i - 1 : i + 1; if (j >= 0 && j < W.length) [W[i], W[j]] = [W[j], W[i]]; } drawW(); schedSave(); }
+});
+$('wa').onclick = () => { const ty = $('nw').value; S.widgets.push({t: ty, title: WT[ty][0], text: '', url: '', path: '', unit: '', every: 60, tz: 'Europe/Paris', date: '', big: false, w: 1, h: 1}); drawW(); schedSave(); };
+
+/* ----- Aperçu : grand (onglet Aperçu) + flottant ----- */
+var pvForce = '', pvT;
+const PVF = [{f: 'pvf', box: 'pvbox', loaded: false, last: ''}, {f: 'pvd', box: 'dbox', loaded: false, last: ''}];
+function pvUrl() { const u = ($('pvu').value || '').trim() || 'index.html'; return u + (u.includes('?') ? '&' : '?') + 'preview=1'; }
+function ensurePv(i) { const P = PVF[i], f = $(P.f); if (!P.loaded) { P.loaded = true; f.onload = () => { P.last = ''; pvPost(); }; f.src = pvUrl(); } fitPv(); pvPost(); }
+function fitPv() { PVF.forEach(P => { const k = $(P.box).clientWidth / 800; if (k > 0) $(P.f).style.transform = 'scale(' + k + ')'; }); }
+var pvSleep = false;
+function pvPayload() { const c = JSON.parse(JSON.stringify(S)); if (pvForce) c.force = pvForce; if (pvSleep) c.sleepPv = 1; return c; }
+function pvLast() { PVF.forEach(P => P.last = ''); const n = pvForce && (S.themes[pvForce] ? S.themes[pvForce].name : (S.events.find(e => e.id === pvForce) || {}).name); $('pvforce').textContent = n ? '👁 Aperçu forcé : ' + n + ' (non enregistré)' : ''; $('pvforce').classList.toggle('on', !!n); }
+function pvPost() { const j = JSON.stringify(pvPayload()); PVF.forEach(P => { if (!P.loaded) return; const w = $(P.f).contentWindow; if (!w || j === P.last) return; P.last = j; w.postMessage({type: 'preview-config', cfg: JSON.parse(j)}, '*'); }); }
+function pvEgg(egg) { PVF.forEach(P => { const w = P.loaded && $(P.f).contentWindow; if (w) w.postMessage({type: 'preview-egg', egg}, '*'); }); }
+function pvSched() { clearTimeout(pvT); pvT = setTimeout(pvPost, 250); }
+addEventListener('resize', fitPv);
+['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, pvSched));
+try { $('pvu').value = localStorage.getItem('adminPv') || ''; } catch (e) {}
+$('pvu').onchange = () => { try { localStorage.setItem('adminPv', $('pvu').value); } catch (e) {} PVF.forEach(P => P.loaded = false); ensurePv(0); if ($('dock').classList.contains('on')) ensurePv(1); };
+let dockOn = true; try { dockOn = localStorage.getItem('adminDock') !== '0'; } catch (e) {}
+const DOCKP = ['display', 'style', 'themes', 'events', 'eggs', 'amb'];
+let curPage = 'screen';
+function showDock(force) { if (force && !dockOn) { dockOn = true; try { localStorage.setItem('adminDock', '1'); } catch (e) {} } const on = dockOn && DOCKP.includes(curPage); $('dock').classList.toggle('on', on); document.querySelector('main').classList.toggle('dock', on); if (on) ensurePv(1); }
+$('dockb').onclick = () => { dockOn = !dockOn; try { localStorage.setItem('adminDock', dockOn ? '1' : '0'); } catch (e) {} showDock(); };
+$('dockx').onclick = () => { dockOn = false; try { localStorage.setItem('adminDock', '0'); } catch (e) {} showDock(); };
+function go(p) { curPage = p; document.querySelectorAll('.pg').forEach(e => e.classList.toggle('on', e.dataset.p === p)); document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === p)); try { localStorage.setItem('adminTab', p); } catch (e) {} if (p === 'preview') ensurePv(0); showDock(); }
+document.addEventListener('click', e => { if (e.target.dataset.go) go(e.target.dataset.go); });
+let tab0 = 'screen'; try { tab0 = localStorage.getItem('adminTab') || 'screen'; } catch (e) {}
+go(document.querySelector(`.pg[data-p="${tab0}"]`) ? tab0 : 'screen');
+
+/* ----- Sons d'ambiance + mascotte ----- */
+const rngG = (k, a, b, st) => `<div class="rg"><input type="range" data-g="${k}" min="${a}" max="${b}" step="${st}" value="${esc(getK(k))}"><span>${esc(getK(k))}</span></div>`;
+const SNDT = [['rain', '🌧 Pluie'], ['pour', '🌊 Averse'], ['storm', '⛈ Orage'], ['hail', '🧊 Grêle'], ['wind', '💨 Vent'], ['blizzard', '🌨 Tempête de neige'], ['birds', '🐦 Matin'], ['night', '🦗 Nuit d\'été'], ['owl', '🦉 Chouette'], ['marin', '🌊 Vagues'], ['cyber', '🌃 Ville'], ['vapor', '🎹 Vaporwave'], ['hacker', '⌨ Clavier'], ['ukiyo', '🎐 Carillon'], ['stop', '■ Stop']];
+function drawAmb() {
+  const hrs = Array.from({length: 24}, (_, h) => [h, h + ' h']);
+  $('sndf').innerHTML = R('Sons d\'ambiance', sel('snd.on', [[true, 'Activés'], [false, 'Désactivés']])) + R('Volume', rngG('snd.vol', 0, 100, 5)) +
+    R('Pluie, gouttes et grêle', sel('snd.rain', yn)) + R('Vent', sel('snd.wind', yn)) + R('Tonnerre (avec les éclairs)', sel('snd.thunder', yn)) +
+    R('Nature (oiseaux, grillons, chouette)', sel('snd.nature', yn)) + R('Ambiance du style', sel('snd.style', yn)) +
+    R('Heures calmes', sel('snd.quiet', [['off', 'Non'], ['low', 'Son réduit'], ['mute', 'Silence']])) + R('De', sel('snd.qf', hrs)) + R('À', sel('snd.qt', hrs));
+  $('sndt').innerHTML = SNDT.map(([k, l]) => `<button class="btn ${k === 'stop' ? '' : 's'} xs" data-snd="${k}">${k === 'stop' ? '' : '▶ '}${esc(l)}</button>`).join('');
+  $('mscf').innerHTML = R('Mascotte', sel('masc.on', [[true, 'Activée'], [false, 'Désactivée']])) +
+    R('Mouvement', sel('masc.mode', [['walk', 'Traverse l\'écran en marchant'], ['fly', 'Vole dans le ciel'], ['bounce', 'Rebondit partout'], ['float', 'Flotte dans un coin'], ['peek', 'Surgit du bas de l\'écran']])) +
+    R('Coin (mode « Flotte »)', sel('masc.pos', [['br', 'En bas à droite'], ['bl', 'En bas à gauche'], ['tr', 'En haut à droite'], ['tl', 'En haut à gauche'], ['m', 'Au milieu']])) +
+    R('Passe toutes les (s)', num('masc.every', 'min="3" max="3600"')) + R('Taille', rngG('masc.size', 40, 260, 5)) + R('Vitesse', rngG('masc.spd', .3, 3, .1)) + R('Opacité', rngG('masc.op', .2, 1, .05)) +
+    R('L\'image regarde vers', sel('masc.look', [['r', 'La droite'], ['l', 'La gauche'], ['no', 'Ne jamais retourner']])) +
+    R('Parle de la météo (bulles)', sel('masc.talk', yn)) + R('Petit accessoire météo (☂ 😎 🧣…)', sel('masc.acc', yn)) +
+    R('Lien vers une image (au lieu d\'un fichier)', `<input id="murl" value="${esc(/^data:|^img:/.test(S.masc.src) ? '' : S.masc.src)}" placeholder="https://…/perso.gif">`, 'full') +
+    R('Phrases en plus (| pour séparer)', `<input data-g="masc.say" value="${esc(S.masc.say)}" placeholder="ex : Bonne journée ! | Vive les vacances">`, 'full');
+  $('mthumb').innerHTML = S.masc.src && !/^img:/.test(S.masc.src) ? `<img src="${esc(S.masc.src)}" alt="">` : '<span style="font-size:64px">☁️</span>';
+}
+let sndStopT;
+function sndTest(k) {
+  clearTimeout(sndStopT);
+  if (k === 'stop') { AMB.setVol(0); return; }
+  AMB.unlock(); AMB.setVol(Math.max(.2, (+S.snd.vol || 50) / 100));
+  const X = {cfg: {}, hour: 14, T: 15, month: 6}, sc = {
+    rain: sndScene('rain', X), pour: sndScene('pour', X), storm: sndScene('storm', X), hail: sndScene('hail', X), wind: sndScene('wind', X), blizzard: sndScene('blizzard', X),
+    birds: sndScene('clear', Object.assign({}, X, {hour: 8})), night: sndScene('clearN', Object.assign({}, X, {hour: 22, T: 20, month: 7})), owl: {r_owl: .35},
+    marin: sndScene('cloudy', Object.assign({}, X, {style: 'marin'})), cyber: Object.assign(sndScene('cloudy', Object.assign({}, X, {style: 'cyber'})), {r_siren: .12}), vapor: sndScene('cloudy', Object.assign({}, X, {style: 'vapor'})), hacker: sndScene('cloudy', Object.assign({}, X, {style: 'hacker'})), ukiyo: Object.assign(sndScene('cloudy', Object.assign({}, X, {style: 'ukiyo'})), {r_chime: .6})
+  }[k];
+  if (!sc) return; AMB.scene(sc);
+  if (k === 'storm') { setTimeout(() => AMB.thunder(.9), 600); setTimeout(() => AMB.thunder(.3), 5200); }
+  if (k === 'owl') AMB.one('owl');
+  sndStopT = setTimeout(() => AMB.setVol(0), 10000);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-snd]'); if (b) sndTest(b.dataset.snd); });
+async function mascImg(f) {
+  if (f.type === 'image/gif') {
+    if (f.size > 150000) throw new Error('Ce GIF fait ' + Math.round(f.size / 1000) + ' Ko : le maximum est 150 Ko. Réduis-le (moins d\'images ou plus petit), ou colle plutôt un lien vers l\'image.');
+    return await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => ko(new Error('Fichier illisible')); r.readAsDataURL(f); });
+  }
+  const u = URL.createObjectURL(f), im = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Image illisible')); i.src = u; });
+  const k = Math.min(1, 280 / Math.max(im.width, im.height)), w = Math.max(1, Math.round(im.width * k)), h = Math.max(1, Math.round(im.height * k)), c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); g.drawImage(im, 0, 0, w, h); URL.revokeObjectURL(u);
+  if ($('mcut').checked) cutBg(g, w, h);
+  let d = c.toDataURL('image/webp', .9); if (!/^data:image\/webp/.test(d)) d = c.toDataURL('image/png'); return d;
+}
+/* Détourage : enlève le fond uni en partant des 4 coins (avec un bord adouci) */
+function cutBg(g, w, h) {
+  const D = g.getImageData(0, 0, w, h), p = D.data, C = [0, w - 1, (h - 1) * w, h * w - 1];
+  if (C.filter(i => p[i * 4 + 3] < 20).length >= 3) return;   // déjà transparent
+  const seen = new Uint8Array(w * h), T = 42;
+  C.forEach(c0 => {
+    if (seen[c0] || p[c0 * 4 + 3] < 200) return; const r = p[c0 * 4], gg = p[c0 * 4 + 1], b = p[c0 * 4 + 2], st = [c0];
+    while (st.length) {
+      const i = st.pop(); if (seen[i]) continue; const o = i * 4, d = Math.abs(p[o] - r) + Math.abs(p[o + 1] - gg) + Math.abs(p[o + 2] - b);
+      if (d > T * 1.8) continue; seen[i] = 1;
+      if (d >= T) { p[o + 3] = Math.min(p[o + 3], Math.round(255 * (d - T) / (T * .8))); continue; }
+      p[o + 3] = 0; const x = i % w;
+      if (x > 0) st.push(i - 1); if (x < w - 1) st.push(i + 1); if (i >= w) st.push(i - w); if (i < w * (h - 1)) st.push(i + w);
+    }
+  });
+  g.putImageData(D, 0, 0);
+}
+$('mfile').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; try { status('Préparation de l\'image…', null); S.masc.src = await mascImg(f); S.masc.on = true; drawAmb(); pvSched(); schedSave(); } catch (x) { alert(x.message || x); status('Image refusée', false); } };
+$('mnim').onclick = () => { S.masc.src = ''; S.masc.on = true; drawAmb(); pvSched(); schedSave(); };
+$('mresend').onclick = () => { if (typeof sentImg !== 'undefined') { delete sentImg[code()]; } push('Image renvoyée à l\'écran'); };
+document.addEventListener('change', e => { if (e.target.id === 'murl') { S.masc.src = e.target.value.trim(); if (S.masc.src) S.masc.on = true; drawAmb(); pvSched(); schedSave(); } });
+$('slpv').onclick = () => { pvSleep = !pvSleep; $('slpv').textContent = pvSleep ? '✕ Quitter l\'aperçu du mode veille' : '👁 Voir dans l\'aperçu'; showDock(true); PVF.forEach(P => P.last = ''); pvSched(); };
+document.addEventListener('change', e => { if (!e.target.dataset.pool) return; const all = [...document.querySelectorAll('[data-pool]')], on = all.filter(x => x.checked).map(x => x.dataset.pool); S.roll.pool = on.length === all.length ? [] : on; pvSched(); schedSave(); });
+$('rollscr').onclick = () => { S.fire = {id: Date.now(), egg: 'roll'}; push('Roll envoyé à l\'écran'); };
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudx]'); if (!b) return; if (S.hud !== 'x0' && !confirm('Activer le style secret ? Tu vas le découvrir dans l\'aperçu (spoil !).')) return; S.hud = 'x0'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage (Style › Roll › Désactivé pour le garder)', false), 1500); });
+function geoTxt() { const s = typeof seen !== 'undefined' && typeof code === 'function' && seen[code()]; return S.geo === false ? 'Position fixe : latitude et longitude ci-dessous.' : s && s.city ? '📍 Ville détectée par l\'écran : ' + s.city + ' (elle remplace la partie après le « · » du nom affiché)' : '📍 L\'écran détectera sa ville tout seul (elle remplace la partie après le « · » du nom affiché).'; }
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.g === 'geo') drawForm(); });
+/* 🔒 Accès restreint : code personnel (on ne garde qu'une empreinte du code, jamais le code lui-même) */
+const xrHash = s => 'h' + imgHash('🔒' + String(s).trim().toLowerCase() + '#meteo');
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-hudxr]'); if (!b) return;
+  if (S.hud === 'xr') return;
+  if (!S.xlock) { const c1 = prompt('🔒 Choisis un code secret pour ce style (4 caractères minimum) :'); if (c1 == null) return; if (String(c1).trim().length < 4) { alert('Code trop court (4 caractères minimum).'); return; } const c2 = prompt('Retape le code pour confirmer :'); if (c2 == null) return; if (String(c1).trim() !== String(c2).trim()) { alert('Les deux codes ne correspondent pas.'); return; } S.xlock = xrHash(c1); }
+  else { const c = prompt('🔒 ACCÈS RESTREINT\nEntre ton code :'); if (c == null) return; if (xrHash(c) !== S.xlock) { alert('⛔ Code incorrect.'); return; } }
+  S.hud = 'xr'; drawStyle(); pvSched(); schedSave(); status('🔓 Accès autorisé', true);
+});
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudinf]'); if (!b) return; if (S.hud !== 'inf' && !confirm('Activer le style infini ? Sa cinématique d\'une minute va se jouer (spoil !).')) return; S.hud = 'inf'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudcrea]'); if (!b) return; S.hud = 'crea'; drawStyle(); pvSched(); schedSave(); status('♛ Mode créateur activé', true); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1800); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudx0s]'); if (!b) return; if (S.hud !== 'x0s' && !confirm('Activer la Singularité shiny ? Sa cinématique va se jouer (spoil !).')) return; S.hud = 'x0s'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudtrain]'); if (!b) return; if (S.hud !== 'train' && !confirm('Activer le style billet d\'or (1 sur 10 000 000) ? Sa cinématique va se jouer (spoil !).')) return; S.hud = 'train'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudgen]'); if (!b) return; if (S.hud !== 'gen' && !confirm('Activer le style légendaire (1 sur 1 000 000) ? Sa cinématique de 70 s va se jouer (énorme spoil !).')) return; S.hud = 'gen'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudtes]'); if (!b) return; if (S.hud !== 'tes' && !confirm('Activer le style ultime, le plus rare de tous ? Sa cinématique va se jouer (gros spoil !).')) return; S.hud = 'tes'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-hudvoid]'); if (!b) return; if (S.hud !== 'void' && !confirm('Activer le style néant, le plus rare ? Sa cinématique va se jouer (spoil !).')) return; S.hud = 'void'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
+
+/* ----- Connexion ----- */
+try { const c = JSON.parse(localStorage.getItem('adminConn') || '{}'); $('host').value = c.host || ''; $('code').value = c.code || ''; $('key').value = c.key || ''; } catch (e) {}
+const base = () => { const h = $('host').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, ''); return h ? 'http://' + h : ''; };
+const keep = () => { try { localStorage.setItem('adminConn', JSON.stringify({host: $('host').value, key: $('key').value, code: $('code').value})); } catch (e) {} };
+const status = (m, ok) => { $('st').innerHTML = `<span class="dot ${ok === true ? 'ok' : ok === false ? 'bad' : ''}"></span>${m}`; };
+async function loadHttp() {
+  keep();
+  try {
+    const r = await fetch(base() + '/api/config?t=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw 0;
+    const j = await r.json();
+    if (j && j.v) { S = norm(Object.assign({}, DEF, j)); drawForm(); }
+    $('conn').innerHTML = '<span class="dot ok"></span>Connecté'; status('Écran joignable', true);
+  } catch (e) { $('conn').innerHTML = '<span class="dot bad"></span>Injoignable'; status("Écran injoignable : vérifie l'IP et le Wi-Fi", false); }
+}
+$('test').onclick = load;
+async function scr() {
+  try { const r = await fetch(base() + '/api/clients?t=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw 0; const j = await r.json(); $('scr').textContent = j.count ? j.count + ' (' + j.ips.join(', ') + ')' : 'Aucun'; }
+  catch (e) { if (!screens.length) $('scr').textContent = '–'; }
+}
+setInterval(scr, 5000); setTimeout(scr, 800);
+
+async function pushHttp(label) {
+  keep(); S.v = Date.now(); const body = JSON.stringify(S);
+  try { localStorage.setItem('meteoCfgPush', body); } catch (e) {}   // repli : même navigateur
+  try {
+    const r = await fetch(base() + '/api/config', {method: 'POST', headers: {'X-Key': $('key').value, 'Content-Type': 'text/plain'}, body});
+    if (r.status === 401) { status('Clé d\'accès refusée', false); return; }
+    if (!r.ok) throw 0;
+    status(label + ' · ' + new Date().toLocaleTimeString('fr-FR'), true); $('conn').innerHTML = '<span class="dot ok"></span>Connecté';
+  } catch (e) { status('Envoi impossible (copie locale enregistrée)', false); }
+}
+$('send').onclick = () => push('Envoyé');
+$('sn').onclick = () => { const t = $('nt').value.trim(); if (!t) return; S.notice = {id: Date.now(), text: t, sec: +$('ns').value || 15}; push('Message envoyé'); };
+
+/* ----- Sauvegarde ----- */
+$('exb').onclick = () => { const c = JSON.parse(JSON.stringify(S)); delete c.notice; $('ex').value = JSON.stringify(c, null, 1); };
+$('imb').onclick = () => { try { S = norm(Object.assign({}, DEF, JSON.parse($('ex').value))); drawForm(); status('Importé : pense à envoyer', null); } catch (e) { alert('JSON invalide'); } };
+$('dl').onclick = () => { const c = JSON.parse(JSON.stringify(S)); delete c.notice; const l = document.createElement('a'); l.href = URL.createObjectURL(new Blob([JSON.stringify(c, null, 1)], {type: 'application/json'})); l.download = 'meteo-sauvegarde-' + new Date().toISOString().slice(0, 10) + '.json'; l.click(); status('Sauvegarde téléchargée', true); };
+$('up').onclick = () => $('fl').click();
+$('fl').onchange = async e => { try { S = norm(Object.assign({}, DEF, JSON.parse(await e.target.files[0].text()))); drawForm(); schedSave(); } catch (x) { alert('Fichier invalide'); } e.target.value = ''; };
+$('rst').onclick = () => { if (confirm('Remettre la configuration par défaut (non envoyée) ?')) { S = norm(JSON.parse(JSON.stringify(DEF))); drawForm(); pvSched(); } };
+
+
+/* ----- Appairage direct entre PC (WebRTC via PeerJS) ----- */
+/* ===== Relais web (ntfy.sh) : relie n'importe quels navigateurs / PC, même derrière des pare-feux =====
+   Les messages sont compressés, découpés et publiés sur un « sujet » secret dérivé du code d'appairage. */
+const NTFY = 'https://ntfy.sh/';
+const topic = (code, side) => 'meteohud-' + code + '-' + side;   // s = écran, a = admin
+async function pack(obj) {
+  const j = JSON.stringify(obj);
+  try { if (window.CompressionStream) { const buf = new Uint8Array(await new Response(new Blob([j]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); let b = ''; buf.forEach(x => b += String.fromCharCode(x)); return 'z' + btoa(b); } } catch (e) {}
+  return 'j' + btoa(unescape(encodeURIComponent(j)));
+}
+async function unpack(t) {
+  if (t[0] === 'z') { const bin = atob(t.slice(1)), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text()); }
+  return JSON.parse(decodeURIComponent(escape(atob(t.slice(1)))));
+}
+async function relaySend(top, obj) {
+  const p = await pack(obj), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5), N = 3200, n = Math.ceil(p.length / N);
+  for (let i = 0; i < n; i++) { const r = await fetch(NTFY + top, {method: 'POST', body: id + '.' + i + '.' + n + '.' + p.slice(i * N, (i + 1) * N)}); if (!r.ok) throw new Error('relais ' + r.status); }
+}
+function relaySub(top, since, onObj, onState) {
+  const bufs = {}; let es = new EventSource(NTFY + top + '/sse' + (since ? '?since=' + since : ''));
+  es.onopen = () => onState && onState(true);
+  es.onerror = () => onState && onState(false);   // EventSource se reconnecte tout seul
+  es.onmessage = async ev => {
+    try {
+      const d = JSON.parse(ev.data); if (d.event !== 'message') return;
+      const a = d.message.split('.'), id = a[0], i = +a[1], n = +a[2]; (bufs[id] = bufs[id] || {})[i] = a.slice(3).join('.');
+      if (Object.keys(bufs[id]).length === n) { let t = ''; for (let k = 0; k < n; k++) t += bufs[id][k]; delete bufs[id]; onObj(await unpack(t)); }
+    } catch (e) {}
+  };
+  return {close: () => es.close()};
+}
+let peer, conn;
+const code = () => $('code').value.trim().toLowerCase();
+function p2p() {
+  return new Promise((res, rej) => {
+    const c = code(); if (!c) return rej('nocode'); if (!window.Peer) return rej('nolib');
+    if (conn && conn.open && conn._code === c) return res(conn);
+    try { if (peer) peer.destroy(); } catch (e) {}
+    peer = new Peer(); const t = setTimeout(() => rej('timeout'), 12000);
+    peer.on('error', e => { clearTimeout(t); rej(e.type); });
+    peer.on('open', () => {
+      conn = peer.connect('meteoscr-' + c, {reliable: true}); conn._code = c;
+      conn.on('open', () => { clearTimeout(t); res(conn); });
+      conn.on('data', m => onData(m, c));
+      conn.on('close', () => { $('conn').innerHTML = '<span class="dot bad"></span>Déconnecté'; });
+    });
+  });
+}
+/* ----- Plusieurs écrans ----- */
+var screens = [], confs = {}, seen = {}, shareAll = false, gotCfg = false, ackV = {}, adminSubs = {};
+try { screens = JSON.parse(localStorage.getItem('adminScreens') || '[]'); confs = JSON.parse(localStorage.getItem('adminConfs') || '{}'); shareAll = localStorage.getItem('adminShare') === '1'; } catch (e) {}
+function saveScr() { try { localStorage.setItem('adminScreens', JSON.stringify(screens)); localStorage.setItem('adminConfs', JSON.stringify(confs)); localStorage.setItem('adminShare', shareAll ? '1' : '0'); } catch (e) {} }
+function ensureSubs() { screens.forEach(s => { if (!adminSubs[s.code]) { try { adminSubs[s.code] = relaySub(topic(s.code, 'a'), '', m => onData(m, s.code)); } catch (e) {} } }); }
+/* Diagnostic : l'écran dit quelle version il a et quel style il affiche vraiment */
+const HNAME = id => id === 'x0s' ? '✨ Singularité shiny' : id === 'train' ? '🎫 Style billet d\'or' : id === 'crea' ? '♛ Style créateur' : id === 'gen' ? '✺ Style légendaire' : id === 'tes' ? '◈ Style ultime' : id === 'void' ? '∅ Style néant' : id === 'inf' ? '∞ Style infini' : id === 'xr' ? '🔒 Accès restreint' : id === 'x0' ? '✦ Style secret' : ((SIGLIST.find(x => x[0] === id) || [])[1] || (VARIANTS.find(x => x[0] === id) || [])[1] || id);
+function scrDiag(m, c) {
+  if (!m || !['ack', 'pong', 'config'].includes(m.type)) return;
+  seen[c] = Object.assign(seen[c] || {}, {app: m.app || 0}); if (m.city !== undefined) seen[c].city = m.city;
+  if (c === code() && $('geoinfo')) $('geoinfo').textContent = geoTxt();
+  if (c !== code()) return;
+  if (!m.app || m.app < APPV) { status('⚠ L\'écran utilise une ancienne version : remplace son index.html par le nouveau (sinon les nouveaux styles ne marchent pas)', false); return true; }
+  if (m.hud && m.want && m.hud !== m.want) {
+    const w = m.why || '', why = w.startsWith('fest:') ? `c'est la fête « ${esc(w.slice(5))} » (Style › Options › Style festif automatique)` : w === 'roll' ? 'un roll a choisi un autre style (relance un roll, ou rechoisis ton style)' : w === 'url' ? 'l\'adresse de l\'écran contient ?hud=' : w === 'unknown' ? 'l\'écran ne connaît pas ce style (ancienne version ?)' : 'raison inconnue';
+    status(`⚠ L'écran affiche « ${esc(HNAME(m.hud))} » au lieu de « ${esc(HNAME(m.want))} » : ${why}`, false); return true;
+  }
+}
+function onData(m, c) {
+  if (!m) return; c = c || code(); const diag = scrDiag(m, c);
+  if (m.type === 'config' && m.cfg && m.cfg.v) {
+    seen[c] = {t: Date.now(), name: m.cfg.name};
+    const n = norm(Object.assign({}, DEF, m.cfg));
+    if (c === code()) { gotCfg = true; S = n; confs[c] = JSON.parse(JSON.stringify(n)); drawForm(); $('conn').innerHTML = '<span class="dot ok"></span>Connecté'; if (!diag) status("Config de l'écran chargée", true); pvSched(); }
+    else confs[c] = n;
+    saveScr(); renderScreens();
+  }
+  if (m.type === 'ack') { ackV[c] = m.v; seen[c] = {t: Date.now(), name: (seen[c] || {}).name}; if (c === code() && m.v === S.v && !diag) status('Reçu par l\'écran ✓ · ' + new Date().toLocaleTimeString('fr-FR'), true); renderScreens(); }
+  if (m.type === 'pong') { seen[c] = {t: Date.now(), name: m.name}; renderScreens(); }
+}
+function renderScreens() {
+  const L = $('scrl'); if (!L) return;
+  const now = Date.now(), cur = code(), on = s => seen[s.code] && now - seen[s.code].t < 600000;
+  L.innerHTML = screens.length ? screens.map((s, i) => `<div class="row" style="gap:8px;${s.code === cur ? 'background:rgba(0,122,255,.10)' : ''}"><span class="dot ${on(s) ? 'ok' : ''}" title="${on(s) ? 'en ligne' : 'état inconnu'}"></span>${seen[s.code] && seen[s.code].app !== undefined && seen[s.code].app < APPV ? '<span class="foot" style="color:var(--bad);flex:none">ancienne version</span>' : ''}<input data-sn="${i}" value="${esc(s.name)}" style="text-align:left;min-width:90px"><span style="font:12px monospace;opacity:.65">${esc(s.code)}</span><button class="mini" data-sa="sel" data-i="${i}">${s.code === cur ? 'En cours' : 'Modifier'}</button><button class="mini" data-sa="cp" data-i="${i}">Lien</button><button class="mini" style="color:var(--bad)" data-sa="del" data-i="${i}">✕</button></div>`).join('')
+    : '<div class="row"><span class="foot">Aucun écran : ajoute-en un avec son code.</span></div>';
+  $('scr').textContent = screens.filter(on).length + ' / ' + screens.length;
+}
+function selectScreen(c) {
+  const cur = code(); if (cur) confs[cur] = JSON.parse(JSON.stringify(S));
+  $('code').value = c; keep();
+  if (confs[c]) S = norm(JSON.parse(JSON.stringify(confs[c])));   // sinon : le nouvel écran démarre avec la config actuelle
+  saveScr(); drawForm(); pvSched(); renderScreens(); load();
+}
+document.addEventListener('input', e => { const i = e.target.dataset.sn; if (i !== undefined) { screens[+i].name = e.target.value; saveScr(); } });
+document.addEventListener('click', e => {
+  const t = e.target, i = +t.dataset.i, s = screens[i];
+  if (t.dataset.sa === 'sel') selectScreen(s.code);
+  else if (t.dataset.sa === 'cp') { const u = new URL('index.html', location.href).href + '?code=' + s.code; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => status('Lien copié', true)).catch(() => prompt("Lien de l'écran :", u)); }
+  else if (t.dataset.sa === 'del') {
+    if (!confirm('Retirer « ' + s.name + ' » de la liste ? (l\'écran lui-même n\'est pas modifié)')) return;
+    screens.splice(i, 1); delete confs[s.code]; if (adminSubs[s.code]) { adminSubs[s.code].close(); delete adminSubs[s.code]; }
+    saveScr(); if (s.code === code()) { if (screens.length) selectScreen(screens[0].code); else { $('code').value = ''; keep(); renderScreens(); } } else renderScreens();
+  }
+});
+$('sgen').onclick = () => { $('ncode').value = Array.from({length: 8}, () => 'abcdefghjkmnpqrstuvwxyz23456789'[Math.random() * 31 | 0]).join(''); };
+$('sadd').onclick = () => {
+  const c = $('ncode').value.trim().toLowerCase();
+  if (!/^[a-z0-9-]{4,32}$/.test(c)) { status('Code invalide : 4 à 32 caractères (lettres, chiffres, tiret)', false); return; }
+  if (!screens.some(s => s.code === c)) screens.push({code: c, name: $('nname').value.trim() || 'Écran ' + (screens.length + 1)});
+  $('ncode').value = ''; $('nname').value = ''; saveScr(); ensureSubs(); selectScreen(c);
+};
+$('sall').onchange = e => { shareAll = e.target.checked; saveScr(); if (shareAll) status('Les modifications partiront vers tous les écrans', null); };
+$('sping').onclick = () => { ensureSubs(); screens.forEach(s => relaySend(topic(s.code, 's'), {type: 'ping', t: Date.now()}).catch(() => {})); status('Actualisation de l\'état…', null); setTimeout(renderScreens, 4000); };
+$('spush').onclick = () => {
+  if (!screens.length) return; ensureSubs(); S.v = Date.now();
+  screens.forEach(s => { confs[s.code] = JSON.parse(JSON.stringify(S)); relaySend(topic(s.code, 's'), {type: 'config', cfg: S}).catch(() => {}); });
+  saveScr(); status('Config envoyée à ' + screens.length + ' écran(s)', true);
+};
+const perr = e => e === 'peer-unavailable' ? "Écran introuvable : vérifie le code et que l'écran est ouvert" : e === 'timeout' ? 'Pas de réponse (Internet requis pour la mise en relation)' : 'Connexion impossible (' + e + ')';
+async function load() {
+  keep(); if (!code()) return loadHttp();
+  gotCfg = false; status("Connexion à l'écran…", null); ensureSubs();
+  relaySend(topic(code(), 's'), {type: 'get', t: Date.now()}).catch(() => {});
+  p2p().then(c => c.send({type: 'get'})).catch(e => setTimeout(() => { if (!gotCfg) { $('conn').innerHTML = '<span class="dot bad"></span>Injoignable'; status("Pas de réponse de l'écran : est-il allumé, avec Internet ? (" + perr(e) + ')', false); } }, 7000));
+}
+/* L'image de la mascotte n'est envoyée qu'une fois par écran (ensuite : « img:empreinte ») */
+let sentImg = {}; try { sentImg = JSON.parse(localStorage.getItem('adminImgSent') || '{}'); } catch (e) {}
+function slim(c) { const m = S.masc; if (!m || !/^data:/.test(m.src || '')) return S; const h = imgHash(m.src); return sentImg[c] === h ? Object.assign({}, S, {masc: Object.assign({}, m, {src: 'img:' + h})}) : S; }
+function markImg(c) { const m = S.masc; if (m && /^data:/.test(m.src || '')) { sentImg[c] = imgHash(m.src); try { localStorage.setItem('adminImgSent', JSON.stringify(sentImg)); } catch (e) {} } }
+async function push(label) {
+  if (!code() && !base() && location.protocol === 'file:') { keep(); S.v = Date.now(); try { localStorage.setItem('meteoCfgPush', JSON.stringify(S)); localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {} status('Enregistré sur ce PC · ajoute un écran (code) pour l\'envoyer', null); return; }
+  try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {}
+  if (!code()) return pushHttp(label);
+  keep(); S.v = Date.now(); const c0 = code(); confs[c0] = JSON.parse(JSON.stringify(S)); saveScr();
+  try { localStorage.setItem('meteoCfgPush', JSON.stringify(S)); } catch (e) {}
+  ensureSubs(); status('Envoi en cours…', null);
+  const rs = relaySend(topic(c0, 's'), {type: 'config', cfg: slim(c0)}).then(() => { markImg(c0); return true; }).catch(() => false);
+  const ps = p2p().then(c => { c.send({type: 'config', cfg: S}); return true; }).catch(() => false);
+  let n = 1;
+  if (shareAll) screens.forEach(s => { if (s.code !== c0) { n++; confs[s.code] = JSON.parse(JSON.stringify(S)); relaySend(topic(s.code, 's'), {type: 'config', cfg: slim(s.code)}).then(() => markImg(s.code)).catch(() => {}); } });
+  rs.then(ok => { if (ok) status('Envoyé' + (n > 1 ? ' à ' + n + ' écrans' : '') + ' · en attente de confirmation…', null); });
+  const v = S.v;
+  setTimeout(async () => { if (ackV[c0] !== v) { if (await rs) status("Envoyé · l'écran l'appliquera dès qu'il sera en ligne", true); else if (!(await ps)) status('Envoi impossible : vérifie ta connexion Internet', false); } }, 8000);
+}
+if (!screens.length && code()) screens.push({code: code(), name: 'Écran 1'});
+try { if (code() && confs[code()]) S = norm(JSON.parse(JSON.stringify(confs[code()]))); else { const d = JSON.parse(localStorage.getItem('adminDraft') || 'null'); if (d) S = norm(Object.assign({}, DEF, d)); } } catch (e) {}
+$('sall').checked = shareAll; ensureSubs(); renderScreens();
+drawForm(); status('Enregistrement automatique activé', null); pvSched(); if ($('code').value.trim() || base() || location.protocol.startsWith('http')) load();
+
+/* ===== ♛ Apparence de l'admin : Créateur / Classique ===== */
+(() => {
+  const H = document.documentElement, b = document.getElementById('skinb');
+  const lab = () => { if (b) b.textContent = H.classList.contains('crea') ? '◻ Classique' : '♛ Créateur'; };
+  lab();
+  if (b) b.addEventListener('click', () => { const on = !H.classList.contains('crea'); H.classList.toggle('crea', on); try { localStorage.setItem('adminSkin', on ? 'crea' : 'classic'); } catch (e) {} lab(); if (on) splash(true); });
+  function splash(force) {
+    if (!H.classList.contains('crea')) return;
+    try { if (!force && sessionStorage.getItem('crSplash')) return; sessionStorage.setItem('crSplash', '1'); } catch (e) {}
+    const d = document.createElement('div'); d.id = 'crsplash';
+    d.innerHTML = '<div class="k">♛</div><div class="t">ACCÈS ADMINISTRATEUR</div><div class="l">› mode créateur : tous les pouvoirs</div><div class="bar2"><i></i></div>';
+    document.body.appendChild(d);
+    const go = () => { d.classList.add('out'); setTimeout(() => d.remove(), 800); };
+    d.addEventListener('click', go); setTimeout(go, 2300);
+  }
+  splash(false);
+})();
+</script>
+</body>
+</html>
