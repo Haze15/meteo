@@ -2230,7 +2230,6 @@ svg.seg .off{opacity:.08}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 const $ = id => document.getElementById(id), stage = $('stage');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -2294,7 +2293,7 @@ const DEFEVENTS = [
 const DEFEGGS = {halloween: true, fri13: true, newyear: true, april: true, starwars: true, xmas: true, easter: true, konami: true, bzh: true, ufo: true, wolf: true, snow1: true, nums: true, lcd: true};
 const DEFWX = {golden: true, frost: true, fullmoon: true, cloudnight: true, rainbow: true, heat: 32, windG: 70, blizG: 55};
 /* Version de l'application : l'admin prévient si l'écran a un index.html plus ancien */
-const APPV = 38;
+const APPV = 39;
 const DEFSND = {on: false, vol: 50, rain: true, wind: true, thunder: true, nature: true, style: true, quiet: 'low', qf: 22, qt: 7};
 const DEFMASC = {on: false, src: '', mode: 'walk', pos: 'br', size: 110, spd: 1, every: 40, look: 'r', op: 1, talk: true, acc: true, say: ''};
 /* empreinte d'une image (pour ne pas renvoyer la mascotte à chaque enregistrement) */
@@ -2374,6 +2373,22 @@ const norm = c => {
   c.events.forEach(e => { if (e.id === 'xmas' && e.fx === 'snow') e.fx = 'santa'; });   // migration : le père Noël passe
   return c;
 };
+
+/* ===== Serveur (GitHub) : la config vit dans config.json, sur la branche « config » du dépôt =====
+   L'écran la lit (sans mot de passe) ; seule la page admin, déverrouillée par le mot de passe, peut l'écrire. */
+const GHS = (() => { const h = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i), p = location.pathname.split('/').filter(Boolean); return {o: h ? h[1] : 'Haze15', r: h && p[0] && !/\.html?$/i.test(p[0]) ? p[0] : 'meteo', b: 'config'}; })();
+const GHAPI = 'https://api.github.com/repos/' + GHS.o + '/' + GHS.r;
+const b64u = s => { const b = new TextEncoder().encode(s); let t = ''; for (let i = 0; i < b.length; i += 8192) t += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return btoa(t); };
+const ub64 = s => { const t = atob(s.replace(/\s/g, '')), u = new Uint8Array(t.length); for (let i = 0; i < t.length; i++) u[i] = t.charCodeAt(i); return new TextDecoder().decode(u); };
+/* Lecture d'un fichier du serveur : {text, sha} ; null s'il n'existe pas encore ; exception si le serveur est injoignable */
+async function ghGet(f, tok) {
+  const h = {Accept: 'application/vnd.github+json'}; if (tok) h.Authorization = 'Bearer ' + tok;
+  const r = await fetch(GHAPI + '/contents/' + f + '?ref=' + GHS.b, {cache: 'no-cache', headers: h});
+  if (r.status === 404) return null; if (!r.ok) throw new Error('serveur ' + r.status);
+  const j = await r.json(); let text = j.encoding === 'base64' && j.content ? ub64(j.content) : '';
+  if (!text && j.download_url) text = await (await fetch(j.download_url + '?t=' + Date.now(), {cache: 'no-store'})).text();
+  return {text, sha: j.sha};
+}
 
 
 let cfg;
@@ -6741,13 +6756,15 @@ function ageStrikes() {
 }
 function updAlert() { const now = Date.now(), near = strikes.filter(s => now - s.t < 15 * 60000 && s.d <= 50).map(s => s.d); $('al').textContent = near.length ? `⚡ Foudre à ${Math.round(Math.min(...near))} km` : stormAt ? `⚡ Orage prévu vers ${stormAt}` : ''; }
 
-/* ===== Synchronisation avec la page admin (réseau local) =====
-   L'ESP32 expose GET/POST /api/config. Hors ESP32, repli sur le même navigateur (localStorage). */
+/* ===== Synchronisation : l'écran lit sa config sur le serveur (config.json du dépôt GitHub) =====
+   Rien à appairer : tous les écrans ouverts sur le site suivent la même config. */
+let srvOk = null, srvWait = 0;
 async function sync() {
-  let j = null;
-  try { const r = await fetch(BASE + '/api/config?t=' + Date.now() + '&c=' + CID, {cache: 'no-store'}); if (r.ok) j = await r.json(); } catch (e) {}
-  if (!j || !j.v) { try { j = JSON.parse(localStorage.getItem('meteoCfgPush') || 'null'); } catch (e) {} }
-  applyRemote(j);
+  if (Date.now() < srvWait) return;
+  try {
+    const f = await ghGet('config.json'); srvOk = true;
+    if (f && f.text) applyRemote(JSON.parse(f.text));
+  } catch (e) { srvOk = false; if (/ 40[39]| 429/.test(e.message)) srvWait = Date.now() + 5 * 60000; }   // limite du serveur : on patiente
 }
 /* L'image de la mascotte n'est envoyée qu'une fois : ensuite l'admin envoie seulement « img:empreinte » */
 function mascResolve(j, old) {
@@ -6756,12 +6773,6 @@ function mascResolve(j, old) {
     if (/^data:/.test(m.src)) localStorage.setItem('mascImg', JSON.stringify({h: imgHash(m.src), src: m.src}));
     else if (/^img:/.test(m.src)) { const h = m.src.slice(4), c = JSON.parse(localStorage.getItem('mascImg') || 'null'), o = old && old.masc && old.masc.src; m.src = c && c.h === h ? c.src : o && /^data:/.test(o) && imgHash(o) === h ? o : ''; }
   } catch (e) {}
-}
-/* Ce que l'écran affiche vraiment (pour le diagnostic dans l'admin) */
-function scrInfo() {
-  const want = cfg.hud, hud = HT.id; let why = '';
-  if (hud !== want) { const p = pickTheme(), fe = p && p.ev && FESTHUD[p.ev.id]; why = QS.get('hud') ? 'url' : fe === hud ? 'fest:' + p.ev.name : (typeof rollHud === 'function' && rollHud() === hud) ? 'roll' : !SIG[want] && !HUDS.find(x => x[0] === want) ? 'unknown' : 'other'; }
-  return {app: APPV, hud, want, why, city: typeof GEO !== 'undefined' && GEO && cfg.geo !== false ? GEO.city : ''};
 }
 function applyRemote(j) {
   if (!j || !j.v || +j.v <= +lastV) return;   // ignore les anciennes configs (rejouées par le relais au démarrage)
@@ -6774,63 +6785,6 @@ function applyRemote(j) {
   firstSync = false;
 }
 
-/* ===== Appairage direct entre PC (WebRTC via PeerJS) : aucun serveur à installer =====
-   Cet écran s'enregistre sous le code d'appairage ; la page admin se connecte avec ce code. */
-const CH = 'abcdefghjkmnpqrstuvwxyz23456789';
-let CODE = (new URLSearchParams(location.search).get('code') || localStorage.getItem('pairCode') || '').toLowerCase();
-if (!CODE) CODE = Array.from({length: 8}, () => CH[Math.random() * CH.length | 0]).join('');
-if (!PV) try { localStorage.setItem('pairCode', CODE); } catch (e) {}
-/* ===== Relais web (ntfy.sh) : relie n'importe quels navigateurs / PC, même derrière des pare-feux =====
-   Les messages sont compressés, découpés et publiés sur un « sujet » secret dérivé du code d'appairage. */
-const NTFY = 'https://ntfy.sh/';
-const topic = (code, side) => 'meteohud-' + code + '-' + side;   // s = écran, a = admin
-async function pack(obj) {
-  const j = JSON.stringify(obj);
-  try { if (window.CompressionStream) { const buf = new Uint8Array(await new Response(new Blob([j]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); let b = ''; buf.forEach(x => b += String.fromCharCode(x)); return 'z' + btoa(b); } } catch (e) {}
-  return 'j' + btoa(unescape(encodeURIComponent(j)));
-}
-async function unpack(t) {
-  if (t[0] === 'z') { const bin = atob(t.slice(1)), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text()); }
-  return JSON.parse(decodeURIComponent(escape(atob(t.slice(1)))));
-}
-async function relaySend(top, obj) {
-  const p = await pack(obj), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5), N = 3200, n = Math.ceil(p.length / N);
-  for (let i = 0; i < n; i++) { const r = await fetch(NTFY + top, {method: 'POST', body: id + '.' + i + '.' + n + '.' + p.slice(i * N, (i + 1) * N)}); if (!r.ok) throw new Error('relais ' + r.status); }
-}
-function relaySub(top, since, onObj, onState) {
-  const bufs = {}; let es = new EventSource(NTFY + top + '/sse' + (since ? '?since=' + since : ''));
-  es.onopen = () => onState && onState(true);
-  es.onerror = () => onState && onState(false);   // EventSource se reconnecte tout seul
-  es.onmessage = async ev => {
-    try {
-      const d = JSON.parse(ev.data); if (d.event !== 'message') return;
-      const a = d.message.split('.'), id = a[0], i = +a[1], n = +a[2]; (bufs[id] = bufs[id] || {})[i] = a.slice(3).join('.');
-      if (Object.keys(bufs[id]).length === n) { let t = ''; for (let k = 0; k < n; k++) t += bufs[id][k]; delete bufs[id]; onObj(await unpack(t)); }
-    } catch (e) {}
-  };
-  return {close: () => es.close()};
-}
-let peer, pt, p2pOk = false, relayOk = false;
-const pairTxt = () => 'Code : ' + CODE + '  ·  P2P ' + (p2pOk ? '✓' : '…') + '  ·  relais ' + (relayOk ? '✓' : '…');
-const updPair = () => { const e = $('pair'); if (e.classList.contains('on')) e.textContent = pairTxt(); };
-function showPair(txt, sec) { const e = $('pair'); e.textContent = txt || pairTxt(); e.classList.add('on'); clearTimeout(pt); if (sec) pt = setTimeout(() => e.classList.remove('on'), sec * 1000); }
-$('city').onclick = () => $('pair').classList.contains('on') ? $('pair').classList.remove('on') : showPair();
-function startPeer() {
-  if (!window.Peer) return;
-  peer = new Peer('meteoscr-' + CODE);
-  peer.on('open', () => { p2pOk = true; updPair(); });
-  peer.on('connection', c => {
-    c.on('open', () => showPair('Admin connecté ✓', 6));
-    c.on('data', m => {
-      if (!m) return;
-      if (m.type === 'get') c.send(Object.assign({type: 'config', cfg: cfg}, scrInfo()));
-      else if (m.type === 'config' && m.cfg && m.cfg.v) { applyRemote(m.cfg); setTimeout(() => c.send(Object.assign({type: 'ack', v: m.cfg.v}, scrInfo())), 300); }
-    });
-  });
-  peer.on('disconnected', () => { p2pOk = false; updPair(); });
-  peer.on('disconnected', () => setTimeout(() => { try { peer.reconnect(); } catch (e) {} }, 3000));
-  peer.on('error', e => { if (e.type === 'unavailable-id' || e.type === 'network' || e.type === 'server-error') setTimeout(() => { try { peer.destroy(); } catch (x) {} startPeer(); }, 6000); });
-}
 
 /* ===== Démarrage ===== */
 function fit() { const s = Math.min(innerWidth / 800, innerHeight / 480); stage.style.transform = `translate(${(innerWidth - 800 * s) / 2}px,${(innerHeight - 480 * s) / 2}px) scale(${s})`; }
@@ -6855,24 +6809,7 @@ if (PV) {
   try { parent.postMessage({type: 'preview-ready'}, '*'); } catch (e) {}
 } else {
 connectWS(); setInterval(ageStrikes, 5000);
-startPeer(); showPair(null, 180);
-/* Relais : reçoit la config même si l'écran était éteint (messages conservés 12 h).
-   Au démarrage, le relais renvoie TOUTES les configs des 12 dernières heures : on attend la fin
-   de la rafale et on n'applique que la plus récente (sinon tous les anciens thèmes défilent). */
-let rPend = null, rT = 0;
-function relayCfg(c) {
-  if (!rPend || +c.v > +rPend.v) rPend = c;
-  clearTimeout(rT); rT = setTimeout(() => { const c2 = rPend; rPend = null; const before = lastV; applyRemote(c2); if (lastV !== before) setTimeout(() => relaySend(topic(CODE, 'a'), Object.assign({type: 'ack', v: c2.v}, scrInfo())).catch(() => {}), 300); }, 700);
-}
-try {
-  relaySub(topic(CODE, 's'), '12h', m => {
-    if (!m) return;
-    if (m.type === 'config' && m.cfg && m.cfg.v) relayCfg(m.cfg);
-    else if (m.type === 'get' && Math.abs(Date.now() - m.t) < 300000) relaySend(topic(CODE, 'a'), Object.assign({type: 'config', cfg: cfg}, scrInfo())).catch(() => {});
-    else if (m.type === 'ping' && Math.abs(Date.now() - m.t) < 300000) relaySend(topic(CODE, 'a'), Object.assign({type: 'pong', name: cfg.name, v: lastV}, scrInfo())).catch(() => {});
-  }, ok => { relayOk = ok; updPair(); });
-} catch (e) {}
-sync().then(() => { firstSync = false; }); setInterval(sync, 4000);
+sync().then(() => { firstSync = false; }); setInterval(sync, 20000);
 }
 </script>
 </body>

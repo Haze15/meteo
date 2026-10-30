@@ -187,30 +187,47 @@ html.crea .pg.on{animation:crpg .45s cubic-bezier(.2,.8,.2,1)}
 #crsplash .bar2{width:220px;height:2px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
 #crsplash .bar2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c4a3ff,#8fe9ff,#ffd2ec);animation:crbar 1.4s .5s cubic-bezier(.6,0,.2,1) forwards;box-shadow:0 0 10px #c4a3ff}
 @keyframes crbar{to{width:100%}}
+#lock{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bg)}
+#lock[hidden]{display:none}
+#lockf{width:min(380px,100%);background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+#lockf h2{font-size:19px;margin:0}#lockf p{margin:0 0 4px;color:var(--dim);font-size:14px;line-height:1.45}
+#lockf label{font-size:13px;color:var(--dim);font-weight:600}
+#lockf input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font-size:15px;text-align:left;margin:4px 0 6px}
+#lockf .lk-keep{display:flex;align-items:center;gap:8px;font-weight:500}
+#lockf .lk-k{font-size:30px}#lockf .btn{margin-top:4px}
+#lkerr{color:var(--bad);font-size:13px;min-height:1em}
+#lock [hidden],#lock[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <script>try{if(localStorage.getItem('adminSkin')!=='classic')document.documentElement.classList.add('crea')}catch(e){document.documentElement.classList.add('crea')}</script>
+<div id="lock"><form id="lockf" autocomplete="on">
+  <div class="lk-k">🔒</div><h2>Administration · Météo</h2>
+  <p id="lkmsg">Connexion au serveur…</p>
+  <div id="lksetup" hidden>
+    <label for="lktok">Jeton GitHub (accès au dépôt <b id="lkrepo"></b>)</label><input id="lktok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+  </div>
+  <div id="lkpw" hidden>
+    <input type="text" name="username" value="admin-meteo" autocomplete="username" hidden>
+    <label for="lkp1">Mot de passe</label><input id="lkp1" type="password" autocomplete="current-password">
+    <div id="lkp2w" hidden><label for="lkp2">Encore une fois</label><input id="lkp2" type="password" autocomplete="new-password"></div>
+    <label class="lk-keep"><input type="checkbox" id="lkkeep"> Rester connecté sur cet appareil</label>
+  </div>
+  <button class="btn" id="lkgo" type="submit" hidden>Déverrouiller</button><button class="btn s" id="lkcancel" type="button" hidden>Annuler</button>
+  <div id="lkerr"></div>
+</form></div>
 <header class="top">
   <div class="bar"><h1>Administration · Météo</h1><div id="st"></div><button class="btn s" id="skinb" title="Changer l'apparence de l'admin">♛ Créateur</button><button class="btn s" id="dockb" title="Afficher / masquer l'aperçu flottant">Aperçu flottant</button><button class="btn" id="send">Enregistrer maintenant</button></div>
   <nav id="nav"><button data-go="screen">Écran</button><button data-go="preview">Aperçu</button><button data-go="display">Affichage</button><button data-go="style">Style</button><button data-go="themes">Météos</button><button data-go="events">Fêtes</button><button data-go="eggs">Surprises</button><button data-go="amb">Sons & mascotte</button><button data-go="widgets">Widgets</button><button data-go="backup">Sauvegarde</button></nav>
 </header>
 <main>
   <section class="pg" data-p="screen"><div class="cards">
-    <div class="card"><h3>Mes écrans</h3><div class="g">
-      <div id="scrl"></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap"><input id="ncode" placeholder="Code de l'écran" autocapitalize="off" autocomplete="off" style="text-align:left;min-width:120px"><input id="nname" placeholder="Nom (ex : Salle des profs)" style="text-align:left;min-width:140px"><button class="btn s" id="sgen">Générer un code</button><button class="btn" id="sadd">Ajouter</button></div>
-      <div class="row"><label>Même config sur tous les écrans</label><input type="checkbox" id="sall"></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" id="sping">Actualiser l'état</button><button class="btn s" id="spush">Envoyer cette config à tous</button></div>
-      <div class="foot pad" style="padding-top:10px">Chaque écran a son code (affiché en cliquant sur le nom du lieu, ou imposé par <b>index.html?code=salle1</b>). Un écran par code ; 2 écrans dans le même navigateur doivent avoir 2 codes différents. « Modifier » choisit l'écran dont tu règles la config ; avec « Même config sur tous », tes modifications partent vers tous les écrans (nom et position compris).</div>
-    </div></div>
-    <div class="card"><h3>Écran en cours de modification</h3><div class="g">
-      <div class="row" style="display:none"><input id="code"></div>
-      <div class="row"><label>Adresse (option ESP32)</label><input id="host" placeholder="192.168.1.50 (vide = cette adresse)" autocapitalize="off"></div>
-      <div class="row"><label>Clé (option ESP32)</label><input id="key" type="password" placeholder="définie dans l'ESP32"></div>
-      <div class="row"><label>État</label><span id="conn"><span class="dot"></span>Non testé</span></div>
-      <div class="row"><label>Écrans en ligne</label><span id="scr">–</span></div>
-      <div class="row"><button class="btn s" id="test">Tester et charger la config</button></div>
+    <div class="card"><h3>Serveur</h3><div class="g">
+      <div class="row"><label>État</label><span id="conn"><span class="dot"></span>Connexion…</span></div>
+      <div class="row"><label>Dernier enregistrement</label><span id="lastsave">–</span></div>
+      <div class="row"><label>Stockage</label><span class="foot" id="repo"></span></div>
+      <div class="row full" style="gap:8px;flex-wrap:wrap;justify-content:flex-start"><button class="btn s" id="test">Recharger depuis le serveur</button><button class="btn s" id="chpw">Changer le mot de passe</button><button class="btn s" id="chtok">Changer le jeton</button><button class="btn d" id="logout">Se déconnecter</button></div>
+      <div class="row full"><span class="foot">Tout passe par le serveur : chaque modification est enregistrée en ligne, et tous les écrans ouverts sur le site l'appliquent d'eux-mêmes en moins d'une minute. Rien à appairer.</span></div>
     </div></div>
     <div class="card"><h3>Envoyer une info maintenant</h3><div class="g">
       <div class="row col"><label>Message affiché en haut de l'écran</label><textarea id="nt" rows="2" placeholder="Ex : Réunion à 14h en salle B"></textarea></div>
@@ -278,7 +295,6 @@ html.crea .pg.on{animation:crpg .45s cubic-bezier(.2,.8,.2,1)}
 </main>
 <div id="dock"><div class="dh"><span>Aperçu en direct</span><button class="mini" id="dockx" title="Masquer">✕</button></div><div id="pvforce"></div><div id="dbox"><iframe id="pvd" title="Aperçu flottant"></iframe></div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
@@ -329,7 +345,7 @@ const DEFEVENTS = [
 const DEFEGGS = {halloween: true, fri13: true, newyear: true, april: true, starwars: true, xmas: true, easter: true, konami: true, bzh: true, ufo: true, wolf: true, snow1: true, nums: true, lcd: true};
 const DEFWX = {golden: true, frost: true, fullmoon: true, cloudnight: true, rainbow: true, heat: 32, windG: 70, blizG: 55};
 /* Version de l'application : l'admin prévient si l'écran a un index.html plus ancien */
-const APPV = 38;
+const APPV = 39;
 const DEFSND = {on: false, vol: 50, rain: true, wind: true, thunder: true, nature: true, style: true, quiet: 'low', qf: 22, qt: 7};
 const DEFMASC = {on: false, src: '', mode: 'walk', pos: 'br', size: 110, spd: 1, every: 40, look: 'r', op: 1, talk: true, acc: true, say: ''};
 /* empreinte d'une image (pour ne pas renvoyer la mascotte à chaque enregistrement) */
@@ -409,6 +425,22 @@ const norm = c => {
   c.events.forEach(e => { if (e.id === 'xmas' && e.fx === 'snow') e.fx = 'santa'; });   // migration : le père Noël passe
   return c;
 };
+
+/* ===== Serveur (GitHub) : la config vit dans config.json, sur la branche « config » du dépôt =====
+   L'écran la lit (sans mot de passe) ; seule la page admin, déverrouillée par le mot de passe, peut l'écrire. */
+const GHS = (() => { const h = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i), p = location.pathname.split('/').filter(Boolean); return {o: h ? h[1] : 'Haze15', r: h && p[0] && !/\.html?$/i.test(p[0]) ? p[0] : 'meteo', b: 'config'}; })();
+const GHAPI = 'https://api.github.com/repos/' + GHS.o + '/' + GHS.r;
+const b64u = s => { const b = new TextEncoder().encode(s); let t = ''; for (let i = 0; i < b.length; i += 8192) t += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return btoa(t); };
+const ub64 = s => { const t = atob(s.replace(/\s/g, '')), u = new Uint8Array(t.length); for (let i = 0; i < t.length; i++) u[i] = t.charCodeAt(i); return new TextDecoder().decode(u); };
+/* Lecture d'un fichier du serveur : {text, sha} ; null s'il n'existe pas encore ; exception si le serveur est injoignable */
+async function ghGet(f, tok) {
+  const h = {Accept: 'application/vnd.github+json'}; if (tok) h.Authorization = 'Bearer ' + tok;
+  const r = await fetch(GHAPI + '/contents/' + f + '?ref=' + GHS.b, {cache: 'no-cache', headers: h});
+  if (r.status === 404) return null; if (!r.ok) throw new Error('serveur ' + r.status);
+  const j = await r.json(); let text = j.encoding === 'base64' && j.content ? ub64(j.content) : '';
+  if (!text && j.download_url) text = await (await fetch(j.download_url + '?t=' + Date.now(), {cache: 'no-store'})).text();
+  return {text, sha: j.sha};
+}
 
 
 /* ===================================================================
@@ -1112,7 +1144,7 @@ $('eva').onclick = () => { S.events.push(Object.assign({}, TADV, {id: 'ev' + Dat
 
 /* ----- Enregistrement automatique ----- */
 let saveT;
-const schedSave = () => { clearTimeout(saveT); status('Modification…', null); saveT = setTimeout(() => { try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {} push('Enregistré'); }, 700); };
+const schedSave = () => { clearTimeout(saveT); status('Modification…', null); saveT = setTimeout(() => { try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {} push('Enregistré'); }, 1800); };
 document.addEventListener('change', e => { const d = e.target.dataset; if (e.target.closest('main') && (d.g || d.w || d.th || d.ev !== undefined || d.egg)) schedSave(); });
 document.addEventListener('click', e => {
   const t = e.target;
@@ -1238,38 +1270,111 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-hudg
 document.addEventListener('click', e => { const b = e.target.closest('[data-hudtes]'); if (!b) return; if (S.hud !== 'tes' && !confirm('Activer le style ultime, le plus rare de tous ? Sa cinématique va se jouer (gros spoil !).')) return; S.hud = 'tes'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
 document.addEventListener('click', e => { const b = e.target.closest('[data-hudvoid]'); if (!b) return; if (S.hud !== 'void' && !confirm('Activer le style néant, le plus rare ? Sa cinématique va se jouer (spoil !).')) return; S.hud = 'void'; drawStyle(); pvSched(); schedSave(); if (S.roll.mode !== 'off') setTimeout(() => status('⚠ Le roll automatique est activé : il remplacera ce style au prochain tirage', false), 1500); });
 
-/* ----- Connexion ----- */
-try { const c = JSON.parse(localStorage.getItem('adminConn') || '{}'); $('host').value = c.host || ''; $('code').value = c.code || ''; $('key').value = c.key || ''; } catch (e) {}
-const base = () => { const h = $('host').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, ''); return h ? 'http://' + h : ''; };
-const keep = () => { try { localStorage.setItem('adminConn', JSON.stringify({host: $('host').value, key: $('key').value, code: $('code').value})); } catch (e) {} };
+/* ===== Serveur + mot de passe =====
+   La config est enregistrée dans config.json (branche « config » du dépôt GitHub du site).
+   Le jeton GitHub qui permet d'écrire est stocké chiffré (AES-256, clé tirée du mot de passe) dans admin.json :
+   sans le mot de passe, personne ne peut modifier l'écran. */
 const status = (m, ok) => { $('st').innerHTML = `<span class="dot ${ok === true ? 'ok' : ok === false ? 'bad' : ''}"></span>${m}`; };
-async function loadHttp() {
-  keep();
-  try {
-    const r = await fetch(base() + '/api/config?t=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw 0;
-    const j = await r.json();
-    if (j && j.v) { S = norm(Object.assign({}, DEF, j)); drawForm(); }
-    $('conn').innerHTML = '<span class="dot ok"></span>Connecté'; status('Écran joignable', true);
-  } catch (e) { $('conn').innerHTML = '<span class="dot bad"></span>Injoignable'; status("Écran injoignable : vérifie l'IP et le Wi-Fi", false); }
+const setConn = (ok, t) => { $('conn').innerHTML = `<span class="dot ${ok ? 'ok' : 'bad'}"></span>${t}`; };
+$('repo').textContent = 'github.com/' + GHS.o + '/' + GHS.r + ' · branche ' + GHS.b; $('lkrepo').textContent = GHS.o + '/' + GHS.r;
+const b2u = b => { let t = ''; new Uint8Array(b).forEach(x => t += String.fromCharCode(x)); return btoa(t); }, u2b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function pwKey(pw, salt) { const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']); return crypto.subtle.deriveKey({name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256'}, k, {name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']); }
+async function seal(tok, pw) { const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)); const d = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, await pwKey(pw, salt), new TextEncoder().encode(tok)); return {v: 1, kdf: 'PBKDF2-SHA256-250000', s: b2u(salt), i: b2u(iv), d: b2u(d)}; }
+async function unseal(a, pw) { const d = await crypto.subtle.decrypt({name: 'AES-GCM', iv: u2b(a.i)}, await pwKey(pw, u2b(a.s)), u2b(a.d)); return new TextDecoder().decode(d); }
+let TOK = '', ADM = null;
+try { TOK = sessionStorage.getItem('ghTok') || localStorage.getItem('ghTok') || ''; } catch (e) {}
+const api = (path, o = {}) => fetch(GHAPI + path, Object.assign({cache: 'no-store'}, o, {headers: Object.assign({Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + TOK}, o.headers || {})}));
+async function ghPut(f, text, msg, tries = 2) {
+  const cur = await ghGet(f, TOK);
+  const r = await api('/contents/' + f, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: msg, content: b64u(text), branch: GHS.b, sha: cur ? cur.sha : undefined})});
+  if ((r.status === 409 || r.status === 422) && tries > 1) return ghPut(f, text, msg, tries - 1);
+  if (r.status === 401) throw new Error('jeton');
+  if (!r.ok) throw new Error('serveur ' + r.status);
 }
-$('test').onclick = load;
-async function scr() {
-  try { const r = await fetch(base() + '/api/clients?t=' + Date.now(), {cache: 'no-store'}); if (!r.ok) throw 0; const j = await r.json(); $('scr').textContent = j.count ? j.count + ' (' + j.ips.join(', ') + ')' : 'Aucun'; }
-  catch (e) { if (!screens.length) $('scr').textContent = '–'; }
+/* La branche « config » est créée au premier enregistrement (à partir de main) */
+async function ensureBranch() {
+  let r = await api('/git/ref/heads/' + GHS.b); if (r.ok) return;
+  const repo = await (await api('')).json(), m = await (await api('/git/ref/heads/' + (repo.default_branch || 'main'))).json();
+  r = await api('/git/refs', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ref: 'refs/heads/' + GHS.b, sha: m.object.sha})});
+  if (!r.ok && r.status !== 422) throw new Error('branche ' + r.status);
 }
-setInterval(scr, 5000); setTimeout(scr, 800);
+async function checkTok(t) { const r = await fetch(GHAPI, {cache: 'no-store', headers: {Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + t}}); if (!r.ok) return false; const j = await r.json(); return !!(j.permissions && j.permissions.push); }
 
-async function pushHttp(label) {
-  keep(); S.v = Date.now(); const body = JSON.stringify(S);
-  try { localStorage.setItem('meteoCfgPush', body); } catch (e) {}   // repli : même navigateur
-  try {
-    const r = await fetch(base() + '/api/config', {method: 'POST', headers: {'X-Key': $('key').value, 'Content-Type': 'text/plain'}, body});
-    if (r.status === 401) { status('Clé d\'accès refusée', false); return; }
-    if (!r.ok) throw 0;
-    status(label + ' · ' + new Date().toLocaleTimeString('fr-FR'), true); $('conn').innerHTML = '<span class="dot ok"></span>Connecté';
-  } catch (e) { status('Envoi impossible (copie locale enregistrée)', false); }
+/* ----- Écran de verrouillage ----- */
+let lockMode = 'login';
+function lockUI(mode, msg) {
+  lockMode = mode; $('lock').hidden = false; $('lkerr').textContent = ''; $('lkmsg').textContent = msg;
+  $('lksetup').hidden = !(mode === 'setup' || mode === 'token'); $('lkpw').hidden = mode === 'wait' || mode === 'token';
+  $('lkp2w').hidden = !(mode === 'setup' || mode === 'newpw'); $('lkgo').hidden = mode === 'wait';
+  $('lkcancel').hidden = !(mode === 'newpw' || mode === 'token');
+  $('lkgo').textContent = mode === 'setup' ? 'Créer le mot de passe' : mode === 'newpw' ? 'Changer le mot de passe' : mode === 'token' ? 'Enregistrer le jeton' : 'Déverrouiller';
+  $('lkp1').value = ''; $('lkp2').value = ''; $('lktok').value = '';
+  $('lkp1').setAttribute('autocomplete', mode === 'login' ? 'current-password' : 'new-password');
+  setTimeout(() => { const f = mode === 'setup' || mode === 'token' ? $('lktok') : $('lkp1'); if (f && !f.closest('[hidden]')) f.focus(); }, 50);
 }
-$('send').onclick = () => push('Envoyé');
+const unlocked = (keep) => {
+  try { sessionStorage.setItem('ghTok', TOK); if (keep) localStorage.setItem('ghTok', TOK); else localStorage.removeItem('ghTok'); } catch (e) {}
+  $('lock').hidden = true; loadSrv(true);
+};
+$('lkcancel').onclick = () => { $('lock').hidden = true; };
+$('lockf').onsubmit = async e => {
+  e.preventDefault(); const err = m => { $('lkerr').textContent = m; $('lkgo').disabled = false; }; $('lkgo').disabled = true;
+  const p1 = $('lkp1').value, p2 = $('lkp2').value, tk = $('lktok').value.trim();
+  try {
+    if (lockMode === 'login') {
+      try { TOK = await unseal(ADM, p1); } catch (x) { return err('Mot de passe incorrect.'); }
+      $('lkgo').disabled = false; return unlocked($('lkkeep').checked);
+    }
+    if (lockMode === 'setup' || lockMode === 'token') {
+      if (!/^(github_pat_|ghp_)\w{20,}$/.test(tk)) return err('Ce jeton ne ressemble pas à un jeton GitHub (il commence par github_pat_).');
+      if (!(await checkTok(tk))) return err('Ce jeton ne peut pas écrire dans ' + GHS.o + '/' + GHS.r + ' : vérifie l\'accès « Contents : Read and write ».');
+    }
+    if (lockMode === 'setup' || lockMode === 'newpw') {
+      if (p1.length < 8) return err('8 caractères minimum.'); if (p1 !== p2) return err('Les deux mots de passe sont différents.');
+      if (lockMode === 'setup') { TOK = tk; await ensureBranch(); }
+      ADM = await seal(TOK, p1); await ghPut('admin.json', JSON.stringify(ADM), 'Mot de passe de l\'admin');
+      if (lockMode === 'setup' && !(await ghGet('config.json', TOK))) await ghPut('config.json', JSON.stringify(Object.assign({}, S, {v: Date.now()})), 'Config de l\'écran');
+      $('lkgo').disabled = false; status('🔒 Mot de passe enregistré', true); return unlocked($('lkkeep').checked);
+    }
+    if (lockMode === 'token') { TOK = tk; $('lkgo').disabled = false; lockUI('newpw', 'Jeton valide. Choisis le mot de passe (tu peux reprendre le même).'); return; }
+  } catch (x) { err('Le serveur ne répond pas (' + x.message + '). Réessaie dans un instant.'); }
+};
+$('chpw').onclick = () => lockUI('newpw', 'Choisis le nouveau mot de passe.');
+$('chtok').onclick = () => lockUI('token', 'Colle le nouveau jeton GitHub.');
+$('logout').onclick = () => { try { sessionStorage.removeItem('ghTok'); localStorage.removeItem('ghTok'); } catch (e) {} TOK = ''; location.reload(); };
+
+async function start() {
+  lockUI('wait', 'Connexion au serveur…');
+  try { const a = await ghGet('admin.json', TOK || undefined); ADM = a ? JSON.parse(a.text) : null; }
+  catch (e) { lockUI('wait', 'Serveur injoignable. Vérifie la connexion Internet, puis recharge la page.'); return; }
+  if (!ADM) return lockUI('setup', 'Première connexion : colle le jeton GitHub qui donne accès au site, puis choisis le mot de passe de l\'admin.');
+  if (TOK && await checkTok(TOK).catch(() => false)) { $('lock').hidden = true; return loadSrv(true); }
+  TOK = ''; lockUI('login', 'Entre le mot de passe pour modifier l\'écran.');
+}
+
+/* ----- Charger / enregistrer la config ----- */
+async function loadSrv(first) {
+  status('Chargement depuis le serveur…', null);
+  try {
+    const f = await ghGet('config.json', TOK);
+    if (f && f.text) { S = norm(Object.assign({}, DEF, JSON.parse(f.text))); drawForm(); pvSched(); }
+    setConn(true, 'Connecté'); status(first ? 'Connecté au serveur · les modifications sont enregistrées en ligne' : 'Config rechargée', true);
+  } catch (e) { setConn(false, 'Injoignable'); status('Serveur injoignable : vérifie ta connexion Internet', false); }
+}
+function load() { loadSrv(false); }
+$('test').onclick = load;
+let saving = null, again = null;
+async function push(label) {
+  try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {}
+  if (!TOK) { status('Verrouillé : entre le mot de passe pour enregistrer', false); return; }
+  if (saving) { again = label; return; }
+  S.v = Date.now(); const body = JSON.stringify(S); status('Enregistrement…', null);
+  saving = ghPut('config.json', body, label + ' · ' + new Date().toLocaleString('fr-FR'))
+    .then(() => { const t = new Date().toLocaleTimeString('fr-FR'); setConn(true, 'Connecté'); $('lastsave').textContent = t; status(label + ' · ' + t + ' · les écrans suivent en moins d\'une minute', true); })
+    .catch(e => { if (e.message === 'jeton') { status('Jeton refusé : il a expiré ou a été supprimé (Écran › Changer le jeton)', false); } else { setConn(false, 'Injoignable'); status('Enregistrement impossible : vérifie ta connexion Internet', false); } })
+    .finally(() => { saving = null; if (again) { const l = again; again = null; push(l); } });
+}
+$('send').onclick = () => push('Enregistré');
 $('sn').onclick = () => { const t = $('nt').value.trim(); if (!t) return; S.notice = {id: Date.now(), text: t, sec: +$('ns').value || 15}; push('Message envoyé'); };
 
 /* ----- Sauvegarde ----- */
@@ -1281,152 +1386,8 @@ $('fl').onchange = async e => { try { S = norm(Object.assign({}, DEF, JSON.parse
 $('rst').onclick = () => { if (confirm('Remettre la configuration par défaut (non envoyée) ?')) { S = norm(JSON.parse(JSON.stringify(DEF))); drawForm(); pvSched(); } };
 
 
-/* ----- Appairage direct entre PC (WebRTC via PeerJS) ----- */
-/* ===== Relais web (ntfy.sh) : relie n'importe quels navigateurs / PC, même derrière des pare-feux =====
-   Les messages sont compressés, découpés et publiés sur un « sujet » secret dérivé du code d'appairage. */
-const NTFY = 'https://ntfy.sh/';
-const topic = (code, side) => 'meteohud-' + code + '-' + side;   // s = écran, a = admin
-async function pack(obj) {
-  const j = JSON.stringify(obj);
-  try { if (window.CompressionStream) { const buf = new Uint8Array(await new Response(new Blob([j]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); let b = ''; buf.forEach(x => b += String.fromCharCode(x)); return 'z' + btoa(b); } } catch (e) {}
-  return 'j' + btoa(unescape(encodeURIComponent(j)));
-}
-async function unpack(t) {
-  if (t[0] === 'z') { const bin = atob(t.slice(1)), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text()); }
-  return JSON.parse(decodeURIComponent(escape(atob(t.slice(1)))));
-}
-async function relaySend(top, obj) {
-  const p = await pack(obj), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 5), N = 3200, n = Math.ceil(p.length / N);
-  for (let i = 0; i < n; i++) { const r = await fetch(NTFY + top, {method: 'POST', body: id + '.' + i + '.' + n + '.' + p.slice(i * N, (i + 1) * N)}); if (!r.ok) throw new Error('relais ' + r.status); }
-}
-function relaySub(top, since, onObj, onState) {
-  const bufs = {}; let es = new EventSource(NTFY + top + '/sse' + (since ? '?since=' + since : ''));
-  es.onopen = () => onState && onState(true);
-  es.onerror = () => onState && onState(false);   // EventSource se reconnecte tout seul
-  es.onmessage = async ev => {
-    try {
-      const d = JSON.parse(ev.data); if (d.event !== 'message') return;
-      const a = d.message.split('.'), id = a[0], i = +a[1], n = +a[2]; (bufs[id] = bufs[id] || {})[i] = a.slice(3).join('.');
-      if (Object.keys(bufs[id]).length === n) { let t = ''; for (let k = 0; k < n; k++) t += bufs[id][k]; delete bufs[id]; onObj(await unpack(t)); }
-    } catch (e) {}
-  };
-  return {close: () => es.close()};
-}
-let peer, conn;
-const code = () => $('code').value.trim().toLowerCase();
-function p2p() {
-  return new Promise((res, rej) => {
-    const c = code(); if (!c) return rej('nocode'); if (!window.Peer) return rej('nolib');
-    if (conn && conn.open && conn._code === c) return res(conn);
-    try { if (peer) peer.destroy(); } catch (e) {}
-    peer = new Peer(); const t = setTimeout(() => rej('timeout'), 12000);
-    peer.on('error', e => { clearTimeout(t); rej(e.type); });
-    peer.on('open', () => {
-      conn = peer.connect('meteoscr-' + c, {reliable: true}); conn._code = c;
-      conn.on('open', () => { clearTimeout(t); res(conn); });
-      conn.on('data', m => onData(m, c));
-      conn.on('close', () => { $('conn').innerHTML = '<span class="dot bad"></span>Déconnecté'; });
-    });
-  });
-}
-/* ----- Plusieurs écrans ----- */
-var screens = [], confs = {}, seen = {}, shareAll = false, gotCfg = false, ackV = {}, adminSubs = {};
-try { screens = JSON.parse(localStorage.getItem('adminScreens') || '[]'); confs = JSON.parse(localStorage.getItem('adminConfs') || '{}'); shareAll = localStorage.getItem('adminShare') === '1'; } catch (e) {}
-function saveScr() { try { localStorage.setItem('adminScreens', JSON.stringify(screens)); localStorage.setItem('adminConfs', JSON.stringify(confs)); localStorage.setItem('adminShare', shareAll ? '1' : '0'); } catch (e) {} }
-function ensureSubs() { screens.forEach(s => { if (!adminSubs[s.code]) { try { adminSubs[s.code] = relaySub(topic(s.code, 'a'), '', m => onData(m, s.code)); } catch (e) {} } }); }
-/* Diagnostic : l'écran dit quelle version il a et quel style il affiche vraiment */
-const HNAME = id => id === 'x0s' ? '✨ Singularité shiny' : id === 'train' ? '🎫 Style billet d\'or' : id === 'crea' ? '♛ Style créateur' : id === 'gen' ? '✺ Style légendaire' : id === 'tes' ? '◈ Style ultime' : id === 'void' ? '∅ Style néant' : id === 'inf' ? '∞ Style infini' : id === 'xr' ? '🔒 Accès restreint' : id === 'x0' ? '✦ Style secret' : ((SIGLIST.find(x => x[0] === id) || [])[1] || (VARIANTS.find(x => x[0] === id) || [])[1] || id);
-function scrDiag(m, c) {
-  if (!m || !['ack', 'pong', 'config'].includes(m.type)) return;
-  seen[c] = Object.assign(seen[c] || {}, {app: m.app || 0}); if (m.city !== undefined) seen[c].city = m.city;
-  if (c === code() && $('geoinfo')) $('geoinfo').textContent = geoTxt();
-  if (c !== code()) return;
-  if (!m.app || m.app < APPV) { status('⚠ L\'écran utilise une ancienne version : remplace son index.html par le nouveau (sinon les nouveaux styles ne marchent pas)', false); return true; }
-  if (m.hud && m.want && m.hud !== m.want) {
-    const w = m.why || '', why = w.startsWith('fest:') ? `c'est la fête « ${esc(w.slice(5))} » (Style › Options › Style festif automatique)` : w === 'roll' ? 'un roll a choisi un autre style (relance un roll, ou rechoisis ton style)' : w === 'url' ? 'l\'adresse de l\'écran contient ?hud=' : w === 'unknown' ? 'l\'écran ne connaît pas ce style (ancienne version ?)' : 'raison inconnue';
-    status(`⚠ L'écran affiche « ${esc(HNAME(m.hud))} » au lieu de « ${esc(HNAME(m.want))} » : ${why}`, false); return true;
-  }
-}
-function onData(m, c) {
-  if (!m) return; c = c || code(); const diag = scrDiag(m, c);
-  if (m.type === 'config' && m.cfg && m.cfg.v) {
-    seen[c] = {t: Date.now(), name: m.cfg.name};
-    const n = norm(Object.assign({}, DEF, m.cfg));
-    if (c === code()) { gotCfg = true; S = n; confs[c] = JSON.parse(JSON.stringify(n)); drawForm(); $('conn').innerHTML = '<span class="dot ok"></span>Connecté'; if (!diag) status("Config de l'écran chargée", true); pvSched(); }
-    else confs[c] = n;
-    saveScr(); renderScreens();
-  }
-  if (m.type === 'ack') { ackV[c] = m.v; seen[c] = {t: Date.now(), name: (seen[c] || {}).name}; if (c === code() && m.v === S.v && !diag) status('Reçu par l\'écran ✓ · ' + new Date().toLocaleTimeString('fr-FR'), true); renderScreens(); }
-  if (m.type === 'pong') { seen[c] = {t: Date.now(), name: m.name}; renderScreens(); }
-}
-function renderScreens() {
-  const L = $('scrl'); if (!L) return;
-  const now = Date.now(), cur = code(), on = s => seen[s.code] && now - seen[s.code].t < 600000;
-  L.innerHTML = screens.length ? screens.map((s, i) => `<div class="row" style="gap:8px;${s.code === cur ? 'background:rgba(0,122,255,.10)' : ''}"><span class="dot ${on(s) ? 'ok' : ''}" title="${on(s) ? 'en ligne' : 'état inconnu'}"></span>${seen[s.code] && seen[s.code].app !== undefined && seen[s.code].app < APPV ? '<span class="foot" style="color:var(--bad);flex:none">ancienne version</span>' : ''}<input data-sn="${i}" value="${esc(s.name)}" style="text-align:left;min-width:90px"><span style="font:12px monospace;opacity:.65">${esc(s.code)}</span><button class="mini" data-sa="sel" data-i="${i}">${s.code === cur ? 'En cours' : 'Modifier'}</button><button class="mini" data-sa="cp" data-i="${i}">Lien</button><button class="mini" style="color:var(--bad)" data-sa="del" data-i="${i}">✕</button></div>`).join('')
-    : '<div class="row"><span class="foot">Aucun écran : ajoute-en un avec son code.</span></div>';
-  $('scr').textContent = screens.filter(on).length + ' / ' + screens.length;
-}
-function selectScreen(c) {
-  const cur = code(); if (cur) confs[cur] = JSON.parse(JSON.stringify(S));
-  $('code').value = c; keep();
-  if (confs[c]) S = norm(JSON.parse(JSON.stringify(confs[c])));   // sinon : le nouvel écran démarre avec la config actuelle
-  saveScr(); drawForm(); pvSched(); renderScreens(); load();
-}
-document.addEventListener('input', e => { const i = e.target.dataset.sn; if (i !== undefined) { screens[+i].name = e.target.value; saveScr(); } });
-document.addEventListener('click', e => {
-  const t = e.target, i = +t.dataset.i, s = screens[i];
-  if (t.dataset.sa === 'sel') selectScreen(s.code);
-  else if (t.dataset.sa === 'cp') { const u = new URL('index.html', location.href).href + '?code=' + s.code; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => status('Lien copié', true)).catch(() => prompt("Lien de l'écran :", u)); }
-  else if (t.dataset.sa === 'del') {
-    if (!confirm('Retirer « ' + s.name + ' » de la liste ? (l\'écran lui-même n\'est pas modifié)')) return;
-    screens.splice(i, 1); delete confs[s.code]; if (adminSubs[s.code]) { adminSubs[s.code].close(); delete adminSubs[s.code]; }
-    saveScr(); if (s.code === code()) { if (screens.length) selectScreen(screens[0].code); else { $('code').value = ''; keep(); renderScreens(); } } else renderScreens();
-  }
-});
-$('sgen').onclick = () => { $('ncode').value = Array.from({length: 8}, () => 'abcdefghjkmnpqrstuvwxyz23456789'[Math.random() * 31 | 0]).join(''); };
-$('sadd').onclick = () => {
-  const c = $('ncode').value.trim().toLowerCase();
-  if (!/^[a-z0-9-]{4,32}$/.test(c)) { status('Code invalide : 4 à 32 caractères (lettres, chiffres, tiret)', false); return; }
-  if (!screens.some(s => s.code === c)) screens.push({code: c, name: $('nname').value.trim() || 'Écran ' + (screens.length + 1)});
-  $('ncode').value = ''; $('nname').value = ''; saveScr(); ensureSubs(); selectScreen(c);
-};
-$('sall').onchange = e => { shareAll = e.target.checked; saveScr(); if (shareAll) status('Les modifications partiront vers tous les écrans', null); };
-$('sping').onclick = () => { ensureSubs(); screens.forEach(s => relaySend(topic(s.code, 's'), {type: 'ping', t: Date.now()}).catch(() => {})); status('Actualisation de l\'état…', null); setTimeout(renderScreens, 4000); };
-$('spush').onclick = () => {
-  if (!screens.length) return; ensureSubs(); S.v = Date.now();
-  screens.forEach(s => { confs[s.code] = JSON.parse(JSON.stringify(S)); relaySend(topic(s.code, 's'), {type: 'config', cfg: S}).catch(() => {}); });
-  saveScr(); status('Config envoyée à ' + screens.length + ' écran(s)', true);
-};
-const perr = e => e === 'peer-unavailable' ? "Écran introuvable : vérifie le code et que l'écran est ouvert" : e === 'timeout' ? 'Pas de réponse (Internet requis pour la mise en relation)' : 'Connexion impossible (' + e + ')';
-async function load() {
-  keep(); if (!code()) return loadHttp();
-  gotCfg = false; status("Connexion à l'écran…", null); ensureSubs();
-  relaySend(topic(code(), 's'), {type: 'get', t: Date.now()}).catch(() => {});
-  p2p().then(c => c.send({type: 'get'})).catch(e => setTimeout(() => { if (!gotCfg) { $('conn').innerHTML = '<span class="dot bad"></span>Injoignable'; status("Pas de réponse de l'écran : est-il allumé, avec Internet ? (" + perr(e) + ')', false); } }, 7000));
-}
-/* L'image de la mascotte n'est envoyée qu'une fois par écran (ensuite : « img:empreinte ») */
-let sentImg = {}; try { sentImg = JSON.parse(localStorage.getItem('adminImgSent') || '{}'); } catch (e) {}
-function slim(c) { const m = S.masc; if (!m || !/^data:/.test(m.src || '')) return S; const h = imgHash(m.src); return sentImg[c] === h ? Object.assign({}, S, {masc: Object.assign({}, m, {src: 'img:' + h})}) : S; }
-function markImg(c) { const m = S.masc; if (m && /^data:/.test(m.src || '')) { sentImg[c] = imgHash(m.src); try { localStorage.setItem('adminImgSent', JSON.stringify(sentImg)); } catch (e) {} } }
-async function push(label) {
-  if (!code() && !base() && location.protocol === 'file:') { keep(); S.v = Date.now(); try { localStorage.setItem('meteoCfgPush', JSON.stringify(S)); localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {} status('Enregistré sur ce PC · ajoute un écran (code) pour l\'envoyer', null); return; }
-  try { localStorage.setItem('adminDraft', JSON.stringify(S)); } catch (e) {}
-  if (!code()) return pushHttp(label);
-  keep(); S.v = Date.now(); const c0 = code(); confs[c0] = JSON.parse(JSON.stringify(S)); saveScr();
-  try { localStorage.setItem('meteoCfgPush', JSON.stringify(S)); } catch (e) {}
-  ensureSubs(); status('Envoi en cours…', null);
-  const rs = relaySend(topic(c0, 's'), {type: 'config', cfg: slim(c0)}).then(() => { markImg(c0); return true; }).catch(() => false);
-  const ps = p2p().then(c => { c.send({type: 'config', cfg: S}); return true; }).catch(() => false);
-  let n = 1;
-  if (shareAll) screens.forEach(s => { if (s.code !== c0) { n++; confs[s.code] = JSON.parse(JSON.stringify(S)); relaySend(topic(s.code, 's'), {type: 'config', cfg: slim(s.code)}).then(() => markImg(s.code)).catch(() => {}); } });
-  rs.then(ok => { if (ok) status('Envoyé' + (n > 1 ? ' à ' + n + ' écrans' : '') + ' · en attente de confirmation…', null); });
-  const v = S.v;
-  setTimeout(async () => { if (ackV[c0] !== v) { if (await rs) status("Envoyé · l'écran l'appliquera dès qu'il sera en ligne", true); else if (!(await ps)) status('Envoi impossible : vérifie ta connexion Internet', false); } }, 8000);
-}
-if (!screens.length && code()) screens.push({code: code(), name: 'Écran 1'});
-try { if (code() && confs[code()]) S = norm(JSON.parse(JSON.stringify(confs[code()]))); else { const d = JSON.parse(localStorage.getItem('adminDraft') || 'null'); if (d) S = norm(Object.assign({}, DEF, d)); } } catch (e) {}
-$('sall').checked = shareAll; ensureSubs(); renderScreens();
-drawForm(); status('Enregistrement automatique activé', null); pvSched(); if ($('code').value.trim() || base() || location.protocol.startsWith('http')) load();
+try { const d = JSON.parse(localStorage.getItem('adminDraft') || 'null'); if (d) S = norm(Object.assign({}, DEF, d)); } catch (e) {}
+drawForm(); pvSched(); start();
 
 /* ===== ♛ Apparence de l'admin : Créateur / Classique ===== */
 (() => {
