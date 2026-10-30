@@ -1289,6 +1289,7 @@ async function ghPut(f, text, msg, tries = 2) {
   const r = await api('/contents/' + f, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: msg, content: b64u(text), branch: GHS.b, sha: cur ? cur.sha : undefined})});
   if ((r.status === 409 || r.status === 422) && tries > 1) return ghPut(f, text, msg, tries - 1);
   if (r.status === 401) throw new Error('jeton');
+  if (r.status === 403 || r.status === 404) throw new Error('droits');
   if (!r.ok) throw new Error('serveur ' + r.status);
 }
 /* La branche « config » est créée au premier enregistrement (à partir de main) */
@@ -1296,6 +1297,7 @@ async function ensureBranch() {
   let r = await api('/git/ref/heads/' + GHS.b); if (r.ok) return;
   const repo = await (await api('')).json(), m = await (await api('/git/ref/heads/' + (repo.default_branch || 'main'))).json();
   r = await api('/git/refs', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ref: 'refs/heads/' + GHS.b, sha: m.object.sha})});
+  if (r.status === 403 || r.status === 404) throw new Error('droits');
   if (!r.ok && r.status !== 422) throw new Error('branche ' + r.status);
 }
 async function checkTok(t) { const r = await fetch(GHAPI, {cache: 'no-store', headers: {Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + t}}); if (!r.ok) return false; const j = await r.json(); return !!(j.permissions && j.permissions.push); }
@@ -1337,7 +1339,7 @@ $('lockf').onsubmit = async e => {
       $('lkgo').disabled = false; status('🔒 Mot de passe enregistré', true); return unlocked($('lkkeep').checked);
     }
     if (lockMode === 'token') { TOK = tk; $('lkgo').disabled = false; lockUI('newpw', 'Jeton valide. Choisis le mot de passe (tu peux reprendre le même).'); return; }
-  } catch (x) { err('Le serveur ne répond pas (' + x.message + '). Réessaie dans un instant.'); }
+  } catch (x) { err(x.message === 'droits' ? 'Ce jeton peut lire mais pas écrire. Sur GitHub (Fine-grained tokens → ton jeton → Edit), mets Repository access sur « meteo » et Permissions → Contents sur « Read and write », enregistre, puis réessaie avec le même jeton.' : x.message === 'jeton' ? 'Jeton refusé par GitHub (expiré ou mal copié).' : 'Le serveur ne répond pas (' + x.message + '). Réessaie dans un instant.'); }
 };
 $('chpw').onclick = () => lockUI('newpw', 'Choisis le nouveau mot de passe.');
 $('chtok').onclick = () => lockUI('token', 'Colle le nouveau jeton GitHub.');
@@ -1371,7 +1373,7 @@ async function push(label) {
   S.v = Date.now(); const body = JSON.stringify(S); status('Enregistrement…', null);
   saving = ghPut('config.json', body, label + ' · ' + new Date().toLocaleString('fr-FR'))
     .then(() => { const t = new Date().toLocaleTimeString('fr-FR'); setConn(true, 'Connecté'); $('lastsave').textContent = t; status(label + ' · ' + t + ' · les écrans suivent en moins d\'une minute', true); })
-    .catch(e => { if (e.message === 'jeton') { status('Jeton refusé : il a expiré ou a été supprimé (Écran › Changer le jeton)', false); } else { setConn(false, 'Injoignable'); status('Enregistrement impossible : vérifie ta connexion Internet', false); } })
+    .catch(e => { if (e.message === 'droits') { status('Le jeton n\'a pas le droit d\'écrire (Contents : Read and write)', false); } else if (e.message === 'jeton') { status('Jeton refusé : il a expiré ou a été supprimé (Écran › Changer le jeton)', false); } else { setConn(false, 'Injoignable'); status('Enregistrement impossible : vérifie ta connexion Internet', false); } })
     .finally(() => { saving = null; if (again) { const l = again; again = null; push(l); } });
 }
 $('send').onclick = () => push('Enregistré');
