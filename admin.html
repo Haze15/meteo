@@ -1330,7 +1330,7 @@ $('lockf').onsubmit = async e => {
       if (!(await checkTok(tk))) return err('Ce jeton ne peut pas écrire dans ' + GHS.o + '/' + GHS.r + ' : vérifie l\'accès « Contents : Read and write ».');
     }
     if (lockMode === 'setup' || lockMode === 'newpw') {
-      if (p1.length < 8) return err('8 caractères minimum.'); if (p1 !== p2) return err('Les deux mots de passe sont différents.');
+      if (p1.length < 6) return err('6 caractères minimum.'); if (p1 !== p2) return err('Les deux mots de passe sont différents.');
       if (lockMode === 'setup') { TOK = tk; await ensureBranch(); }
       ADM = await seal(TOK, p1); await ghPut('admin.json', JSON.stringify(ADM), 'Mot de passe de l\'admin');
       if (lockMode === 'setup' && !(await ghGet('config.json', TOK))) await ghPut('config.json', JSON.stringify(Object.assign({}, S, {v: Date.now()})), 'Config de l\'écran');
