@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07051a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Admin Météo">
+<link rel="manifest" href="admin.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
 <title>Admin – Météo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Cinzel:wght@700&family=VT323&family=Orbitron:wght@500&family=Press+Start+2P&family=Special+Elite&family=Playfair+Display:wght@900&family=Creepster&family=Bangers&family=Caveat:wght@700&family=Gochi+Hand&family=Rye&family=Poiret+One&family=Monoton&family=Share+Tech+Mono&family=Silkscreen&family=Fredoka:wght@600&family=Architects+Daughter&family=Mountains+of+Christmas:wght@700&family=Oswald:wght@600&family=Tilt+Neon&family=Dela+Gothic+One&family=Noto+Serif+JP:wght@900&family=JetBrains+Mono:wght@400;700&family=Shippori+Mincho+B1:wght@800&family=Yuji+Syuku&family=Bodoni+Moda:ital,wght@1,900&family=Nunito:wght@600;800;900&display=swap">
@@ -198,6 +200,39 @@ html.crea .pg.on{animation:crpg .45s cubic-bezier(.2,.8,.2,1)}
 #lockf .lk-k{font-size:30px}#lockf .btn{margin-top:4px}
 #lkerr{color:var(--bad);font-size:13px;min-height:1em}
 #lock [hidden],#lock[hidden]{display:none!important}
+
+/* ===== Version mobile ===== */
+@media (max-width:700px){
+html{-webkit-text-size-adjust:100%}
+header.top{padding-top:env(safe-area-inset-top,0px)}
+.bar{flex-wrap:wrap;gap:8px 10px;padding:10px max(14px,env(safe-area-inset-right,0px)) 4px max(14px,env(safe-area-inset-left,0px))}
+h1{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#st{order:5;flex:1 1 100%;text-align:left;font-size:12px}
+#dockb,#dock{display:none!important}
+#skinb{padding:8px 10px;font-size:12px}
+#send{padding:9px 12px;font-size:13px}
+#nav{padding:2px max(10px,env(safe-area-inset-left,0px)) 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+#nav::-webkit-scrollbar{display:none}
+#nav button{padding:9px 14px;scroll-snap-align:start}
+main,main.dock{padding:14px max(12px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.cards{grid-template-columns:minmax(0,1fr);gap:12px}
+.g{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));padding:12px 14px 14px}
+.row input,.row select,.row textarea,.tb select{font-size:16px;padding:10px 11px}
+.row input[type=checkbox]{width:24px;height:24px}
+.row input[type=color]{height:40px}
+.gal{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+.hcrea{grid-column:1/-1}
+.hc .sw{height:68px;padding:0 10px}.hc .sw b{font-size:30px}.hc .sw i{font-size:10.5px}
+.hc .nm{font-size:13px;padding:7px 10px 2px}.hc .tg{font-size:11px;padding:0 10px 9px}
+.btn{padding:10px 16px}
+.tb .foot{min-width:0;flex-basis:100%}
+.items,.items.wide,.egl{grid-template-columns:minmax(0,1fr);gap:12px}
+h1,html.crea h1{font-size:0!important}h1::after{content:"Admin Météo";font-size:17px}html.crea h1::after{font-size:18px}html.crea h1::before{font-size:18px}
+#send{font-size:0;padding:9px 14px}#send::after{content:"Enregistrer";font-size:13px}
+#skinb{font-size:0;padding:8px 11px}#skinb::after{content:"♛";font-size:15px}html.crea #skinb::after{content:"◻"}
+.eg{padding:12px 14px}
+#lockf{padding:22px 18px}
+}
 </style>
 </head>
 <body>
@@ -346,7 +381,7 @@ const DEFEVENTS = [
 const DEFEGGS = {halloween: true, fri13: true, newyear: true, april: true, starwars: true, xmas: true, easter: true, konami: true, bzh: true, ufo: true, wolf: true, snow1: true, nums: true, lcd: true};
 const DEFWX = {golden: true, frost: true, fullmoon: true, cloudnight: true, rainbow: true, heat: 32, windG: 70, blizG: 55};
 /* Version de l'application : l'admin prévient si l'écran a un index.html plus ancien */
-const APPV = 40;
+const APPV = 41;
 const DEFSND = {on: false, vol: 50, rain: true, wind: true, thunder: true, nature: true, style: true, quiet: 'low', qf: 22, qt: 7};
 const DEFMASC = {on: false, src: '', mode: 'walk', pos: 'br', size: 110, spd: 1, every: 40, look: 'r', op: 1, talk: true, acc: true, say: ''};
 /* empreinte d'une image (pour ne pas renvoyer la mascotte à chaque enregistrement) */
@@ -1233,7 +1268,7 @@ function showDock(force) { if (force && !dockOn) { dockOn = true; try { localSto
 $('dockb').onclick = () => { dockOn = !dockOn; try { localStorage.setItem('adminDock', dockOn ? '1' : '0'); } catch (e) {} showDock(); };
 $('dockx').onclick = () => { dockOn = false; try { localStorage.setItem('adminDock', '0'); } catch (e) {} showDock(); };
 function go(p) { curPage = p; document.querySelectorAll('.pg').forEach(e => e.classList.toggle('on', e.dataset.p === p)); document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === p)); try { localStorage.setItem('adminTab', p); } catch (e) {} if (p === 'preview') ensurePv(0); showDock(); }
-document.addEventListener('click', e => { if (e.target.dataset.go) go(e.target.dataset.go); });
+document.addEventListener('click', e => { if (e.target.dataset.go) { go(e.target.dataset.go); if (e.target.closest('#nav')) try { e.target.scrollIntoView({inline: 'center', block: 'nearest', behavior: 'smooth'}); window.scrollTo(0, 0); } catch (x) {} } });
 let tab0 = 'screen'; try { tab0 = localStorage.getItem('adminTab') || 'screen'; } catch (e) {}
 go(document.querySelector(`.pg[data-p="${tab0}"]`) ? tab0 : 'screen');
 

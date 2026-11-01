@@ -95,6 +95,20 @@ pre.asc{font:inherit;line-height:1.02;white-space:pre;text-align:left;margin:0 0
 #pair.on{opacity:.9}
 #fest{position:absolute;left:50%;bottom:3px;transform:translateX(-50%);z-index:5;padding:2px 14px;font-size:12px;line-height:17px;font-weight:600;border-radius:16px;display:none;white-space:nowrap;transition:opacity .4s}
 #fest.fade{opacity:0}
+/* ----- version mobile (portrait) ----- */
+#stage.mob header{left:18px;right:18px;top:16px;height:auto;flex-direction:column;align-items:stretch;gap:12px}
+#stage.mob header>div:first-child{text-align:center}
+#stage.mob .tabs{justify-content:center}
+#stage.mob .tabs button{flex:1;padding:8px 6px}
+#stage.mob canvas#fx{inset:auto;left:50%;top:50%;width:800px;height:480px;transform:translate(-50%,-50%) scale(var(--cov,1))}
+#mbox{position:absolute;left:0;top:0;width:800px;height:480px;transform-origin:0 0;z-index:4990;visibility:visible!important;pointer-events:none}
+#mbox>*{pointer-events:auto}
+#mbox:not(:empty)::after{content:"↻ Tourne ton téléphone pour voir en grand";position:absolute;left:0;right:0;top:506px;text-align:center;font:600 22px -apple-system,"Helvetica Neue",Arial,sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.45);pointer-events:none}
+#stage.mob #days.mobd{padding:4px 16px}
+#stage.mob #v3{grid-template-columns:repeat(2,1fr)}
+#stage.mob[data-hud=gazette] header>div:first-child{padding:0}#stage.mob[data-hud=gazette] #city{font-size:30px;line-height:46px}#stage.mob[data-hud=gazette] .tabs{position:static;justify-content:center;margin-top:2px}
+#stage.mob #note{max-width:440px}
+
 .tk #fest{bottom:auto;top:3px}
 .wg iframe{width:100%;border:0;border-radius:12px;margin-top:6px;background:#fff}
 .wg a{color:inherit}
@@ -2398,7 +2412,7 @@ const DEFEVENTS = [
 const DEFEGGS = {halloween: true, fri13: true, newyear: true, april: true, starwars: true, xmas: true, easter: true, konami: true, bzh: true, ufo: true, wolf: true, snow1: true, nums: true, lcd: true};
 const DEFWX = {golden: true, frost: true, fullmoon: true, cloudnight: true, rainbow: true, heat: 32, windG: 70, blizG: 55};
 /* Version de l'application : l'admin prévient si l'écran a un index.html plus ancien */
-const APPV = 40;
+const APPV = 41;
 const DEFSND = {on: false, vol: 50, rain: true, wind: true, thunder: true, nature: true, style: true, quiet: 'low', qf: 22, qt: 7};
 const DEFMASC = {on: false, src: '', mode: 'walk', pos: 'br', size: 110, spd: 1, every: 40, look: 'r', op: 1, talk: true, acc: true, say: ''};
 /* empreinte d'une image (pour ne pas renvoyer la mascotte à chaque enregistrement) */
@@ -3186,6 +3200,7 @@ function applyHud(id) {
 
 const SZ = {S: .6, M: .82, L: 1, XL: 1.3};
 function layoutHud() {
+  if (stage.classList.contains('mob')) return layoutMob();
   const L = cfg.layout, X = HT.L || {}, P = Object.assign({t: 84, b: 24, l: 28, r: 28}, X.pad), tk = stage.classList.contains('tk'), vb = P.b + (tk ? 26 : 0);
   ['v1', 'v2', 'v3'].forEach(id => { const s = $(id).style; s.top = P.t + 'px'; s.bottom = vb + 'px'; s.left = P.l + 'px'; s.right = P.r + 'px'; });
   const ts = $('tick').style; ts.bottom = (P.b - 10) + 'px'; ts.left = P.l + 'px'; ts.right = P.r + 'px';
@@ -3212,6 +3227,26 @@ function layoutHud() {
   const k = Math.min(1, (fh + 8) / nh);
   ns.transformOrigin = L.now === 'right' ? 'top right' : L.now === 'center' ? 'top center' : 'top left';
   if (k < 1) ns.transform = 'scale(' + k.toFixed(3) + ')'; else if (L.now === 'center') ns.top = (top + (fh - nh) / 2) + 'px';
+  schedDecor();
+}
+/* Disposition mobile (portrait) : la météo du moment en haut, les jours, puis les heures en bas */
+function layoutMob() {
+  const SHh = stage.offsetHeight || 800, P = {t: 122, b: 22, l: 18, r: 18}, tk = stage.classList.contains('tk'), vb = P.b + (tk ? 26 : 0);
+  ['v1', 'v2', 'v3'].forEach(id => { const s = $(id).style; s.top = P.t + 'px'; s.bottom = vb + 'px'; s.left = P.l + 'px'; s.right = P.r + 'px'; });
+  const ts = $('tick').style; ts.bottom = (P.b - 10) + 'px'; ts.left = P.l + 'px'; ts.right = P.r + 'px';
+  const W = 480 - P.l - P.r, H = SHh - P.t - vb, HH = 92, G = 14;
+  const now = $('now'), days = $('days'), hrs = $('hours'), hOn = !!cfg.show.hours, dOn = !!cfg.show.days, ns = now.style, ds = days.style, hs = hrs.style;
+  stage.dataset.lay = 'mob'; let bot = H;
+  hs.left = '0'; hs.right = '0'; hs.height = HH + 'px'; hs.top = 'auto'; hs.bottom = '0'; if (hOn) bot -= HH + G;
+  if (dOn) {
+    days.className = stage.dataset.hud && stage.dataset.hud !== 'glass' ? 'pnl' : 'glass mobd'; ds.left = '0'; ds.right = '0'; ds.width = 'auto'; ds.height = 'auto'; ds.top = 'auto'; ds.transform = '';
+    days.querySelectorAll('.day').forEach(e => e.classList.remove('glass'));
+    ds.bottom = (hOn ? HH + G : 0) + 'px'; bot -= days.offsetHeight + G;
+  }
+  ns.left = '0'; ns.width = W + 'px'; ns.top = '0'; ns.textAlign = 'left'; ns.transform = 'none'; ns.transformOrigin = 'top left';
+  $('temp').style.fontSize = Math.round(118 * (SZ[cfg.layout.size] || 1) * (HT.tempScale || 1)) + 'px';
+  const fh = Math.max(60, bot); now.classList.remove('cp'); let nh = now.offsetHeight || 1;
+  const k = Math.min(1, (fh + 8) / nh); if (k < 1) ns.transform = 'scale(' + k.toFixed(3) + ')'; else ns.top = Math.max(0, (fh - nh) * .35) + 'px';
   schedDecor();
 }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layoutHud());
@@ -5474,7 +5509,8 @@ const TC4 = []; for (let a = 0; a < 4; a++) for (let s = 0; s < 2; s++) { const 
 /* place de chaque cube dans le patron (la croix) : x−, x+, y−, y+, z−, z+, w− (centre), w+ (au bout) */
 const TNETPOS = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1], [0, 0, 0], [0, 2, 0]];
 const TCELLCOL = ['90,240,255', '120,200,255', '255,90,220', '255,140,235', '255,214,90', '255,180,120', '190,170,255', '255,255,255'];
-function tesPos() { const l = stage.dataset.lay; return l === 'center' ? [655, 150] : l === 'left-row' ? [625, 200] : l === 'right-row' ? [175, 200] : l === 'right' ? [480, 160] : [332, 146]; }
+const tesCov = () => +stage.style.getPropertyValue('--cov') || 1, tesK = () => stage.classList.contains('mob') ? 1.25 / tesCov() : 1;
+function tesPos() { if (stage.classList.contains('mob') && typeof SH !== 'undefined') { const c = tesCov(); return [400 + (480 * .64 - 240) / c, 240 + (SH * .5 - SH / 2) / c]; } const l = stage.dataset.lay; return l === 'center' ? [655, 150] : l === 'left-row' ? [625, 200] : l === 'right-row' ? [175, 200] : l === 'right' ? [480, 160] : [332, 146]; }
 const tcl = x => x < 0 ? 0 : x > 1 ? 1 : x, tez = x => x <= 0 ? 0 : x >= 1 ? 1 : x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 /* projection 4D → 3D → 2D. A = angles des 6 plans de rotation */
 function tes4(A, cx, cy, sc, dw = 3, dz = 2.2, V = TV4) {
@@ -5592,7 +5628,7 @@ function drawTes(P, t) {
   TSX.dust.forEach(d => { d.x += d.dx * SPD; d.y += d.dy * SPD; if (d.x < 0) d.x += 800; if (d.x > 800) d.x -= 800; if (d.y < 0) d.y += 480; if (d.y > 480) d.y -= 480; const w = Math.sin(T * d.f + d.p), a = Math.exp(-w * w * 9); if (a < .03) return; const r = 1 + a * 3.2; f.fillStyle = `rgba(${TCOL[d.c]},${(a * .7).toFixed(2)})`; f.beginPath(); f.moveTo(d.x, d.y - r * 2); f.lineTo(d.x + r * .4, d.y); f.lineTo(d.x, d.y + r * 2); f.lineTo(d.x - r * .4, d.y); f.closePath(); f.moveTo(d.x - r * 2, d.y); f.lineTo(d.x, d.y + r * .4); f.lineTo(d.x + r * 2, d.y); f.lineTo(d.x, d.y - r * .4); f.closePath(); f.fill(); });
   f.restore();
   /* --- le tesseract --- */
-  const a = TSX.a, A = {xw: a * .9, yw: a * .55, zw: a * .37, xz: .52 + Math.sin(a * .2) * .15, yz: -.35}, sc = 205 * (1 + boost * .15);
+  const a = TSX.a, A = {xw: a * .9, yw: a * .55, zw: a * .37, xz: .52 + Math.sin(a * .2) * .15, yz: -.35}, sc = 205 * tesK() * (1 + boost * .15);
   let ev = TSX.ev, q = 0; if (ev) { q = (t - ev.t) / ev.d; if (q >= 1) { TSX.ev = ev = null; q = 0; } }
   let chroma = 1.2 + boost * 3, mode = 'main';
   if (ev && ev.k === 'inv') { A.xw += Math.PI * tez(q); chroma += 5 * Math.sin(q * Math.PI); }
@@ -5613,7 +5649,7 @@ function drawTes(P, t) {
     tesDraw(f, PP, {al: ev && ev.k === 'slice' ? .55 : .95, lw: 1.5, faces: .045, chroma});
     if (ev && ev.k === 'slice') { TSX.sliceW = -1.5 + tez(q) * 3; tesSlice(f, PP, TSX.sliceW, Math.sin(tcl(q) * Math.PI)); }
   }
-  tesCompass(f, cx + 112, cy0 - 64, A, .7);
+  if (tesK() < 1) { const k = tesK(); f.save(); f.translate(cx + 100 * k, cy0 - 60 * k); f.scale(k, k); tesCompass(f, 0, 0, A, .7); f.restore(); } else tesCompass(f, cx + 112, cy0 - 64, A, .7);
 }
 const tesW = () => { const w = Math.sin(TSX.a * .9); return (w >= 0 ? '+' : '−') + Math.abs(w).toFixed(3); };
 let tesLast = '';
@@ -5770,7 +5806,7 @@ Object.assign(SIG, {
 setInterval(() => { if (HT.id !== 'tes' || typeof CTX === 'undefined' || !CTX) return; const k = $('kick'); if (k) { const s = HT.v.kick(CTX); if (k.textContent !== s) k.textContent = s; k.classList.toggle('ev', !!TSX.ev); } }, 250);
 const TSQ = ['Tu ne vois que son ombre en 3D.', 'Un cube fait de 8 cubes.', '16 sommets, 32 arêtes, 24 carrés, 8 cubes.', 'Il ne tourne pas : c\'est toi qui le regardes de travers.', 'Bienvenue dans la quatrième dimension.', 'Les points qui clignotent traversent notre dimension.'];
 stage.addEventListener('pointerdown', e => {
-  if (HT.id !== 'tes') return; const s = stage.getBoundingClientRect(), k = s.width / 800, x = (e.clientX - s.left) / k, y = (e.clientY - s.top) / k, [cx, cy] = tesPos();
+  if (HT.id !== 'tes') return; const s = stage.getBoundingClientRect(), mob = stage.classList.contains('mob'), k = s.width / (mob ? 480 : 800), c = mob ? tesCov() : 1, sx = (e.clientX - s.left) / k, sy = (e.clientY - s.top) / k, x = mob ? 400 + (sx - 240) / c : sx, y = mob ? 240 + (sy - stage.offsetHeight / 2) / c : sy, [cx, cy] = tesPos();
   if (Math.hypot(x - cx, y - cy) < 110) { TSX.spin = performance.now(); if (!TSX.ev) tesEvent(performance.now()); if (typeof toast === 'function') toast(TSQ[Math.random() * TSQ.length | 0]); }
 });
 EGGS.tescin = () => tesCinematic(HT.id === 'tes');
@@ -7329,7 +7365,22 @@ function applyRemote(j) {
 
 
 /* ===== Démarrage ===== */
-function fit() { const s = Math.min(innerWidth / 800, innerHeight / 480); stage.style.transform = `translate(${(innerWidth - 800 * s) / 2}px,${(innerHeight - 480 * s) / 2}px) scale(${s})`; }
+/* Version mobile : en portrait (téléphone), l'écran passe en colonne (480 px de large).
+   Les cinématiques gardent leur format 800 × 480 et s'affichent dans un bandeau au milieu. ?mobile=1 / ?mobile=0 pour forcer. */
+let MOBV = null, SW = 800, SH = 480;
+const MBOX = document.createElement('div'); MBOX.id = 'mbox';
+const MFIT = ['boot', 'lboot', 'roll', 'tsc', 'abc', 'crc', 'vdc', 'infc', 'x0sc', 'nvc', 'prc', 'trc', 'x0c', 'xrv', 'gnc', 'x0b'];
+new MutationObserver(ms => { if (!MOBV) return; ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1 && MFIT.includes(n.id)) { if (!MBOX.isConnected) stage.appendChild(MBOX); MBOX.appendChild(n); } })); }).observe(stage, {childList: true});
+function fit() {
+  const q = QS.get('mobile'), mob = !PV && q !== '0' && (q === '1' || (innerHeight > innerWidth * 1.15 && innerWidth < 1000));
+  if (mob) { SW = 480; SH = Math.round(Math.max(720, Math.min(1100, 480 * innerHeight / Math.max(1, innerWidth)))); } else { SW = 800; SH = 480; }
+  const ch = mob !== MOBV || stage.offsetHeight !== SH; MOBV = mob;
+  stage.classList.toggle('mob', mob); stage.style.width = SW + 'px'; stage.style.height = SH + 'px';
+  const fk = SW / 800; stage.style.setProperty('--cov', Math.max(SW / 800, SH / 480).toFixed(4));
+  MBOX.style.transform = `translate(0px,${((SH - 480 * fk) / 2).toFixed(1)}px) scale(${fk.toFixed(4)})`;
+  const s = Math.min(innerWidth / SW, innerHeight / SH); stage.style.transform = `translate(${(innerWidth - SW * s) / 2}px,${(innerHeight - SH * s) / 2}px) scale(${s})`;
+  if (ch && MOBV !== null) { try { if (typeof layoutHud === 'function' && typeof cfg !== 'undefined' && cfg.layout) layoutHud(); } catch (e) {} try { if (typeof map !== 'undefined' && map) setTimeout(() => map.invalidateSize(), 300); } catch (e) {} }
+}
 addEventListener('resize', fit); fit();
 let skipB = false; try { skipB = sessionStorage.getItem('skipBoot') === '1'; sessionStorage.removeItem('skipBoot'); } catch (e) {}
 if (!PV && !QS.get('noboot') && !skipB) runBoot();
