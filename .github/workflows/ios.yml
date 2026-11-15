@@ -1,0 +1,40 @@
+name: Build iOS (.ipa non signé)
+on:
+  workflow_dispatch:
+  push:
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+      - name: Générer le projet
+        working-directory: ios
+        run: xcodegen generate
+      - name: Compiler (sans signature)
+        working-directory: ios
+        run: |
+          xcodebuild -project Meteo.xcodeproj -scheme Meteo -configuration Release \
+            -sdk iphoneos -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: Fabriquer le .ipa
+        working-directory: ios
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/Meteo.app Payload/
+          zip -qr Meteo.ipa Payload
+          ls -lh Meteo.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Meteo-ipa
+          path: ios/Meteo.ipa
+      - name: Publier en Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete ios-latest --yes --cleanup-tag || true
+          gh release create ios-latest ios/Meteo.ipa --title "Appli iOS (dernière version)" --notes "IPA non signé, à ouvrir avec LiveContainer."
