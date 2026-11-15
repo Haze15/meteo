@@ -29,6 +29,7 @@ targets:
     type: app-extension
     platform: iOS
     sources: [MeteoWidget]
+    deploymentTarget: "16.0"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.haze15.meteo.widget
