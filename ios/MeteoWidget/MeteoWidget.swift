@@ -20,11 +20,43 @@ struct WeatherEntry: TimelineEntry {
     let isDay: Bool
     let unit: String
     let days: [DayForecast]
+    var bg: [Color] = []
+    var ang: Double = 170
+    var ink: Color = .white
+}
+
+func hexColor(_ h: String) -> Color? {
+    let t = h.replacingOccurrences(of: "#", with: "")
+    guard t.count == 6, let n = Int(t, radix: 16) else { return nil }
+    return Color(red: Double(n >> 16 & 255) / 255, green: Double(n >> 8 & 255) / 255, blue: Double(n & 255) / 255)
+}
+func luminance(_ h: String) -> Double {
+    let t = h.replacingOccurrences(of: "#", with: "")
+    guard let n = Int(t, radix: 16) else { return 0 }
+    return (0.299 * Double(n >> 16 & 255) + 0.587 * Double(n >> 8 & 255) + 0.114 * Double(n & 255)) / 255
+}
+
+// Même choix de thème que l'écran (engine.js : stateFor)
+func themeKey(code k: Int, day: Bool, tempC: Double, gust: Double, wx: [String: Any]) -> String {
+    let windG = (wx["windG"] as? Double) ?? 70, blizG = (wx["blizG"] as? Double) ?? 55, heat = (wx["heat"] as? Double) ?? 32
+    if k >= 96 { return "hail" }
+    if k == 95 { return "storm" }
+    if [56, 57, 66, 67].contains(k) { return "sleet" }
+    if (71...77).contains(k) || k == 85 || k == 86 { return (k == 75 || k == 86 || gust >= blizG) ? "blizzard" : "snow" }
+    if k == 45 || k == 48 { return "fog" }
+    if (51...55).contains(k) { return "drizzle" }
+    if (61...67).contains(k) || (80...82).contains(k) { return "rain" }
+    if gust >= windG { return "wind" }
+    if day && tempC >= heat { return "heat" }
+    if (wx["frost"] as? Bool ?? true) && tempC <= 0 { return "frost" }
+    if !day && k == 3 && (wx["cloudnight"] as? Bool ?? true) { return "cloudnight" }
+    return k <= 2 ? (day ? "clear" : "night") : "cloudy"
 }
 
 extension WeatherEntry {
     static let placeholder = WeatherEntry(
         date: Date(), place: "Météo", temp: 14, feels: 12, code: 2, isDay: true, unit: "°",
+        bg: [Color(red: 0.11, green: 0.42, blue: 0.90), Color(red: 0.34, green: 0.69, blue: 1.0), Color(red: 0.75, green: 0.90, blue: 1.0)],
         days: [
             DayForecast(label: "Lun", code: 3, tmax: 15, tmin: 9),
             DayForecast(label: "Mar", code: 61, tmax: 13, tmin: 8),
@@ -84,15 +116,17 @@ struct Loader {
 
     static func load() async -> WeatherEntry {
         var lat = 47.978, lon = -4.084, fahrenheit = false, place = "Météo"
+        var cfgJSON: [String: Any] = [:]
         if let (d, _) = try? await URLSession.shared.data(from: configURL),
            let j = try? JSONSerialization.jsonObject(with: d) as? [String: Any] {
+            cfgJSON = j
             if let v = j["lat"] as? Double { lat = v }
             if let v = j["lon"] as? Double { lon = v }
             if let u = j["unit"] as? String, u == "F" { fahrenheit = true }
             if let n = j["name"] as? String, !n.trimmingCharacters(in: .whitespaces).isEmpty { place = n }
         }
         let u = "https://api.open-meteo.com/v1/forecast?latitude=\(lat)&longitude=\(lon)"
-            + "&current=temperature_2m,apparent_temperature,weather_code,is_day"
+            + "&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_gusts_10m"
             + "&daily=weather_code,temperature_2m_max,temperature_2m_min"
             + "&timezone=auto&forecast_days=5"
             + (fahrenheit ? "&temperature_unit=fahrenheit" : "")
@@ -114,13 +148,28 @@ struct Loader {
             let lab = f.date(from: dates[i]).map { o.string(from: $0).replacingOccurrences(of: ".", with: "").capitalized } ?? "—"
             days.append(DayForecast(label: lab, code: codes[i], tmax: Int(tmax[i].rounded()), tmin: Int(tmin[i].rounded())))
         }
+        let t = (cur["temperature_2m"] as? Double) ?? 0
+        let code = (cur["weather_code"] as? Int) ?? 0
+        let day = ((cur["is_day"] as? Int) ?? 1) == 1
+        let tempC = fahrenheit ? (t - 32) / 1.8 : t
+        let themes = cfgJSON["themes"] as? [String: Any] ?? [:]
+        var key = themeKey(code: code, day: day, tempC: tempC, gust: (cur["wind_gusts_10m"] as? Double) ?? 0, wx: cfgJSON["wx"] as? [String: Any] ?? [:])
+        if let force = cfgJSON["force"] as? String, force != "auto", themes[force] != nil { key = force }
+        var bg: [Color] = [], hexes: [String] = [], ang = 170.0
+        if let th = themes[key] as? [String: Any] {
+            hexes = (th["c"] as? [String]) ?? []
+            bg = hexes.compactMap(hexColor)
+            if let a = th["ang"] as? Double { ang = a }
+        }
+        if bg.count < 2 { bg = colors(code, day: day); hexes = [] }
+        let light = hexes.isEmpty ? false : (hexes.map(luminance).reduce(0, +) / Double(hexes.count)) > 0.68
         return WeatherEntry(
             date: Date(), place: place,
-            temp: Int(((cur["temperature_2m"] as? Double) ?? 0).rounded()),
+            temp: Int(t.rounded()),
             feels: Int(((cur["apparent_temperature"] as? Double) ?? 0).rounded()),
-            code: (cur["weather_code"] as? Int) ?? 0,
-            isDay: ((cur["is_day"] as? Int) ?? 1) == 1,
-            unit: fahrenheit ? "°F" : "°", days: days)
+            code: code, isDay: day,
+            unit: fahrenheit ? "°F" : "°", days: days,
+            bg: bg, ang: ang, ink: light ? Color(red: 0.08, green: 0.12, blue: 0.2) : .white)
     }
 }
 
@@ -152,7 +201,7 @@ struct SmallView: View {
             Text("\(e.temp)\(e.unit)").font(.system(size: 40, weight: .light))
             Text(label(e.code)).font(.caption2).lineLimit(1)
         }
-        .foregroundColor(.white)
+        .foregroundColor(e.ink)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 }
@@ -173,7 +222,7 @@ struct MediumView: View {
                     }
                 }
             }
-            .foregroundColor(.white)
+            .foregroundColor(e.ink)
             .frame(maxWidth: .infinity)
         }
     }
@@ -184,7 +233,7 @@ struct WidgetView: View {
     let e: WeatherEntry
 
     var body: some View {
-        content.modifier(WidgetBG(colors: colors(e.code, day: e.isDay)))
+        content.modifier(WidgetBG(colors: e.bg, ang: e.ang))
     }
 
     @ViewBuilder var content: some View {
@@ -205,13 +254,19 @@ struct WidgetView: View {
 
 struct WidgetBG: ViewModifier {
     let colors: [Color]
+    let ang: Double
+    // Angle CSS (180 = de haut en bas) -> points de départ/arrivée
+    var grad: LinearGradient {
+        let r = ang * .pi / 180, dx = sin(r), dy = -cos(r)
+        return LinearGradient(colors: colors,
+            startPoint: UnitPoint(x: 0.5 - dx / 2, y: 0.5 - dy / 2),
+            endPoint: UnitPoint(x: 0.5 + dx / 2, y: 0.5 + dy / 2))
+    }
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
-            content.containerBackground(for: .widget) {
-                LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
-            }
+            content.containerBackground(for: .widget) { grad }
         } else {
-            content.padding().background(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+            content.padding().background(grad)
         }
     }
 }
