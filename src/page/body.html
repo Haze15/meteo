@@ -1,0 +1,41 @@
+</style>
+</head>
+<body>
+<div id="stage" data-w="clear">
+  <div id="ovb"></div>
+  <div id="deco"></div>
+  <canvas id="fx" width="800" height="480"></canvas>
+  <div id="under"></div>
+  <div id="fl"></div>
+  <div id="ovt"></div>
+  <div id="scan"></div>
+  <header>
+    <div><div id="city"></div><div id="date"></div></div>
+    <div class="tabs glass"><button id="n1" class="on">Météo</button><button id="n2">Radar</button><button id="n3">Infos</button></div>
+  </header>
+  <div id="fest" class="glass"></div>
+  <section class="view on" id="v1">
+    <div id="now"><div id="kick"></div><div id="ic"></div><div id="temp">--°</div><div id="desc">Chargement…</div><div id="hl"></div><div id="mt"></div><div id="al"></div></div>
+    <div id="days"></div>
+    <div id="hours" class="glass"></div>
+  </section>
+  <section class="view glass" id="v2">
+    <div id="map"></div>
+    <div class="pill" id="leg">Radar <b></b></div>
+    <div class="pill" id="ctl">
+      <button id="play" aria-label="Lecture"><svg id="pi" width="20" height="20" viewBox="0 0 24 24"></svg></button>
+      <input type="range" id="rg" min="0" max="12" value="12" aria-label="Temps">
+      <span id="tl">--:--</span>
+      <button class="chip on" id="cp">Pluie</button><button class="chip on" id="cl">Orages</button>
+    </div>
+  </section>
+  <section class="view" id="v3"></section>
+  <div id="tick" class="glass"><span id="tks"></span></div>
+  <div id="shelf"></div>
+  <div id="deco2"></div>
+  <div id="eggs"></div>
+  <div id="note" class="glass"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>

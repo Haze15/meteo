@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07051a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Admin Météo">
+<link rel="manifest" href="admin.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
+<title>Admin – Météo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Cinzel:wght@700&family=VT323&family=Orbitron:wght@500&family=Press+Start+2P&family=Special+Elite&family=Playfair+Display:wght@900&family=Creepster&family=Bangers&family=Caveat:wght@700&family=Gochi+Hand&family=Rye&family=Poiret+One&family=Monoton&family=Share+Tech+Mono&family=Silkscreen&family=Fredoka:wght@600&family=Architects+Daughter&family=Mountains+of+Christmas:wght@700&family=Oswald:wght@600&family=Tilt+Neon&family=Dela+Gothic+One&family=Noto+Serif+JP:wght@900&family=JetBrains+Mono:wght@400;700&family=Shippori+Mincho+B1:wght@800&family=Yuji+Syuku&family=Bodoni+Moda:ital,wght@1,900&family=Nunito:wght@600;800;900&display=swap">
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--tx:#000;--dim:#8a8a8e;--ln:#e5e5ea;--ac:#007aff;--ok:#34c759;--bad:#ff3b30}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--tx:#fff;--dim:#8e8e93;--ln:#38383a;--ac:#0a84ff}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:15px}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--ln)}
+.bar{display:flex;align-items:center;gap:16px;padding:12px 28px 6px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+#st{flex:1;min-width:0;font-size:13px;color:var(--dim);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nav{display:flex;gap:4px;padding:4px 24px 10px;overflow-x:auto}
+#nav button{padding:7px 16px;border:0;border-radius:999px;background:none;color:var(--dim);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+#nav button.on{background:var(--ac);color:#fff}
+main{padding:20px 28px 48px}
+main.dock{padding-right:440px}
+.pg{display:none}.pg.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start}
+.card,.w{background:var(--card);border:1px solid var(--ln);border-radius:14px;overflow:hidden}
+.card>h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);padding:14px 16px 0;font-weight:600}
+.card+.card{margin-top:16px}.cards .card+.card{margin-top:0}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 14px;padding:14px 16px 16px;align-items:end}
+.g.s{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;padding:12px 14px 14px}
+.g.s .row input,.g.s .row select{padding:7px 6px;font-size:13px}
+.rpool{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 16px}.rpool label{display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 9px;border-radius:8px;border:1px solid var(--ln);border-left:4px solid var(--rc);cursor:pointer}.rpool input{accent-color:var(--rc)}
+.hx .sw{background:radial-gradient(circle at 50% 50%,#2a1650,#05030c 70%)!important;color:#fff;justify-content:center!important;gap:14px}
+.hx .sw b{font-size:40px;background:linear-gradient(90deg,#ff6bd5,#ffd36b,#6bffb8,#6bc8ff,#b56bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hx .sw i{color:#d9cfff;letter-spacing:.3em}
+.hvoid .sw{background:#f4f1ea!important;color:#141418!important}.hvoid .sw b{font-size:44px;-webkit-text-fill-color:#141418!important;background:none!important;font-weight:300}.hvoid .sw i{color:#888!important}
+.hcrea{grid-column:span 2;border:2px solid transparent!important;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(115deg,#fff,#c8a2ff,#8fe9ff,#fff3c4,#ff9ad5,#fff) border-box!important}
+.hcrea .sw{height:110px!important;justify-content:center!important;gap:18px;background:radial-gradient(ellipse at 50% 55%,#2a2060 0,#0b0820 55%,#020108 100%)!important}
+.hcrea .sw b{font-size:62px!important;background:linear-gradient(110deg,#fff,#d8b8ff 30%,#9fe8ff 50%,#fff3c4 70%,#fff)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;filter:drop-shadow(0 0 14px rgba(200,170,255,.8))}
+.hcrea .sw i{color:#e8e0ff!important;letter-spacing:.32em;font-weight:700;font-size:11px!important}
+.hcrea .nm{font-size:16px}
+@media(max-width:700px){.hcrea{grid-column:auto}}
+.htrain .sw{background:linear-gradient(135deg,#f6e2a8,#d8b46a 40%,#a87d34 60%,#f3d98f)!important;color:#3a2410!important}.htrain .sw b{font-size:44px;background:none!important;-webkit-text-fill-color:initial!important}.htrain .sw i{color:#3a2410!important;letter-spacing:.2em;font-weight:800}.htrain{outline:2px solid #d8b46a;outline-offset:-2px}
+.hx0s .sw{background:radial-gradient(circle at 50% 50%,#fff 0 4%,#9ff0ff 7%,#c58bff 18%,#1a0c3a 45%,#04020c 75%)!important}.hx0s .sw b{font-size:46px;background:none!important;-webkit-text-fill-color:initial!important;filter:drop-shadow(0 0 12px #9ff0ff)}.hx0s .sw i{color:#e6f8ff!important;letter-spacing:.4em;font-weight:800}.hx0s{outline:2px solid #9ff0ff;outline-offset:-2px}
+.haby .sw{background:radial-gradient(ellipse at 50% 55%,#bffaff 0,#3fd8ff 7%,#0a4f8a 26%,#03132a 55%,#00060d 80%)!important}.haby .sw b{font-size:48px;color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;text-shadow:0 0 18px #5ff4ff,0 0 40px #7a5cff}.haby .sw i{color:#bffaff!important;letter-spacing:.2em}.haby{outline:2px solid #5ff4ff;outline-offset:-2px}
+.hgen .sw{background:radial-gradient(ellipse at 50% 50%,#fff3d6 0,#ffcf7a 6%,#7a5cff 22%,#160f3a 55%,#04030c 80%)!important}.hgen .sw b{font-size:48px;color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;text-shadow:0 0 18px #ffd98a,0 0 40px #b08cff}.hgen .sw i{color:#ffe7b0!important;letter-spacing:.2em}.hgen{outline:2px solid #ffd98a;outline-offset:-2px}
+.htes .sw{background:radial-gradient(circle at 50% 45%,#2a1a6a,#07051a 70%)!important;box-shadow:inset 0 0 0 1px rgba(90,240,255,.5),inset 0 0 0 6px #07051a,inset 0 0 0 7px rgba(255,90,220,.45)}.htes .sw b{font-size:48px;background:linear-gradient(90deg,#5af0ff,#ff5adc,#ffd65a)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important}
+.hinf .sw{background:conic-gradient(from 0deg,#2a0f4a,#0f2a4a,#2a0f4a)!important}.hinf .sw b{font-size:46px}
+.hxr .sw{background:repeating-linear-gradient(-45deg,#ff7a00 0 10px,#111 10px 20px)!important;justify-content:center!important;gap:10px}
+.hxr .sw b{font-size:30px;background:#111;border-radius:50%;padding:4px 8px}
+.hxr .sw i{background:#111;color:#ff7a00;padding:2px 8px;font-weight:800;letter-spacing:.06em;font-style:normal;font-size:10px}
+.hx{border-image:linear-gradient(90deg,#ff6bd5,#ffd36b,#6bffb8,#6bc8ff,#b56bff) 1}
+.sbtn{display:flex;flex-wrap:wrap;gap:6px}
+.mpv{display:flex;gap:14px;align-items:flex-start}
+#mthumb{flex:none;width:110px;height:110px;border-radius:12px;border:1px solid var(--ln);background:repeating-conic-gradient(rgba(127,127,127,.18) 0 25%,transparent 0 50%) 0 0/16px 16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#mthumb img,#mthumb svg{max-width:96px;max-height:96px}
+.mbt{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+code{font-size:11px;background:var(--bg);padding:1px 5px;border-radius:4px}
+.row{display:flex;flex-direction:column;gap:5px;min-width:0}
+.row label{font-size:12px;font-weight:500;color:var(--dim)}
+.row.col,.row.full{grid-column:1/-1}
+.row input,.row select,.row textarea{width:100%;padding:8px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-size:14px;text-align:left;outline:0}
+.row input:focus,.row select:focus,.row textarea:focus{border-color:var(--ac)}
+.row textarea{resize:vertical;min-height:54px}
+.row input[type=color]{padding:2px;height:34px;cursor:pointer}
+.row input[type=color].auto{opacity:.3}
+.row input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--ac)}
+.row input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac)}
+.rg{display:flex;align-items:center;gap:8px}.rg span{font-size:12px;color:var(--dim);min-width:30px;text-align:right;font-variant-numeric:tabular-nums}
+.row>span{font-size:14px;padding:8px 0}
+.cc{display:flex;gap:8px;align-items:center}
+.pv{grid-column:1/-1;height:14px;border-radius:7px}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start}
+.items.wide{grid-template-columns:repeat(auto-fill,minmax(390px,1fr))}
+.wh{display:flex;align-items:center;gap:4px;padding:6px 8px 6px 14px;border-bottom:1px solid var(--ln);font-weight:600}
+.wh span{flex:1}
+.wh input.nm{flex:1;min-width:0;border:0;background:none;color:var(--tx);font:inherit;font-weight:600;padding:5px 0;outline:0}
+details.adv{grid-column:1/-1;border-top:1px dashed var(--ln);padding-top:8px}
+details.adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ac);list-style:none;padding:2px 0}
+details.adv summary::before{content:"▸ "}details.adv[open] summary::before{content:"▾ "}
+details.adv .g{padding:10px 0 0}
+.tb{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.tb select{padding:8px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;font-size:14px}
+.tb .foot{flex:1;min-width:240px}
+.foot{color:var(--dim);font-size:13px;line-height:1.45}
+.foot.pad{padding:0 16px 14px}
+.btn{padding:9px 18px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.s{background:var(--card);color:var(--ac);border:1px solid var(--ln)}
+.btn.d{background:var(--card);color:var(--bad);border:1px solid var(--ln)}
+.btn.xs{padding:5px 10px;font-size:12px;border-radius:8px}
+.mini{border:0;background:none;color:var(--ac);font-size:14px;cursor:pointer;padding:4px 8px}
+.mini.on{background:var(--ac);color:#fff;border-radius:8px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--dim);margin-right:6px}
+.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}
+#ex{min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+/* Galerie des styles */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:14px 16px 16px}
+.hc{border:2px solid var(--ln);border-radius:12px;overflow:hidden;cursor:pointer;background:var(--card);text-align:left;padding:0;color:var(--tx);font:inherit;transition:transform .15s}
+.hc:hover{transform:translateY(-2px)}
+.hc.on{border-color:var(--ac);box-shadow:0 0 0 3px rgba(10,132,255,.25)}
+.hc .sw{height:84px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;overflow:hidden}
+.hc .sw b{font-size:42px;line-height:1;white-space:nowrap}
+.hc .sw i{font-style:normal;font-size:13px;opacity:.9;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hc .nm{padding:8px 12px 2px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;gap:6px}
+.hc .nm em{font-style:normal;font-size:11px;color:var(--ac)}
+.hc .tg{padding:0 12px 10px;font-size:12px;color:var(--dim);line-height:1.35}
+.vars{padding:0 16px 16px}.vars summary{cursor:pointer;color:var(--ac);font-weight:600;font-size:13px;padding:6px 0}
+.vars .vl{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px}
+/* Surprises */
+.egl{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.eg{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.eg .t{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.eg .t span{flex:1}
+.eg p{font-size:13px;color:var(--dim);line-height:1.45}
+.eg .b{display:flex;flex-wrap:wrap;gap:6px}
+.sw2{position:relative;width:44px;height:26px;flex:none}
+.sw2 input{position:absolute;opacity:0;inset:0;cursor:pointer;z-index:1}
+.sw2 i{position:absolute;inset:0;border-radius:13px;background:var(--ln);transition:.2s}
+.sw2 i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.2s}
+.sw2 input:checked+i{background:var(--ok)}.sw2 input:checked+i::after{transform:translateX(18px)}
+/* Aperçu flottant */
+#dock{position:fixed;right:18px;bottom:18px;width:404px;z-index:30;background:var(--card);border:1px solid var(--ln);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden;display:none}
+#dock.on{display:block}
+#dock .dh{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;font-size:12px;font-weight:600;color:var(--dim)}
+#dock .dh span{flex:1}
+#dbox{position:relative;width:100%;aspect-ratio:5/3;overflow:hidden;background:#000}
+#dbox iframe,#pvbox iframe{position:absolute;left:0;top:0;width:800px;height:480px;border:0;transform-origin:0 0;pointer-events:none}
+#pvforce{display:none;font-size:11px;padding:4px 12px;background:var(--ac);color:#fff}
+#pvforce.on{display:block}
+@media(max-width:1100px){main.dock{padding-right:28px}#dock{width:300px}}
+/* =================== ♛ SKIN CRÉATEUR (admin) =================== */
+@property --hra{syntax:'<angle>';inherits:false;initial-value:0deg}
+html.crea{color-scheme:dark;--bg:#07051a;--card:rgba(20,15,44,.66);--tx:#f4f1ff;--dim:#a8a0cc;--ln:rgba(200,180,255,.16);--ac:#c4a3ff;--ok:#5fe3a1;--bad:#ff6b8a;--holo:linear-gradient(110deg,#fff 0%,#e3ccff 18%,#a8ecff 36%,#fff 50%,#fff0c2 64%,#ffb8e2 82%,#fff 100%)}
+html.crea body{background:radial-gradient(ellipse 80% 60% at 15% 0%,rgba(140,90,255,.22),transparent 60%),radial-gradient(ellipse 70% 60% at 100% 30%,rgba(60,200,255,.12),transparent 60%),radial-gradient(ellipse 70% 60% at 40% 110%,rgba(255,110,200,.12),transparent 60%),#05030f;background-attachment:fixed;min-height:100vh}
+html.crea body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 120px 80px,#cfc4ff,transparent),radial-gradient(1.4px 1.4px at 200px 160px,#fff,transparent),radial-gradient(1px 1px at 300px 40px,#a8ecff,transparent),radial-gradient(1px 1px at 360px 220px,#fff,transparent),radial-gradient(1.2px 1.2px at 80px 260px,#ffd9ef,transparent);background-size:400px 300px;animation:crstars 120s linear infinite}
+@keyframes crstars{to{background-position:400px 300px}}
+html.crea body::after{content:"";position:fixed;left:-20%;top:-30%;width:140%;height:90%;pointer-events:none;z-index:0;background:conic-gradient(from var(--hra) at 50% 50%,transparent,rgba(170,120,255,.10),transparent 30%,rgba(90,220,255,.08),transparent 60%,rgba(255,120,210,.08),transparent);filter:blur(60px);animation:crhra 40s linear infinite}
+@keyframes crhra{to{--hra:360deg}}
+html.crea header.top,html.crea main,html.crea #dock{position:relative;z-index:1}
+html.crea header.top{position:sticky;background:rgba(7,5,24,.72);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(200,170,255,.6),rgba(140,230,255,.6),rgba(255,180,220,.6),transparent) 1;z-index:20}
+html.crea h1{font-family:Cinzel,serif;font-weight:700;letter-spacing:.08em;font-size:21px;background:var(--holo) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:crsh 9s linear infinite}
+html.crea h1::before{content:"♛ ";-webkit-text-fill-color:#fff;text-shadow:0 0 14px #c8a2ff}
+@keyframes crsh{to{background-position:-300% 0}}
+html.crea #st{color:#bfb6e6}
+html.crea #nav button{color:#b9b0dd;transition:color .2s,background .2s,box-shadow .2s}
+html.crea #nav button:hover{color:#fff;background:rgba(255,255,255,.06)}
+html.crea #nav button.on{background:var(--holo) 0 0/300% 100%;color:#120c28;box-shadow:0 0 18px rgba(200,170,255,.45);animation:crsh 9s linear infinite}
+html.crea .card,html.crea .w,html.crea .eg{background:var(--card);border:1px solid var(--ln);border-radius:18px;backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 18px 50px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);position:relative}
+html.crea .card::before,html.crea .eg::before{content:"";position:absolute;left:18px;right:18px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,170,255,.8),rgba(140,230,255,.8),rgba(255,190,225,.8),transparent);opacity:.8;pointer-events:none}
+html.crea .card>h3{color:#dccdff;letter-spacing:.16em;font-weight:700}
+html.crea .card>h3::before{content:"◆ ";color:#a8ecff;font-size:9px;vertical-align:2px}
+html.crea .row label{color:#b6aedb}
+html.crea .row input,html.crea .row select,html.crea .row textarea,html.crea .tb select{background:rgba(255,255,255,.05);border:1px solid rgba(200,180,255,.2);color:var(--tx);border-radius:10px;transition:border-color .2s,box-shadow .2s,background .2s}
+html.crea .row input:focus,html.crea .row select:focus,html.crea .row textarea:focus{border-color:#c4a3ff;box-shadow:0 0 0 3px rgba(196,163,255,.18),0 0 18px rgba(196,163,255,.2);background:rgba(255,255,255,.08)}
+html.crea option{background:#120e2a;color:#fff}
+html.crea .btn{background:linear-gradient(110deg,#d6bcff,#a8ecff 55%,#ffd2ec) 0 0/200% 100%;color:#120c28;box-shadow:0 6px 20px rgba(168,140,255,.3);transition:transform .15s,box-shadow .2s,background-position .6s}
+html.crea .btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(168,140,255,.45);background-position:100% 0}
+html.crea .btn.s{background:rgba(255,255,255,.05);color:#e2d6ff;border:1px solid rgba(200,180,255,.28);box-shadow:none}
+html.crea .btn.s:hover{background:rgba(200,170,255,.12);border-color:rgba(200,180,255,.5)}
+html.crea .btn.d{background:rgba(255,80,120,.08);color:#ff8aa6;border:1px solid rgba(255,107,138,.35);box-shadow:none}
+html.crea .mini{color:#c4a3ff}
+html.crea .mini.on{background:var(--ac);color:#120c28}
+html.crea .hc{background:rgba(20,15,44,.7);border-color:rgba(200,180,255,.14);transition:transform .2s,box-shadow .2s,border-color .2s}
+html.crea .hc:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 22px rgba(170,140,255,.2)}
+html.crea .hc.on{border-color:#c4a3ff;box-shadow:0 0 0 3px rgba(196,163,255,.25),0 0 30px rgba(196,163,255,.3)}
+html.crea .hc .nm em{color:#a8ecff}
+html.crea .hcrea{background:linear-gradient(rgba(20,15,44,.92),rgba(20,15,44,.92)) padding-box,conic-gradient(from var(--hra),#fff,#c8a2ff,#8fe9ff,#fff3c4,#ff9ad5,#c8a2ff,#fff) border-box!important;animation:crhra 6s linear infinite}
+html.crea .sw2 i{background:rgba(255,255,255,.12)}
+html.crea .sw2 input:checked+i{background:linear-gradient(90deg,#c4a3ff,#8fe9ff);box-shadow:0 0 12px rgba(168,140,255,.5)}
+html.crea .rpool label{background:rgba(255,255,255,.03);border-color:rgba(200,180,255,.15)}
+html.crea code{background:rgba(255,255,255,.08);color:#ffe6a8}
+html.crea details.adv summary,html.crea .vars summary{color:#c4a3ff}
+html.crea #dock{background:rgba(14,10,32,.86);border:1px solid rgba(200,180,255,.25);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 30px rgba(150,120,255,.2)}
+html.crea #pvforce{background:linear-gradient(90deg,#c4a3ff,#8fe9ff);color:#120c28}
+html.crea ::-webkit-scrollbar{width:10px;height:10px}html.crea ::-webkit-scrollbar-thumb{background:linear-gradient(#5b4a99,#2f6b8a);border-radius:10px;border:2px solid #07051a}html.crea ::-webkit-scrollbar-track{background:transparent}
+html.crea ::selection{background:rgba(196,163,255,.45)}
+html.crea .pg.on{animation:crpg .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes crpg{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#skinb{white-space:nowrap}
+/* écran d'accès (une fois par session) */
+#crsplash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 45%,#1a1240,#05030f 70%);color:#fff;cursor:pointer;transition:opacity .7s,filter .7s}
+#crsplash.out{opacity:0;filter:blur(8px);pointer-events:none}
+#crsplash .k{font-size:64px;line-height:1;text-shadow:0 0 24px #c8a2ff,0 0 60px #8fe9ff;animation:crk 1.2s cubic-bezier(.2,1.3,.3,1) both}
+@keyframes crk{from{opacity:0;transform:translateY(-20px) scale(2);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+#crsplash .t{font:700 26px Cinzel,serif;letter-spacing:.3em;padding-left:.3em;background:linear-gradient(110deg,#fff 0%,#e3ccff 18%,#a8ecff 36%,#fff 50%,#fff0c2 64%,#ffb8e2 82%,#fff 100%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:crsh 4s linear infinite,crk 1s .25s both}
+#crsplash .l{font:500 13px "JetBrains Mono",monospace;color:#bfe9ff;white-space:nowrap;overflow:hidden;width:0;animation:crty 1s .7s steps(34) forwards}
+@keyframes crty{to{width:34ch}}
+#crsplash .bar2{width:220px;height:2px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
+#crsplash .bar2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c4a3ff,#8fe9ff,#ffd2ec);animation:crbar 1.4s .5s cubic-bezier(.6,0,.2,1) forwards;box-shadow:0 0 10px #c4a3ff}
+@keyframes crbar{to{width:100%}}
+#lock{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bg)}
+#lock[hidden]{display:none}
+#lockf{width:min(380px,100%);background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+#lockf h2{font-size:19px;margin:0}#lockf p{margin:0 0 4px;color:var(--dim);font-size:14px;line-height:1.45}
+#lockf label{font-size:13px;color:var(--dim);font-weight:600}
+#lockf input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font-size:15px;text-align:left;margin:4px 0 6px}
+#lockf .lk-keep{display:flex;align-items:center;gap:8px;font-weight:500}
+#lockf .lk-k{font-size:30px}#lockf .btn{margin-top:4px}
+#lkerr{color:var(--bad);font-size:13px;min-height:1em}
+#lock [hidden],#lock[hidden]{display:none!important}
+
+/* ===== Version mobile ===== */
+@media (max-width:700px){
+html{-webkit-text-size-adjust:100%}
+header.top{padding-top:env(safe-area-inset-top,0px)}
+.bar{flex-wrap:wrap;gap:8px 10px;padding:10px max(14px,env(safe-area-inset-right,0px)) 4px max(14px,env(safe-area-inset-left,0px))}
+h1{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#st{order:5;flex:1 1 100%;text-align:left;font-size:12px}
+#dockb,#dock{display:none!important}
+#skinb{padding:8px 10px;font-size:12px}
+#send{padding:9px 12px;font-size:13px}
+#nav{padding:2px max(10px,env(safe-area-inset-left,0px)) 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+#nav::-webkit-scrollbar{display:none}
+#nav button{padding:9px 14px;scroll-snap-align:start}
+main,main.dock{padding:14px max(12px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.cards{grid-template-columns:minmax(0,1fr);gap:12px}
+.g{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));padding:12px 14px 14px}
+.row input,.row select,.row textarea,.tb select{font-size:16px;padding:10px 11px}
+.row input[type=checkbox]{width:24px;height:24px}
+.row input[type=color]{height:40px}
+.gal{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+.hcrea{grid-column:1/-1}
+.hc .sw{height:68px;padding:0 10px}.hc .sw b{font-size:30px}.hc .sw i{font-size:10.5px}
+.hc .nm{font-size:13px;padding:7px 10px 2px}.hc .tg{font-size:11px;padding:0 10px 9px}
+.btn{padding:10px 16px}
+.tb .foot{min-width:0;flex-basis:100%}
+.items,.items.wide,.egl{grid-template-columns:minmax(0,1fr);gap:12px}
+h1,html.crea h1{font-size:0!important}h1::after{content:"Admin Météo";font-size:17px}html.crea h1::after{font-size:18px}html.crea h1::before{font-size:18px}
+#send{font-size:0;padding:9px 14px}#send::after{content:"Enregistrer";font-size:13px}
+#skinb{font-size:0;padding:8px 11px}#skinb::after{content:"♛";font-size:15px}html.crea #skinb::after{content:"◻"}
+.eg{padding:12px 14px}
+#lockf{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+<script>try{if(localStorage.getItem('adminSkin')!=='classic')document.documentElement.classList.add('crea')}catch(e){document.documentElement.classList.add('crea')}</script>
+<div id="lock"><form id="lockf" autocomplete="on">
+  <div class="lk-k">🔒</div><h2>Administration · Météo</h2>
+  <p id="lkmsg">Connexion au serveur…</p>
+  <div id="lksetup" hidden>
+    <label for="lktok">Jeton GitHub (accès au dépôt <b id="lkrepo"></b>)</label><input id="lktok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+  </div>
+  <div id="lkpw" hidden>
+    <input type="text" name="username" value="admin-meteo" autocomplete="username" hidden>
+    <label for="lkp1">Mot de passe</label><input id="lkp1" type="password" autocomplete="current-password">
+    <div id="lkp2w" hidden><label for="lkp2">Encore une fois</label><input id="lkp2" type="password" autocomplete="new-password"></div>
+    <label class="lk-keep"><input type="checkbox" id="lkkeep"> Rester connecté sur cet appareil</label>
+  </div>
+  <button class="btn" id="lkgo" type="submit" hidden>Déverrouiller</button><button class="btn s" id="lkcancel" type="button" hidden>Annuler</button>
+  <div id="lkerr"></div>
+</form></div>
+<header class="top">
+  <div class="bar"><h1>Administration · Météo</h1><div id="st"></div><button class="btn s" id="skinb" title="Changer l'apparence de l'admin">♛ Créateur</button><button class="btn s" id="dockb" title="Afficher / masquer l'aperçu flottant">Aperçu flottant</button><button class="btn" id="send">Enregistrer maintenant</button></div>
+  <nav id="nav"><button data-go="screen">Écran</button><button data-go="preview">Aperçu</button><button data-go="display">Affichage</button><button data-go="style">Style</button><button data-go="themes">Météos</button><button data-go="events">Fêtes</button><button data-go="eggs">Surprises</button><button data-go="amb">Sons & mascotte</button><button data-go="widgets">Widgets</button><button data-go="backup">Sauvegarde</button></nav>
+</header>
+<main>
+  <section class="pg" data-p="screen"><div class="cards">
+    <div class="card"><h3>Serveur</h3><div class="g">
+      <div class="row"><label>État</label><span id="conn"><span class="dot"></span>Connexion…</span></div>
+      <div class="row"><label>Dernier enregistrement</label><span id="lastsave">–</span></div>
+      <div class="row"><label>Stockage</label><span class="foot" id="repo"></span></div>
+      <div class="row full" style="gap:8px;flex-wrap:wrap;justify-content:flex-start"><button class="btn s" id="test">Recharger depuis le serveur</button><button class="btn s" id="chpw">Changer le mot de passe</button><button class="btn s" id="chtok">Changer le jeton</button><button class="btn d" id="logout">Se déconnecter</button></div>
+      <div class="row full"><span class="foot">Tout passe par le serveur : chaque modification est enregistrée en ligne, et tous les écrans ouverts sur le site l'appliquent d'eux-mêmes en moins d'une minute. Rien à appairer.</span></div>
+    </div></div>
+    <div class="card"><h3>Envoyer une info maintenant</h3><div class="g">
+      <div class="row col"><label>Message affiché en haut de l'écran</label><textarea id="nt" rows="2" placeholder="Ex : Réunion à 14h en salle B"></textarea></div>
+      <div class="row"><label>Durée (secondes)</label><input id="ns" type="number" min="3" value="15"></div>
+      <div class="row"><button class="btn" id="sn">Envoyer le message</button></div>
+    </div></div>
+  </div></section>
+
+  <section class="pg" data-p="display"><div class="cards">
+    <div class="card"><h3>Général</h3><div class="g" id="gen"></div><div class="foot pad">En automatique, l'écran utilise sa position GPS si le navigateur l'autorise, sinon celle de sa connexion Internet (précise à quelques dizaines de km près). En manuel : clic droit sur Google Maps, puis copier les coordonnées. Changer la position recharge l'écran.</div></div>
+    <div class="card"><h3>Affichage</h3><div class="g" id="aff"></div></div>
+    <div class="card"><h3>Disposition</h3><div class="g" id="lay"></div></div>
+    <div class="card"><h3>🚀 Écran de démarrage</h3><div class="g" id="bootf"></div><div style="padding:4px 16px 12px"><button class="btn s xs" data-test="azure">▶ Voir le démarrage dans l'aperçu</button></div><div class="foot pad">Animation d'environ 6 à 7 secondes à chaque allumage ou rechargement de l'écran. Style Linux : menu GRUB, défilement des messages du noyau avec les [ OK ], logo avec chargement, puis connexion automatique. Style cinématique : particules, logo qui se dessine et « Welcome to ». Un toucher passe l'animation.</div></div>
+    <div class="card"><h3>🌙 Mode veille la nuit</h3><div class="g" id="slp"></div><div style="padding:4px 16px 12px"><button class="btn s xs" id="slpv">👁 Voir dans l'aperçu</button></div><div class="foot pad">Aux heures choisies, l'écran affiche seulement une grande horloge avec la température sur fond noir (ou s'assombrit simplement). Les animations s'arrêtent, ce qui économise l'écran et l'ordinateur. L'horloge se décale un peu chaque minute pour ne pas marquer l'écran. Un toucher réveille l'écran pendant 1 minute.</div></div>
+    <div class="card"><h3>Météos spéciales</h3><div class="g" id="wxc"></div><div class="foot pad">Ces météos se déclenchent toutes seules selon la vraie météo. Leurs couleurs et effets se règlent dans l'onglet Météos.</div></div>
+  </div></section>
+
+  <section class="pg" data-p="style">
+    <div class="card"><h3>Style de l'interface</h3><div class="gal" id="gal"></div>
+      <details class="vars"><summary>Variantes simples (anciens styles, mêmes formes que iOS)</summary><div class="vl" id="vars"></div></details></div>
+    <div class="card"><h3>🎰 Roll des styles (façon caisse CS)</h3><div class="g" id="rollf"></div><div style="padding:4px 16px 4px"><button class="btn xs" data-test="roll">🎰 Lancer un roll dans l'aperçu</button> <button class="btn s xs" id="rollscr">🎰 Lancer sur l'écran</button> <button class="btn s xs" data-test="x0cin" title="Attention, spoil !">✦ Rejouer l'animation secrète</button> <button class="btn s xs" data-test="x0scin" title="Attention, spoil !">✨ Rejouer la version shiny</button> <button class="btn s xs" data-test="infcin" title="Attention, spoil !">∞ Rejouer la cinématique infinie</button> <button class="btn s xs" data-test="voidcin" title="Attention, spoil !">∅ Rejouer la cinématique néant</button> <button class="btn s xs" data-test="traincin" title="Attention, spoil !">🎫 Rejouer la cinématique billet d'or</button> <button class="btn s xs" data-test="creacin">♛ Rejouer la cinématique créateur</button> <button class="btn s xs" data-test="gencin" title="Attention, énorme spoil !">✺ Rejouer la cinématique légendaire</button> <button class="btn s xs" data-test="tescin" title="Attention, gros spoil !">◈ Rejouer la cinématique ultime</button> <button class="btn s xs" data-test="novacin">✸ Rejouer la supernova</button></div><div class="foot pad">Les styles défilent comme à l'ouverture d'une caisse, ralentissent et s'arrêtent sur un style au hasard, selon sa rareté. Le style obtenu reste jusqu'au prochain roll, ou jusqu'à ce que tu choisisses un autre style dans la galerie. Coche les styles qui peuvent tomber (aucun coché = tous).</div><div class="rpool" id="rpool"></div></div>
+    <div class="card"><h3>Options du style</h3><div class="g" id="app"></div><div class="foot pad">Chaque style a ses propres polices, décors, icônes, sa façon d'afficher la température et ses propres phrases (« textes d'ambiance »). Le style festif remplace automatiquement le style pendant Halloween (Manoir hanté) et Noël.</div></div>
+  </section>
+
+  <section class="pg" data-p="themes">
+    <div class="tb"><div class="foot">Chaque météo est personnalisable : couleurs, effet principal + effet n°2, intensité, vitesse, vent, couleur des particules, soleil, lune, éclairs, image de fond, texte et message… Ouvre « Réglages avancés ». Le bouton 👁 montre la météo dans l'aperçu sans l'enregistrer.</div></div>
+    <div class="items" id="thm"></div>
+  </section>
+
+  <section class="pg" data-p="events">
+    <div class="tb"><button class="btn" id="eva">+ Ajouter un événement</button><div class="foot">Dates au format MM-JJ (ex : 12-25), « easter » / « easter+1 » pour Pâques, ou « fri13 » pour chaque vendredi 13. Dans le message, sépare plusieurs phrases par <b>|</b> : elles défilent. Le bouton 👁 montre la fête dans l'aperçu.</div></div>
+    <div class="items wide" id="evl"></div>
+  </section>
+
+  <section class="pg" data-p="eggs">
+    <div class="tb"><label class="foot" style="flex:none">Les boutons de test lancent la surprise sur :</label><select id="eggto"><option value="pv">l'aperçu</option><option value="scr">l'écran (envoi)</option></select><div class="foot">Les surprises n'apparaissent que pendant leur fête (ou si tu forces la fête dans Affichage › Fond animé). Les citrouilles, le poisson et les œufs se touchent sur l'écran tactile.</div></div>
+    <div class="egl" id="egl"></div>
+  </section>
+
+  <section class="pg" data-p="amb"><div class="cards">
+    <div class="card"><h3>🔊 Sons d'ambiance</h3><div class="g" id="sndf"></div>
+      <div style="padding:4px 16px 12px"><div class="foot" style="margin-bottom:8px">Écouter ici (sur ce PC, pendant 10 s) :</div><div class="sbtn" id="sndt"></div></div>
+      <div class="foot pad">Tous les sons sont créés en direct par l'écran (aucun fichier à télécharger) et suivent la vraie météo : pluie et gouttes sur la vitre, grêle, vent qui souffle par rafales, tonnerre après chaque éclair, oiseaux le matin, grillons les soirs d'été, chouette la nuit. Certains styles ont leur propre ambiance : vagues (Marin), ville (Cyberpunk), nappe de synthé (Vaporwave), clavier (Terminal hacker), carillon à vent (Estampe japonaise).<br><br>Le navigateur bloque souvent le son tant que personne n'a touché l'écran : l'écran affiche alors « Touchez l'écran pour activer le son ». Sur un écran en mode kiosque (Chromium), ajoute <code>--autoplay-policy=no-user-gesture-required</code> pour que le son démarre tout seul.</div></div>
+    <div class="card"><h3>🐾 Mascotte animée</h3><div class="g" id="mscf"></div>
+      <div style="padding:4px 16px 12px"><div class="mpv"><div id="mthumb"></div><div class="mbt"><label class="btn s xs" style="cursor:pointer">📁 Choisir un PNG / GIF<input type="file" id="mfile" accept="image/png,image/gif,image/webp,image/jpeg" hidden></label><button class="btn s xs" id="mnim">☁ Nimbus (intégré)</button><button class="btn s xs" id="mresend" title="À utiliser si l'écran affiche Nimbus au lieu de ton image">↻ Renvoyer l'image</button><label class="foot" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="mcut" checked> Détourage auto (enlève le fond uni d'un PNG / JPG)</label><button class="btn xs" data-test="masc">▶ Faire passer maintenant</button></div></div></div>
+      <div class="foot pad">Mets un PNG détouré (fond transparent) ou un GIF animé : il est animé sur l'écran (défile, vole, rebondit, flotte ou surgit du bas). Touche-le sur l'écran tactile : il saute et dit la météo. Sans image, c'est <b>Nimbus</b>, le petit nuage, qui s'habille selon le temps (parapluie, lunettes de soleil, écharpe…).<br><br>Les PNG sont réduits automatiquement. Les GIF doivent faire moins de 150 Ko (sinon utilise un lien vers l'image). L'image n'est envoyée à l'écran qu'une seule fois.</div></div>
+  </div></section>
+
+  <section class="pg" data-p="widgets">
+    <div class="tb"><select id="nw"><option value="text">Texte</option><option value="value">Valeur (URL)</option><option value="image">Image</option><option value="clock">Horloge</option><option value="count">Compte à rebours</option><option value="web">Page web (URL)</option><option value="link">Lien (URL)</option></select><button class="btn" id="wa">+ Ajouter un widget</button><div class="foot">Widgets affichés sur la page Infos.</div></div>
+    <div class="items wide" id="wl"></div>
+  </section>
+
+  <section class="pg" data-p="preview">
+    <div class="card"><h3>Aperçu de la page météo de l'écran</h3>
+      <div style="padding:14px 16px"><div id="pvbox" style="position:relative;width:100%;aspect-ratio:5/3;overflow:hidden;border-radius:14px;background:#000"><iframe id="pvf" title="Aperçu de l'écran"></iframe></div></div>
+      <div class="g"><div class="row"><label>Adresse de la page écran</label><input id="pvu" placeholder="index.html" autocapitalize="off"></div></div>
+      <div class="foot pad" style="padding-top:10px">Reproduction fidèle de la page météo avec ta configuration (style, couleurs, météo réelle). Elle suit tes modifications en direct. Le fichier <b>index.html</b> doit être dans le même dossier que <b>admin.html</b> ; sinon indique son adresse complète.</div>
+    </div>
+  </section>
+  <section class="pg" data-p="backup">
+    <div class="card"><h3>Configuration (JSON)</h3><div class="g"><div class="row col"><textarea id="ex" spellcheck="false"></textarea></div></div></div>
+    <div class="acts"><button class="btn" id="dl">Télécharger la sauvegarde</button><button class="btn s" id="up">Restaurer un fichier</button><input type="file" id="fl" accept=".json,application/json" hidden><button class="btn s" id="exb">Afficher en texte</button><button class="btn s" id="imb">Importer</button><button class="btn d" id="rst">Réinitialiser</button></div>
+  </section>
+</main>
+<div id="dock"><div class="dh"><span>Aperçu en direct</span><button class="mini" id="dockx" title="Masquer">✕</button></div><div id="pvforce"></div><div id="dbox"><iframe id="pvd" title="Aperçu flottant"></iframe></div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+/*__SHARED_CONFIG__*/

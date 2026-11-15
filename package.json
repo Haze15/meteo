@@ -1,0 +1,13 @@
+{
+  "name": "meteo-lycee",
+  "private": true,
+  "description": "Écran météo du lycée (800 × 480) et sa page de réglages",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --dev"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
