@@ -136,6 +136,13 @@ La musique de chaque cinématique est **synthétisée** dans `shared/sound.js` (
 
 Les probabilités sont dans `screen/roll.js` (constantes `XP`, `IP`, `VP`, `TP`, `GP`, `ABP`, `TRP`).
 
+## L'appli iOS (`ios/`)
+
+Une petite appli SwiftUI qui affiche le site dans une WebView : l'écran en plein écran, et un bouton ⚙ qui bascule sur l'admin. Elle charge toujours la version en ligne, donc elle n'a pas besoin d'être recompilée quand le site change.
+
+- `ios/project.yml` décrit le projet pour XcodeGen ; `ios/Meteo/` contient le code et l'icône.
+- Le workflow `.github/workflows/ios.yml` compile un `.ipa` **non signé** sur un Mac de GitHub Actions à chaque modification de `ios/` (ou à la demande), et le publie en artefact et en Release. Pour l'installer sur un iPhone, il faut le signer soi-même (par exemple avec un outil de sideload).
+
 ## Paramètres d'URL utiles pour tester
 
 | Paramètre | Effet |

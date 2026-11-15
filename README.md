@@ -12,7 +12,7 @@ Un écran météo pour le hall du lycée (800 × 480 px), avec plus de 30 styles
 - **L'écran** affiche la météo du jour, les prévisions sur 5 jours, l'heure par heure, la qualité de l'air, un radar de pluie et des infos (widgets). Il se met à jour tout seul.
 - **L'admin** règle tout : lieu, style, couleurs par météo, fêtes, sons, mascotte, widgets, messages à afficher tout de suite.
 - **Tout passe par le serveur** : chaque réglage est enregistré en ligne, et tous les écrans ouverts sur le site l'appliquent en moins d'une minute. Il n'y a rien à appairer.
-- **Sur téléphone** : ouvre le lien des réglages puis « Ajouter à l'écran d'accueil ». L'admin s'ouvre alors comme une appli.
+- **Sur téléphone** : ouvre le lien des réglages puis « Ajouter à l'écran d'accueil ». L'admin s'ouvre alors comme une appli. Il existe aussi une petite appli iOS dans `ios/` (voir la documentation technique).
 
 ## Documentation
 
