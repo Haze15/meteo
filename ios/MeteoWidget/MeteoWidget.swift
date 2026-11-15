@@ -56,13 +56,13 @@ func themeKey(code k: Int, day: Bool, tempC: Double, gust: Double, wx: [String: 
 extension WeatherEntry {
     static let placeholder = WeatherEntry(
         date: Date(), place: "Météo", temp: 14, feels: 12, code: 2, isDay: true, unit: "°",
-        bg: [Color(red: 0.11, green: 0.42, blue: 0.90), Color(red: 0.34, green: 0.69, blue: 1.0), Color(red: 0.75, green: 0.90, blue: 1.0)],
         days: [
             DayForecast(label: "Lun", code: 3, tmax: 15, tmin: 9),
             DayForecast(label: "Mar", code: 61, tmax: 13, tmin: 8),
             DayForecast(label: "Mer", code: 1, tmax: 16, tmin: 7),
             DayForecast(label: "Jeu", code: 0, tmax: 17, tmin: 8),
-        ])
+        ],
+        bg: [Color(red: 0.11, green: 0.42, blue: 0.90), Color(red: 0.34, green: 0.69, blue: 1.0), Color(red: 0.75, green: 0.90, blue: 1.0)])
 }
 
 func symbol(_ code: Int, day: Bool) -> String {
